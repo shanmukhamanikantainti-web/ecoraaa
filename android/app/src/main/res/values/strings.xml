@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PEGASUS OS</string>
+    <string name="system_ready">SYSTEM READY</string>
+    <string name="pegasus_core_online">PEGASUS CORE ONLINE</string>
+    <string name="pegasus_command_hint">Ask PEGASUS or give a command</string>
+    <string name="mission_control">MISSION CONTROL</string>
+    <string name="agent_manager">AGENTS</string>
+    <string name="intelligence_center">INTELLIGENCE</string>
+    <string name="file_manager">FILES</string>
+    <string name="terminal">TERMINAL</string>
+    <string name="settings">SETTINGS</string>
+    <string name="memory">PEGASUS MEMORY</string>
+    <string name="workspaces">WORKSPACES</string>
+    <string name="applications">APPLICATIONS</string>
+    <string name="no_active_missions">No active missions</string>
+    <string name="give_pegasus_goal">Give PEGASUS a goal to get started</string>
+</resources>

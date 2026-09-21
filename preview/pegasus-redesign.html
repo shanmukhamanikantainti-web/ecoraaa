@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEGASUS — AI-Native Operating Environment</title>
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     PEGASUS Design System v1.0
+     Primary Blue: #2F7EDA
+     Main Background: #FAFAFA
+     Secondary Surface: #EDEFF3
+     Border: #C6D1D7
+     Secondary Accent: #9FA0B5
+     Dark Neutral: #555663
+     ═══════════════════════════════════════════════════════════ */
+  :root {
+    --pegasus-blue: #2F7EDA;
+    --main-bg: #FAFAFA;
+    --secondary-bg: #EDEFF3;
+    --border-color: #C6D1D7;
+    --secondary-accent: #9FA0B5;
+    --dark-neutral: #555663;
+    --success: #4FAF78;
+    --warning: #D6A84F;
+    --error: #D05C5C;
+
+    /* Typography */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* Component sizes */
+    --control-height: 32px;
+    --panel-radius: 8px;
+    --border-width: 1px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-family);
+    background: var(--main-bg);
+    color: var(--dark-neutral);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* ── GLOBAL UTILITIES ── */
+  .flex-row { display: flex; align-items: center; }
+  .flex-col { display: flex; flex-direction: column; }
+  .gap-4 { gap: 8px; }
+  .gap-8 { gap: 16px; }
+  .gap-12 { gap: 24px; }
+  .flex-1 { flex: 1; }
+  .text-sm { font-size: 12px; }
+  .text-base { font-size: 14px; }
+  .text-lg { font-size: 16px; }
+  .text-xl { font-size: 18px; }
+  .font-medium { font-weight: 500; }
+  .font-semibold { font-weight: 600; }
+  .text-primary { color: var(--pegasus-blue); }
+  .text-success { color: var(--success); }
+  .text-warning { color: var(--warning); }
+  .text-error { color: var(--error); }
+  .text-muted { color: var(--secondary-accent); }
+  .text-disabled { color: #B0B8C1; }
+  .bg-white { background: #FFFFFF; }
+  .bg-secondary { background: var(--secondary-bg); }
+  .border { border: var(--border-width) solid var(--border-color); }
+  .rounded { border-radius: 8px; }
+  .rounded-full { border-radius: 9999px; }
+  .p-4 { padding: 8px; }
+  .p-8 { padding: 16px; }
+  .px-8 { padding-left: 16px; padding-right: 16px; }
+  .py-4 { padding-top: 8px; padding-bottom: 8px; }
+  .m-4 { margin: 8px; }
+  .shadow { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .shadow-lg { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .pointer { cursor: pointer; }
+
+  /* ── APP SHELL ── */
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    height: 48px;
+    background: var(--main-bg);
+    border-bottom: var(--border-width) solid var(--border-color);
+    padding: 0 16px;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .top-bar-left {
+    gap: 16px;
+    flex: 1;
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .top-bar .app-icon {
+    width: 24px;
+    height: 24px;
+    background: var(--pegasus-blue);
+    color: white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .top-bar .logo {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dark-neutral);
+  }
+
+  .top-bar .nav-item {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--secondary-accent);
+  }
+  .top-bar .nav-item:hover { background: var(--secondary-bg); color: var(--dark-neutral); }
+  .top-bar .nav-item.active { background: var(--pegasus-blue); color: white; }
+
+  .top-bar .device-indicator {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .top-bar .device-indicator.connected {
+    background: var(--success);
+    color: white;
+  }
+  .top-bar .device-indicator.disconnected {
+    background: var(--warning);
+    color: white;
+  }
+  .top-bar .device-indicator::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main-content {
+    flex: 1;
+    overflow: auto;
+    padding: 32px;
+  }
+
+  /* ── SIDE BAR ── */
+  .sidebar {
+    width: 240px;
+    background: var(--secondary-bg);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--dark-neutral);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sidebar-item:hover { background: white; }
+  .sidebar-item.active { background: var(--pegasus-blue); color: white; }
+  .sidebar-item .icon { width: 20px; height: 20px; opacity: 0.8; }
+  .sidebar-item.active .icon { opacity: 1; }
+
+  /* ── COMMAND CENTER ── */
+  .command-center {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .greeting {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--dark-neutral);
+    margin-bottom: 8px;
+  }
+
+  .greeting-sub {
+    font-size: 14px;
+    color: var(--secondary-accent);
+    margin-bottom: 24px;
+  }
+
+  .input-section {
+    margin-bottom: 32px;
+  }
+
+  .ask-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .ask-input:focus { border-color: var(--pegasus-blue); }
+  .ask-input::placeholder { color: var(--secondary-accent); }
+
+  /* ── QUICK CMDS ── */
+  .quick-cmds {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quick-cmd {
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--dark-neutral);
+    transition: all 0.15s;
+  }
+  .quick-cmd:hover { background: var(--secondary-bg); }
+  .quick-cmd .hint { font-size: 12px; color: var(--secondary-accent); }
+
+  /* ── ACTIVE TASKS ── */
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-neutral);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .active-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .task-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .task-card:hover { background: var(--secondary-bg); }
+  .task-card .task-name { font-size: 14px; font-weight: 500; }
+  .task-card .task-desc { font-size: 12px; color: var(--secondary-accent); }
+  .task-card .status-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: auto;
+  }
+  .task-card .status-badge.running { background: var(--pegasus-blue); color: white; }
+  .task-card .status-badge.done { background: var(--success); color: white; }
+  .task-card .status-badge.pending { background: var(--secondary-bg); color: var(--secondary-accent); }
+
+  /* ── WORKSPACES ── */
+  .workspaces-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .workspace-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .workspace-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .workspace-card .ws-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .workspace-card .ws-desc { font-size: 12px; color: var(--secondary-accent); }
+
+  /* ── DEVICES ── */
+  .devices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .device-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .device-card:hover { background: var(--secondary-bg); }
+  .device-card .device-name { font-weight: 500; }
+  .device-card .device-status { font-size: 12px; color: var(--secondary-accent); }
+  .device-card .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+  }
+  .device-card .status-dot.connected { background: var(--success); }
+  .device-card .status-dot.disconnected { background: var(--warning); }
+
+  /* ── TASK EXECUTION VIEW ── */
+  .task-view {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .task-header {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .task-steps {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .step-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-color);
+  }
+   .step-row:last-child { border-bottom: none; }
+
+  .step-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .step-icon.done { background: var(--success); color: white; }
+  .step-icon.running { background: var(--pegasus-blue); color: white; }
+  .step-icon.waiting { background: var(--secondary-bg); color: var(--secondary-accent); }
+
+  .step-name { font-size: 14px; }
+  .step-name.done { color: var(--secondary-accent); }
+  .step-name.running { color: var(--dark-neutral); font-weight: 500; }
+  .step-agent { font-size: 12px; color: var(--secondary-accent); }
+
+  .step-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .step-action {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    background: var(--secondary-bg);
+    color: var(--dark-neutral);
+  }
+  .step-action:hover { background: var(--secondary-accent); color: white; }
+
+  /* ── SCREEN MIRROR ── */
+  .screen-mirror {
+    height: 600px;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .mirror-header {
+    background: white;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mirror-content {
+    display: flex;
+    height: calc(100% - 48px);
+  }
+
+  .mirror-pane {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .mirror-pane::before {
+    content: '';
+    width: 300px;
+    height: 500px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--secondary-accent);
+  }
+
+  .mirror-split .mirror-pane:first-child::before {
+    content: 'PEGASUS PHONE';
+    background: linear-gradient(135deg, #2F7EDA 0%, #1a1a1a 100%);
+    color: white;
+  }
+  .mirror-split .mirror-pane:last-child::before {
+    content: 'DESKTOP';
+    background: linear-gradient(135deg, #555663 0%, #1a1a1a 100%);
+    color: white;
+  }
+
+  .mirror-controls {
+    width: 120px;
+    background: white;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mirror-btn {
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background: white;
+    text-align: center;
+  }
+  .mirror-btn:hover { background: var(--secondary-bg); }
+
+  /* ── CASES ── */
+  .cases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .case-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .case-card:hover { transform: translateX(4px); }
+  .case-card .case-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .case-card .case-meta { font-size: 12px; color: var(--secondary-accent); }
+  .case-card .case-status {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: auto;
+  }
+  .case-card .case-status.active { background: var(--pegasus-blue); color: white; }
+  .case-card .case-status.closed { background: var(--secondary-bg); color: var(--secondary-accent); }
+
+  /* ── PERMISSION CENTER ── */
+  .permissions {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .permission-item {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+
+  .permission-item .perm-title { font-size: 14px; font-weight: 500; }
+  .permission-item .perm-desc { font-size: 12px; color: var(--secondary-accent); margin-bottom: 8px; }
+
+  .permission-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .permission-action {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    background: var(--secondary-bg);
+    color: var(--dark-neutral);
+  }
+  .permission-action:hover { background: var(--secondary-accent); color: white; }
+
+  /* ── GLOBAL COMMAND CENTER ── */
+  .global-command-center {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(24, 26, 28, 0.95);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px;
+  }
+  .global-command-center.visible { display: flex; }
+
+  .command-input-wrap {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .command-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+  }
+  .command-input::placeholder { color: var(--secondary-accent); }
+
+  /* ── GLOBAL SEARCH ── */
+  .global-search {
+    position: fixed;
+    top: 60px;
+    right: 24px;
+    width: 400px;
+    max-height: 600px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    z-index: 500;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .global-search.visible { display: block; }
+
+  .search-input {
+    padding: 12px 16px;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    outline: none;
+  }
+  .search-results {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .search-result {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .search-result:hover { background: var(--secondary-bg); }
+  .search-result:last-child { border-bottom: none; }
+
+  /* ── MODALS ── */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.visible { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    padding: 24px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  }
+
+  /* ── TOASTS ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--dark-neutral);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: none;
+    z-index: 1000;
+  }
+  .toast.visible { display: block; }
+
+  /* ── RESPONSIVE BREAKPOINTS ── */
+  @media (max-width: 1200px) {
+    .main-content { padding: 24px; }
+    .sidebar { display: none; }
+  }
+
+  @media (max-width: 768px) {
+    .main-content { padding: 16px; }
+    .sidebar { display: none; }
+  }
+
+  /* ── ANIMATIONS ── */
+  .transition { transition: all 0.15s ease; }
+
+  /* ── CONNECTED DEVICE INDICATOR ── */
+  .connected-device {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .device-frame {
+    display: flex;
+    gap: 16px;
+  }
+  .device-box {
+    flex: 1;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    min-width: 200px;
+  }
+  .device-box.header {
+    background: var(--pegasus-blue);
+    color: white;
+    font-weight: 600;
+  }
+  .device-box.content {
+    background: var(--secondary-bg);
+  }
+</style>
+</head>
+<body>
+
+<!-- Global Search Overlay (CTRL+K) -->
+<div id="globalSearch" class="global-search">
+  <input type="text" placeholder="Search files, apps, workspaces, tasks..." class="search-input">
+  <div class="search-results">
+    <div class="search-result"><strong>File:</strong> main.py</div>
+    <div class="search-result"><strong>App:</strong> Terminal</div>
+    <div class="search-result"><strong>Workspace:</strong> Development</div>
+    <div class="search-result"><strong>Task:</strong> Fix build error</div>
+  </div>
+</div>
+
+<!-- Global Command Center Overlay (CTRL+SPACE) -->
+<div id="globalCommand" class="global-command-center">
+  <div class="command-input-wrap">
+    <span style="color: var(--pegasus-blue); font-size: 18px; font-weight: 600;">◉</span>
+    <input type="text" placeholder="Ask PEGASUS..." class="command-input" id="commandInput">
+  </div>
+  <div style="margin-top: 24px; color: var(--secondary-accent); font-size: 12px;">
+    Quick commands: "Open development workspace" • "Run tests" • "Mirror phone"
+  </div>
+</div>
+
+<!-- App Shell -->
+<div class="app-shell">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="app-icon">🐱</div>
+      <div class="logo">PEGASUS</div>
+      <div class="nav-item active" onclick="navigate('command-center')">Command Center</div>
+      <div class="nav-item" onclick="navigate('workspaces')">Workspaces</div>
+      <div class="nav-item" onclick="navigate('files')">Files</div>
+      <div class="nav-item" onclick="navigate('console')">Console</div>
+      <div class="nav-item" onclick="navigate('mirror')">Screen Mirror</div>
+      <div class="nav-item" onclick="navigate('cases')">Cases</div>
+      <div class="nav-item" onclick="navigate('memory')">AI & Memory</div>
+      <div class="nav-item" onclick="navigate('settings')">Settings</div>
+      <div class="nav-item" onclick="navigate('help')">Help</div>
+    </div>
+    <div class="top-bar-right">
+      <div class="nav-item" style="cursor: default;"><span class="icon">🔍</span></div>
+      <div class="device-indicator connected">
+        <span class="status-dot connected"></span>
+        <span>PEGASUS Phone</span>
+      </div>
+      <div class="device-indicator connected">
+        <span class="status-dot connected"></span>
+        <span>Desktop</span>
+      </div>
+      <div class="nav-item" style="font-size: 18px;">👤</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Command Center Screen -->
+    <div id="command-center" style="display: block;">
+      <div class="command-center">
+        <!-- Greeting -->
+        <div class="greeting" id="greeting">Good morning, Engineer.</div>
+        <div class="greeting-sub" id="greetingSub">What are you working on?</div>
+
+        <!-- Ask PEGASUS Input -->
+        <div class="input-section">
+          <input type="text" class="ask-input" placeholder="Ask PEGASUS anything..."
+                 onkeypress="if(event.key==='Enter') handleAsk(this.value)">
+        </div>
+
+        <!-- Quick Commands -->
+        <div class="section-title">Quick Actions</div>
+        <div class="quick-cmds">
+          <div class="quick-cmd" onclick="runCommand('Open my development environment')">
+            <div>Open my development environment</div>
+            <div class="hint">Open VS Code, terminal, browser, and project files</div>
+          </div>
+          <div class="quick-cmd" onclick="runCommand('Fix the failing tests')">
+            <div>Fix the failing tests</div>
+            <div class="hint">Analyze, fix, and verify test failures</div>
+          </div>
+          <div class="quick-cmd" onclick="runCommand('Research battery cooling')">
+            <div>Research battery cooling methods</div>
+            <div class="hint">Web search, document analysis, summarize findings</div>
+          </div>
+          <div class="quick-cmd" onclick="runCommand('Mirror my phone')">
+            <div>Mirror my phone screen</div>
+            <div class="hint">View and control phone from desktop</div>
+          </div>
+        </div>
+
+        <!-- Connected Devices -->
+        <div class="section-title" style="margin-top: 32px;">Connected Devices</div>
+        <div class="devices">
+          <div class="device-card" onclick="mirrorPhone()">
+            <div class="device-name" style="display: flex; align-items: center; gap: 8px;">
+              <span class="status-dot connected"></span>
+              PEGASUS Phone
+            </div>
+            <div class="device-status">Online • Android 14 • 3.2GB free</div>
+          </div>
+          <div class="device-card" onclick="mirrorDesktop()">
+            <div class="device-name" style="display: flex; align-items: center; gap: 8px;">
+              <span class="status-dot connected"></span>
+              Desktop Computer
+            </div>
+            <div class="device-status">Online • Windows 11 • 45% CPU • 62% RAM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workspaces Screen -->
+    <div id="workspaces" style="display: none;">
+      <div class="command-center">
+        <div class="section-title">Workspaces</div>
+        <div class="workspaces-grid" style="margin-top: 16px;">
+          <div class="workspace-card active">
+            <div class="ws-title">Command Center</div>
+            <div class="ws-desc">Ask PEGASUS anything, view active tasks</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Development</div>
+            <div class="ws-desc">VS Code, Terminal, Browser, Project files</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Research</div>
+            <div class="ws-desc">Browser, Documents, Research Agent</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Testing</div>
+            <div class="ws-desc">Test suites, Device tests, Logs, Screenshots</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Analysis</div>
+            <div class="ws-desc">Data analysis tools, Reports, Queries</div>
+          </div>
+        </div>
+        <div style="margin-top: 24px;">
+          <button onclick="createWorkspace()" style="padding: 12px 24px; border: 2px solid var(--pegasus-blue); border-radius: 8px; background: white; color: var(--pegasus-blue); cursor: pointer; font-size: 14px;">
+            + Create New Workspace
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Mirror Screen -->
+    <div id="mirror" style="display: none;">
+      <div class="command-center">
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Screen Mirror</span>
+          <button onclick="toggleSplit()" class="mirror-btn">Split View</button>
+        </div>
+
+        <div class="screen-mirror mirror-split" style="margin-top: 16px; margin-bottom: 16px;">
+          <div class="mirror-content">
+            <div class="mirror-pane">
+              <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #2F7EDA 0%, #1a1a1a 100%); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600;">
+                PEGASUS PHONE<br>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">FPS: 60 • Latency: 8ms • Touch: Enabled</div>
+              </div>
+            </div>
+            <div class="mirror-controls">
+              <button class="mirror-btn" onclick="takeScreenshot('phone')">📸 Screenshot</button>
+              <button class="mirror-btn" onclick="startRecording('phone')">⏺ Record</button>
+              <button class="mirror-btn" style="background: var(--pegasus-blue); color: white;">🖱️ Control</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="devices" style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="device-card active">
+            <strong>PEGASUS Phone</strong> — Connected via Wi-Fi
+          </div>
+          <div class="device-card active">
+            <strong>Desktop</strong> — Local session
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cases Screen -->
+    <div id="cases" style="display: none;">
+      <div class="command-center">
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Cases</span>
+          <button onclick="createCase()" style="padding: 8px 16px; border: 1px solid var(--pecasus-blue); border-radius: 6px; background: var(--pegasus-blue); color: white; cursor: pointer; font-size: 12px;">
+            + New Case
+          </button>
+        </div>
+
+        <div class="cases-list" style="margin-top: 16px;">
+          <div class="case-card">
+            <div class="case-title">Authentication Error Investigation</div>
+            <div class="case-meta" style="font-size: 12px; color: var(--secondary-accent); margin-bottom: 8px;">
+              Started 2 days ago • Terminal errors, 3 files modified, 12 tests passed
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: var(--secondary-accent;">Completed</span>
+              <span class="case-status active">Active</span>
+            </div>
+          </div>
+
+          <div class="case-card">
+            <div class="case-title">Battery Cooling Research</div>
+            <div class="case-meta" style="font-size: 12px; color: var(--secondary-accent); margin-bottom: 8px;">
+              Started 5 hours ago • Research Agent running • 7 sources collected
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: var(--secondary-accent);">Running</span>
+              <span class="case-status active">Active</span>
+            </div>
+          </div>
+
+          <div class="case-card">
+            <div class="case-title">Python 3.13 Feature Survey</div>
+            <div class="case-meta" style="font-size: 12px; color: var(--secondary-accent); margin-bottom: 8px;">
+              Completed yesterday • 12 sources reviewed • Summary created
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: var(--secondary-accent);">Completed</span>
+              <span class="case-status closed">Closed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI & Memory Screen -->
+    <div id="memory" style="display: none;">
+      <div class="command-center" style="gap: 8px;">
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>AI & Memory</span>
+          <button class="memory-btn" style="padding: 8px; border-radius: 6px; background: var(--pegasus-blue); color: white; cursor: pointer;">⚙ Settings</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+          <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEGASUS — AI-Native Operating Environment</title>
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     PEGASUS Design System v1.0
+     Primary Blue: #2F7EDA
+     Main Background: #FAFAFA
+     Secondary Surface: #EDEFF3
+     Border: #C6D1D7
+     Secondary Accent: #9FA0B5
+     Dark Neutral: #555663
+     ═══════════════════════════════════════════════════════════ */
+  :root {
+    --pegasus-blue: #2F7EDA;
+    --main-bg: #FAFAFA;
+    --secondary-bg: #EDEFF3;
+    --border-color: #C6D1D7;
+    --secondary-accent: #9FA0B5;
+    --dark-neutral: #555663;
+    --success: #4FAF78;
+    --warning: #D6A84F;
+    --error: #D05C5C;
+
+    /* Typography */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* Component sizes */
+    --control-height: 32px;
+    --panel-radius: 8px;
+    --border-width: 1px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-family);
+    background: var(--main-bg);
+    color: var(--dark-neutral);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* ── GLOBAL UTILITIES ── */
+  .flex-row { display: flex; align-items: center; }
+  .flex-col { display: flex; flex-direction: column; }
+  .gap-4 { gap: 8px; }
+  .gap-8 { gap: 16px; }
+  .gap-12 { gap: 24px; }
+  .flex-1 { flex: 1; }
+  .text-sm { font-size: 12px; }
+  .text-base { font-size: 14px; }
+  .text-lg { font-size: 16px; }
+  .text-xl { font-size: 18px; }
+  .font-medium { font-weight: 500; }
+  .font-semibold { font-weight: 600; }
+  .text-primary { color: var(--pegasus-blue); }
+  .text-success { color: var(--success); }
+  .text-warning { color: var(--warning); }
+  .text-error { color: var(--error); }
+  .text-muted { color: var(--secondary-accent); }
+  .text-disabled { color: #B0B8C1; }
+  .bg-white { background: #FFFFFF; }
+  .bg-secondary { background: var(--secondary-bg); }
+  .border { border: var(--border-width) solid var(--border-color); }
+  .rounded { border-radius: 8px; }
+  .rounded-full { border-radius: 9999px; }
+  .p-4 { padding: 8px; }
+  .p-8 { padding: 16px; }
+  .px-8 { padding-left: 16px; padding-right: 16px; }
+  .py-4 { padding-top: 8px; padding-bottom: 8px; }
+  .m-4 { margin: 8px; }
+  .shadow { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .shadow-lg { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .pointer { cursor: pointer; }
+
+  /* ── APP SHELL ── */
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    height: 48px;
+    background: var(--main-bg);
+    border-bottom: var(--border-width) solid var(--border-color);
+    padding: 0 16px;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .top-bar-left {
+    gap: 16px;
+    flex: 1;
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .top-bar .app-icon {
+    width: 24px;
+    height: 24px;
+    background: var(--pegasus-blue);
+    color: white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .top-bar .logo {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dark-neutral);
+  }
+
+  .top-bar .nav-item {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--secondary-accent);
+  }
+  .top-bar .nav-item:hover { background: var(--secondary-bg); color: var(--dark-neutral); }
+  .top-bar .nav-item.active { background: var(--pegasus-blue); color: white; }
+
+  .top-bar .device-indicator {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .top-bar .device-indicator.connected {
+    background: var(--success);
+    color: white;
+  }
+  .top-bar .device-indicator.disconnected {
+    background: var(--warning);
+    color: white;
+  }
+  .top-bar .device-indicator::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main-content {
+    flex: 1;
+    overflow: auto;
+    padding: 32px;
+  }
+
+  /* ── SIDE BAR ── */
+  .sidebar {
+    width: 240px;
+    background: var(--secondary-bg);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--dark-neutral);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sidebar-item:hover { background: white; }
+  .sidebar-item.active { background: var(--pegasus-blue); color: white; }
+  .sidebar-item .icon { width: 20px; height: 20px; opacity: 0.8; }
+  .sidebar-item.active .icon { opacity: 1; }
+
+  /* ── COMMAND CENTER ── */
+  .command-center {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .greeting {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--dark-neutral);
+    margin-bottom: 8px;
+  }
+
+  .greeting-sub {
+    font-size: 14px;
+    color: var(--secondary-accent);
+    margin-bottom: 24px;
+  }
+
+  .input-section {
+    margin-bottom: 32px;
+  }
+
+  .ask-input {
+    width: 100%;
+    max-width: 500px;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .ask-input:focus { border-color: var(--pegasus-blue); }
+  .ask-input::placeholder { color: var(--secondary-accent); }
+
+  /* ── QUICK CMDS ── */
+  .quick-cmds {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quick-cmd {
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--dark-neutral);
+    transition: all 0.15s;
+  }
+  .quick-cmd:hover { background: var(--secondary-bg); }
+  .quick-cmd .hint { font-size: 12px; color: var(--secondary-accent); }
+
+  /* ── ACTIVE TASKS ── */
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-neutral);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .active-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .task-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .task-card:hover { background: var(--secondary-bg); }
+  .task-card .task-name { font-size: 14px; font-weight: 500; }
+  .task-card .task-desc { font-size: 12px; color: var(--secondary-accent); }
+  .task-card .status-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: auto;
+  }
+  .task-card .status-badge.running { background: var(--pegasus-blue); color: white; }
+  .task-card .status-badge.done { background: var(--success); color: white; }
+  .task-card .status-badge.pending { background: var(--secondary-bg); color: var(--secondary-accent); }
+
+  /* ── WORKSPACES ── */
+  .workspaces-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .workspace-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .workspace-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .workspace-card .ws-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .workspace-card .ws-desc { font-size: 12px; color: var(--secondary-accent); }
+
+  /* ── DEVICES ── */
+  .devices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .device-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .device-card:hover { background: var(--secondary-bg); }
+  .device-card .device-name { font-weight: 500; }
+  .device-card .device-status { font-size: 12px; color: var(--secondary-accent); }
+  .device-card .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+  }
+  .device-card .status-dot.connected { background: var(--success); }
+  .device-card .status-dot.disconnected { background: var(--warning); }
+
+  /* ── TASK EXECUTION VIEW ── */
+  .task-view {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .task-header {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .task-steps {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .step-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .step-row:last-child { border-bottom: none; }
+
+  .step-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .step-icon.done { background: var(--success); color: white; }
+  .step-icon.running { background: var(--pegasus-blue); color: white; }
+  .step-icon.waiting { background: var(--secondary-bg); color: var(--secondary-accent); }
+
+  .step-name { font-size: 14px; }
+  .step-name.done { color: var(--secondary-accent); }
+  .step-name.running { color: var(--dark-neutral); font-weight: 500; }
+  .step-agent { font-size: 12px; color: var(--secondary-accent); }
+
+  .step-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .step-action {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    background: var(--secondary-bg);
+    color: var(--dark-neutral);
+  }
+  .step-action:hover { background: var(--secondary-accent); color: white; }
+
+  /* ── SCREEN MIRROR ── */
+  .screen-mirror {
+    height: 600px;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .mirror-header {
+    background: white;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mirror-content {
+    display: flex;
+    height: calc(100% - 48px);
+  }
+
+  .mirror-pane {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .mirror-pane::before {
+    content: '';
+    width: 300px;
+    height: 500px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--secondary-accent);
+  }
+
+  .mirror-split .mirror-pane:first-child::before {
+    content: 'PEGASUS PHONE';
+    background: linear-gradient(135deg, #2F7EDA 0%, #1a1a1a 100%);
+    color: white;
+  }
+  .mirror-split .mirror-pane:last-child::before {
+    content: 'DESKTOP';
+    background: linear-gradient(135deg, #555663 0%, #1a1a1a 100%);
+    color: white;
+  }
+
+  .mirror-controls {
+    width: 120px;
+    background: white;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mirror-btn {
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background: white;
+    text-align: center;
+  }
+  .mirror-btn:hover { background: var(--secondary-bg); }
+
+  /* ── CASES ── */
+  .cases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .case-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .case-card:hover { transform: translateX(4px); }
+  .case-card .case-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .case-card .case-meta { font-size: 12px; color: var(--secondary-accent); }
+  .case-card .case-status {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: auto;
+  }
+  .case-card .case-status.active { background: var(--pegasus-blue); color: white; }
+  .case-card .case-status.closed { background: var(--secondary-bg); color: var(--secondary-accent); }
+
+  /* ── PERMISSION CENTER ── */
+  .permissions {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .permission-item {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+
+  .permission-item .perm-title { font-size: 14px; font-weight: 500; }
+  .permission-item .perm-desc { font-size: 12px; color: var(--secondary-accent); margin-bottom: 8px; }
+
+  .permission-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .permission-action {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    border: none;
+    background: var(--secondary-bg);
+    color: var(--dark-neutral);
+  }
+  .permission-action:hover { background: var(--secondary-accent); color: white; }
+
+  /* ── GLOBAL COMMAND CENTER ── */
+  .global-command-center {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(24, 26, 28, 0.95);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px;
+  }
+  .global-command-center.visible { display: flex; }
+
+  .command-input-wrap {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .command-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+  }
+  .command-input::placeholder { color: var(--secondary-accent); }
+
+  /* ── GLOBAL SEARCH ── */
+  .global-search {
+    position: fixed;
+    top: 60px;
+    right: 24px;
+    width: 400px;
+    max-height: 600px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    z-index: 500;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .global-search.visible { display: block; }
+
+  .search-input {
+    padding: 12px 16px;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    outline: none;
+  }
+  .search-results {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .search-result {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .search-result:hover { background: var(--secondary-bg); }
+  .search-result:last-child { border-bottom: none; }
+
+  /* ── MODALS ── */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.visible { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    padding: 24px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  }
+
+  /* ── TOASTS ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--dark-neutral);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: none;
+    z-index: 1000;
+  }
+  .toast.visible { display: block; }
+
+  /* ── RESPONSIVE BREAKPOINTS ── */
+  @media (max-width: 1200px) {
+    .main-content { padding: 24px; }
+    .sidebar { display: none; }
+  }
+
+  @media (max-width: 768px) {
+    .main-content { padding: 16px; }
+    .sidebar { display: none; }
+  }
+
+  /* ── ANIMATIONS ── */
+  .transition { transition: all 0.15s ease; }
+
+  /* ── CONNECTED DEVICE INDICATOR ── */
+  .connected-device {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .device-frame {
+    display: flex;
+    gap: 16px;
+  }
+  .device-box {
+    flex: 1;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    min-width: 200px;
+  }
+  .device-box.header {
+    background: var(--pegasus-blue);
+    color: white;
+    font-weight: 600;
+  }
+  .device-box.content {
+    background: var(--secondary-bg);
+  }
+</style>
+</head>
+<body>
+
+<!-- Global Search Overlay (CTRL+K) -->
+<div id="globalSearch" class="global-search">
+  <input type="text" placeholder="Search files, apps, workspaces, tasks..." class="search-input">
+  <div class="search-results">
+    <div class="search-result"><strong>File:</strong> main.py</div>
+    <div class="search-result"><strong>App:</strong> Terminal</div>
+    <div class="search-result"><strong>Workspace:</strong> Development</div>
+    <div class="search-result"><strong>Task:</strong> Fix build error</div>
+  </div>
+</div>
+
+<!-- Global Command Center Overlay (CTRL+SPACE) -->
+<div id="globalCommand" class="global-command-center">
+  <div class="command-input-wrap">
+    <span style="color: var(--pegasus-blue); font-size: 18px; font-weight: 600;">◉</span>
+    <input type="text" placeholder="Ask PEGASUS..." class="command-input" id="commandInput">
+  </div>
+  <div style="margin-top: 24px; color: var(--secondary-accent); font-size: 12px;">
+    Quick commands: "Open development" • "Run tests" • "Mirror phone"
+  </div>
+</div>
+
+<!-- App Shell -->
+<div class="app-shell">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="app-icon">🐱</div>
+      <div class="logo">PEGASUS</div>
+      <div class="nav-item active" onclick="navigate('command-center')">Command Center</div>
+      <div class="nav-item" onclick="navigate('workspaces')">Workspaces</div>
+      <div class="nav-item" onclick="navigate('files')">Files</div>
+      <div class="nav-item" onclick="navigate('console')">Console</div>
+      <div class="nav-item" onclick="navigate('mirror')">Screen Mirror</div>
+      <div class="nav-item" onclick="navigate('cases')">Cases</div>
+      <div class="nav-item" onclick="navigate('memory')">AI & Memory</div>
+      <div class="nav-item" onclick="navigate('settings')">Settings</div>
+      <div class="nav-item" onclick="navigate('help')">Help</div>
+    </div>
+    <div class="top-bar-right">
+      <div class="nav-item" style="cursor: default;"><span class="icon">🔍</span></div>
+      <div class="device-indicator connected">
+        <span class="status-dot connected"></span>
+        <span>PEGASUS Phone</span>
+      </div>
+      <div class="device-indicator connected">
+        <span class="status-dot connected"></span>
+        <span>Desktop</span>
+      </div>
+      <div class="nav-item" style="font-size: 18px;">👤</div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Command Center Screen -->
+    <div id="command-center" style="display: block;">
+      <div class="command-center">
+        <!-- Greeting -->
+        <div class="greeting" id="greeting">Good morning, Engineer.</div>
+        <div class="greeting-sub" id="greetingSub">What are you working on?</div>
+
+        <!-- Ask PEGASUS Input -->
+        <div class="input-section">
+          <input type="text" class="ask-input" placeholder="Ask PEGASUS anything..."
+                 onkeypress="if(event.key==='Enter') handleAsk(this.value)">
+        </div>
+
+        <!-- Quick Commands -->
+        <div class="section-title">Quick Actions</div>
+        <div class="quick-cmds">
+          <div class="quick-cmd" onclick="runCommand('Open my development environment')">
+            <div>Open my development environment</div>
+            <div class="hint">Open VS Code, terminal, browser, and project files</div>
+          </div>
+          <div class="quick-cmd" onclick="runCommand('Fix the failing tests')">
+            <div>Fix the failing tests</div>
+            <div class="hint">Analyze, fix, and verify test failures</div>
+          </div>
+          <div class="quick-cmd" onclick="runCommand('Research battery cooling')">
+            <div>Research battery cooling methods</div>
+            <div class="hint">Web search, document analysis, summarize findings</div>
+          </div>
+          <div class="quick-cmd" onclick="runCommand('Mirror my phone')">
+            <div>Mirror my phone screen</div>
+            <div class="hint">View and control phone from desktop</div>
+          </div>
+        </div>
+
+        <!-- Connected Devices -->
+        <div class="section-title" style="margin-top: 32px;">Connected Devices</div>
+        <div class="devices">
+          <div class="device-card" onclick="mirrorPhone()">
+            <div class="device-name" style="display: flex; align-items: center; gap: 8px;">
+              <span class="status-dot connected"></span>
+              PEGASUS Phone
+            </div>
+            <div class="device-status">Online • Android 14 • 3.2GB free</div>
+          </div>
+          <div class="device-card" onclick="mirrorDesktop()">
+            <div class="device-name" style="display: flex; align-items: center; gap: 8px;">
+              <span class="status-dot connected"></span>
+              Desktop Computer
+            </div>
+            <div class="device-status">Online • Windows 11 • 45% CPU • 62% RAM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workspaces Screen -->
+    <div id="workspaces" style="display: none;">
+      <div class="command-center">
+        <div class="section-title">Workspaces</div>
+        <div class="workspaces-grid" style="margin-top: 16px;">
+          <div class="workspace-card active">
+            <div class="ws-title">Command Center</div>
+            <div class="ws-desc">Ask PEGASUS anything, view active tasks</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Development</div>
+            <div class="ws-desc">VS Code, Terminal, Browser, Project files</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Research</div>
+            <div class="ws-desc">Browser, Documents, Research Agent</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Testing</div>
+            <div class="ws-desc">Test suites, Device tests, Logs, Screenshots</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Analysis</div>
+            <div class="ws-desc">Data analysis tools, Reports, Queries</div>
+          </div>
+        </div>
+        <div style="margin-top: 24px;">
+          <button onclick="createWorkspace()" style="padding: 12px 24px; border: 2px solid var(--pegasus-blue); border-radius: 8px; background: white; color: var(--pegasus-blue); cursor: pointer; font-size: 14px;">
+            + Create New Workspace
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Mirror Screen -->
+    <div id="mirror" style="display: none;">
+      <div class="command-center">
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Screen Mirror</span>
+          <button onclick="toggleSplit()" class="mirror-btn">Split View</button>
+        </div>
+
+        <div class="screen-mirror mirror-split" style="margin-top: 16px; margin-bottom: 16px;">
+          <div class="mirror-content">
+            <div class="mirror-pane">
+              <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #2F7EDA 0%, #1a1a1a 100%); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600;">
+                PEGASUS PHONE<br>
+                <div style="font-size: 12px; opacity: 0.8; margin-top: 8px;">FPS: 60 • Latency: 8ms • Touch: Enabled</div>
+              </div>
+            </div>
+            <div class="mirror-controls">
+              <button class="mirror-btn" onclick="takeScreenshot('phone')">📸 Screenshot</button>
+              <button class="mirror-btn" onclick="startRecording('phone')">⏺ Record</button>
+              <button class="mirror-btn" style="background: var(--pegasus-blue); color: white;">🖱️ Control</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="devices" style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="device-card active">
+            <strong>PEGASUS Phone</strong> — Connected via Wi-Fi
+          </div>
+          <div class="device-card active">
+            <strong>Desktop</strong> — Local session
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cases Screen -->
+    <div id="cases" style="display: none;">
+      <div class="command-center">
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Cases</span>
+          <button onclick="createCase()" style="padding: 8px 16px; border: 1px solid var(--pegasus-blue); border-radius: 6px; background: var(--pegasus-blue); color: white; cursor: pointer; font-size: 12px;">
+            + New Case
+          </button>
+        </div>
+
+        <div class="cases-list" style="margin-top: 16px;">
+          <div class="case-card">
+            <div class="case-title">Authentication Error Investigation</div>
+            <div class="case-meta" style="font-size: 12px; color: var(--secondary-accent); margin-bottom: 8px;">
+              Started 2 days ago • Terminal errors, 3 files modified, 12 tests passed
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: var(--secondary-accent);">Completed</span>
+              <span class="case-status active">Active</span>
+            </div>
+          </div>
+
+          <div class="case-card">
+            <div class="case-title">Battery Cooling Research</div>
+            <div class="case-meta" style="font-size: 12px; color: var(--secondary-accent); margin-bottom: 8px;">
+              Started 5 hours ago • Research Agent running • 7 sources collected
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: var(--secondary-accent);">Running</span>
+              <span class="case-status active">Active</span>
+            </div>
+          </div>
+
+          <div class="case-card">
+            <div class="case-title">Python 3.13 Feature Survey</div>
+            <div class="case-meta" style="font-size: 12px; color: var(--secondary-accent); margin-bottom: 8px;">
+              Completed yesterday • 12 sources reviewed • Summary created
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; color: var(--secondary-accent);">Completed</span>
+              <span class="case-status closed">Closed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI & Memory Screen -->
+    <div id="memory" style="display: none;">
+      <div class="command-center" style="gap: 8px;">
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>AI & Memory</span>
+          <button class="memory-btn" style="padding: 8px; border-radius: 6px; background: var(--pegasus-blue); color: white; cursor: pointer;">⚙ Settings</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
+          <div class="workspace-card">
+            <div class="ws-title">Personal Memory</div>
+            <div class="ws-desc">Preferences, workflows, tools • 12 items</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Project Memory</div>
+            <div class="ws-desc">Architecture, dependencies • 3 active projects</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Session Memory</div>
+            <div class="ws-desc">Actions, results, context • 45 items</div>
+          </div>
+          <div class="workspace-card">
+            <div class="ws-title">Knowledge</div>
+            <div class="ws-desc">Research, docs, findings • 82 items</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settings" style="display: none;">
+      <div class="command-center">
+        <div class="section-title">Settings</div>
+        <div class="workspaces-grid" style="margin-top: 16px; gap: 12px;">
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Device Connection</div>
+            <div class="ws-desc">Connect & disconnect devices</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Permissions</div>
+            <div class="ws-desc">Screen, mouse, keyboard, file access</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">AI & Agents</div>
+            <div class="ws-desc">Model settings, agent configurations</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Workspaces</div>
+            <div class="ws-desc">Create, organize, share workspaces</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Recording</div>
+            <div class="ws-desc">Session recording, auto-save</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Privacy & Security</div>
+            <div class="ws-desc">Data protection, encryption, sessions</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Shortcuts</div>
+            <div class="ws-desc">Customize keyboard shortcuts</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Appearance</div>
+            <div class="ws-desc">Theme, colors, fonts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help & Support Screen -->
+    <div id="help" style="display: none;">
+      <div class="command-center">
+        <div class="section-title">Help & Support</div>
+        <div class="workspaces-grid" style="margin-top: 16px;">
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">How PEGASUS Works</div>
+            <div class="ws-desc">Understanding the AI OS architecture</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Connect Your Phone</div>
+            <div class="ws-desc">Step-by-step pairing guide</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Desktop Permissions</div>
+            <div class="ws-desc">Managing screen, mouse, keyboard control</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">AI Agents</div>
+            <div class="ws-desc">What each agent can do</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Memory System</div>
+            <div class="ws-desc">How PEGASUS remembers work</div>
+          </div>
+          <div class="workspace-card" style="cursor: pointer;">
+            <div class="ws-title">Troubleshooting</div>
+            <div class="ws-desc">Common issues & solutions</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 32px; padding: 16px; background: var(--secondary-bg); border-radius: 8px;">
+          <div class="ws-title" style="margin-bottom: 8px;">Understanding PEGASUS</div>
+          <div class="ws-desc" style="margin-bottom: 12px;">How your devices work together</div>
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 12px;">
+            <div style="text-align: center; padding: 12px; background: white; border-radius: 6px;">
+              <div style="font-weight: 600; color: var(--pegasus-blue);">PEGASUS OS</div>
+              <div style="color: var(--secondary-accent);">Phone AI Layer</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: white; border-radius: 6px;">
+              <div style="font-weight: 600; color: var(--dark-neutral);">↓</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: white; border-radius: 6px;">
+              <div style="font-weight: 600; color: var(--pegasus-blue);">Connect</div>
+              <div style="color: var(--secondary-accent);">Communication Bridge</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: white; border-radius: 6px;">
+              <div style="font-weight: 600; color: var(--dark-neutral);">↓</div>
+            </div>
+            <div style="text-align: center; padding: 12px; background: white; border-radius: 6px;">
+              <div style="font-weight: 600; color: var(--pegasus-blue);">Computer</div>
+              <div style="color: var(--secondary-accent);">Workstation</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Additional styles for missing elements */
+  .pegasus-blue { color: var(--pegasus-blue); }
+  .memory-btn {
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: var(--pegasus-blue);
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    border: none;
+  }
+  .memory-card:hover { transform: translateY(-2px); }
+</style>
+
+<script>
+  let currentScreen = 'command-center';
+  let isSplitView = true;
+
+  // Navigation
+  function navigate(screen) {
+    currentScreen = screen;
+    document.querySelectorAll('[id]').forEach(el => {
+      el.style.display = el.id === screen ? 'block' : 'none';
+    });
+  }
+
+  // Ask PEGASUS
+  function handleAsk(input) {
+    if (!input.trim()) return;
+
+    const taskView = `
+      <div class="task-view">
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+          <span>Task: ${input}</span>
+          <span class="status-badge running">Working...</span>
+        </div>
+
+        <div class="task-steps" style="margin-top: 16px;">
+          <div class="step-row">
+            <div class="step-icon done">✓</div>
+            <div style="flex: 1;">
+              <div class="step-name done">Understanding goal</div>
+              <div class="step-agent">Command Center</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-icon done">✓</div>
+            <div style="flex: 1;">
+              <div class="step-name done">Planning workflow</div>
+              <div class="step-agent">Orchestrator</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-icon done">✓</div>
+            <div style="flex: 1;">
+              <div class="step-name done">Connecting to desktop</div>
+              <div class="step-agent">Device Agent</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-icon running">●</div>
+            <div style="flex: 1;">
+              <div class="step-name running">Opening development environment</div>
+              <div class="step-agent">Coding Agent</div>
+            </div>
+          </div>
+          <div class="step-row">
+            <div class="step-icon waiting">○</div>
+            <div style="flex: 1;">
+              <div class="step-name waiting">Running tests</div>
+              <div class="step-agent">Testing Agent</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; display: flex; gap: 12px;">
+          <button class="step-action" onclick="pauseTask()">⏸ Pause</button>
+          <button class="step-action" onclick="stopTask()">⏹ Stop</button>
+          <button class="step-action" onclick="takeControl()">🖱 Take Control</button>
+          <button class="step-action" onclick="approveAction()">✓ Approve</button>
+        </div>
+      </div>
+    `;
+
+    document.querySelector('.main-content').innerHTML = taskView;
+  }
+
+  function runCommand(cmd) {
+    console.log('Running command:', cmd);
+    // Would trigger AI workflow
+    showToast(`Executing: ${cmd}`);
+  }
+
+  function toggleSplit() {
+    isSplitView = !isSplitView;
+    const mirror = document.querySelector('.screen-mirror');
+    if (isSplitView) {
+      mirror.classList.add('mirror-split');
+    } else {
+      mirror.classList.remove('mirror-split');
+    }
+  }
+
+  function createCase() {
+    showToast('Creating new case...');
+  }
+
+  function createWorkspace() {
+    showToast('Creating new workspace...');
+  }
+
+  function mirrorPhone() {
+    showToast('Mirroring phone...');
+  }
+
+  function mirrorDesktop() {
+    showToast('Mirroring desktop...');
+  }
+
+  function takeScreenshot(type) {
+    showToast(`Taking ${type} screenshot...`);
+  }
+
+  function startRecording(type) {
+    showToast(`Starting ${type} recording...`);
+  }
+
+  function pauseTask() { showToast('Task paused'); }
+  function stopTask() { showToast('Task stopped'); }
+  function takeControl() { showToast('Taking control...'); }
+  function approveAction() { showToast('Action approved'); }
+
+  // Global shortcuts
+  document.addEventListener('keydown', function(e) {
+    // CTRL+K = Global Search
+    if (e.ctrlKey && e.key === 'k') {
+      e.preventDefault();
+      document.getElementById('globalSearch').classList.add('visible');
+    }
+
+    // CTRL+SPACE = Command Center
+    if (e.ctrlKey && e.code === 'Space') {
+      e.preventDefault();
+      document.getElementById('globalCommand').classList.add('visible');
+    }
+
+    // ESC = Close overlays
+    if (e.key === 'Escape') {
+      document.getElementById('globalSearch').classList.remove('visible');
+      document.getElementById('globalCommand').classList.remove('visible');
+    }
+  });
+
+  // Toast notification
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast visible';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    updateClock();
+    setInterval(updateClock, 1000);
+  });
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  }
+</script>
+
+</body>
+</html>

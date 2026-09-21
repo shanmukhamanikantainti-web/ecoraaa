@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>PEGASUS OS Preview</title>
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     PEGASUS OS — Design System
+     80% neutral dark / 15% text+system / 5% accent
+     ═══════════════════════════════════════════════════════════ */
+  :root {
+    --deep-bg: #090C10;
+    --main-bg: #0D1117;
+    --secondary-bg: #11161D;
+    --primary-surface: #151B23;
+    --secondary-surface: #1A212B;
+    --elevated-surface: #202833;
+    --subtle-border: #2A333E;
+    --strong-border: #36414D;
+    --accent: #3FB8A5;
+    --accent-hover: #52C7B5;
+    --dark-accent: #287F73;
+    --accent-bg: #102A27;
+    --primary-text: #E6EDF3;
+    --secondary-text: #9DA7B3;
+    --tertiary-text: #687481;
+    --disabled-text: #4B5561;
+    --success: #4FAF78;
+    --warning: #D6A84F;
+    --error: #D05C5C;
+    --info: #6B9FC8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+    background: #000;
+    color: var(--primary-text);
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Phone frame */
+  .phone {
+    width: 390px; height: 844px;
+    background: var(--main-bg);
+    border-radius: 40px;
+    border: 2px solid #2A2A2A;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0,0,0,0.6);
+  }
+  .phone-notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 150px; height: 28px;
+    background: #000; border-radius: 0 0 18px 18px; z-index: 100;
+  }
+  /* Screens */
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; }
+  .screen.active { display: flex; }
+  /* System Bar */
+  .sysbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 34px 14px 6px; background: rgba(9,12,16,0.95);
+    font-size: 11px; min-height: 52px;
+  }
+  .sysbar-left { display: flex; align-items: center; gap: 6px; }
+  .sysbar-right { display: flex; align-items: center; gap: 10px; }
+  .dot-accent { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .dot-green { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+  .pegasus-label { font-weight: 600; letter-spacing: 1.5px; font-size: 10px; }
+  .workspace-label { font-size: 10px; color: var(--tertiary-text); letter-spacing: 0.5px; }
+  .time { color: var(--secondary-text); font-size: 11px; font-weight: 500; letter-spacing: 0.5px; }
+  /* ── Boot Screen ── */
+  #boot { background: var(--deep-bg); align-items: center; justify-content: center; padding: 48px; }
+  #boot .title { font-size: 26px; font-weight: 600; letter-spacing: 2px; margin-bottom: 4px; }
+  #boot .version { font-size: 11px; color: var(--tertiary-text); letter-spacing: 1px; margin-bottom: 32px; }
+  #boot .line { font-family: 'Courier New', monospace; font-size: 13px; color: var(--secondary-text);
+    display: flex; align-items: center; gap: 8px; margin: 3px 0; opacity: 0; transition: opacity 0.3s; }
+  #boot .line .check { color: var(--accent); font-size: 12px; width: 14px; }
+  #boot .line .label { min-width: 170px; letter-spacing: 0.5px; }
+  #boot .line .status { color: var(--accent); font-weight: 500; }
+  #boot .ready { margin-top: 24px; font-size: 12px; font-family: monospace; color: var(--accent);
+    letter-spacing: 2px; opacity: 0; transition: opacity 0.4s; }
+  /* ── Home Screen ── */
+  #home { background: var(--main-bg); }
+  #home .content { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  #home .pegasus-icon { font-size: 32px; color: rgba(63,184,165,0.6); margin-bottom: 16px; }
+  #home .pegasus-word { font-size: 14px; font-weight: 500; color: var(--tertiary-text); letter-spacing: 4px; margin-bottom: 8px; }
+  #home .core-status { font-size: 10px; letter-spacing: 1px; }
+  /* Dock */
+  .dock {
+    display: flex; justify-content: space-evenly; align-items: center;
+    padding: 12px 16px; background: rgba(9,12,16,0.92); border-top: 1px solid var(--subtle-border);
+  }
+  .dock-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+    padding: 4px 6px; transition: opacity 0.15s; }
+  .dock-item:hover { opacity: 0.8; }
+  .dock-item .icon { font-size: 20px; color: var(--secondary-text); }
+  .dock-item .label { font-size: 9px; color: var(--tertiary-text); letter-spacing: 0.3px; }
+  .dock-pegasus {
+    width: 40px; height: 40px; border-radius: 8px; background: var(--accent-bg);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .dock-pegasus .icon { color: var(--accent); font-size: 18px; }
+  /* ── Launcher ── */
+  #launcher { background: var(--main-bg); }
+  .launcher-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 40px 16px 12px;
+  }
+  .launcher-header .title { font-size: 14px; font-weight: 600; letter-spacing: 1.5px; }
+  .launcher-header .back { font-size: 18px; color: var(--secondary-text); cursor: pointer; }
+  .cat-tabs { display: flex; gap: 4px; padding: 4px 16px; overflow-x: auto; }
+  .cat-tab {
+    padding: 6px 10px; border-radius: 4px; font-size: 11px; white-space: nowrap; cursor: pointer;
+    background: var(--primary-surface); color: var(--secondary-text); transition: all 0.15s;
+  }
+  .cat-tab.active { background: var(--accent-bg); color: var(--accent); font-weight: 500; }
+  .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 16px; overflow-y: auto; }
+  .app-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+  .app-item .app-icon {
+    width: 44px; height: 44px; border-radius: 8px; background: var(--primary-surface);
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+    color: var(--secondary-text); transition: background 0.15s;
+  }
+  .app-item:hover .app-icon { background: var(--elevated-surface); }
+  .app-item .app-name { font-size: 10px; color: var(--secondary-text); }
+  /* ── Mission Control ── */
+  #missions { background: var(--main-bg); }
+  .screen-header {
+    display: flex; align-items: center; gap: 12px; padding: 40px 16px 12px;
+    background: var(--deep-bg);
+  }
+  .screen-header .back { font-size: 20px; color: var(--secondary-text); cursor: pointer; }
+  .screen-header .title { font-size: 14px; font-weight: 600; letter-spacing: 1.5px; flex: 1; }
+  .mission-card { margin: 12px 16px; padding: 16px; background: var(--primary-surface); border-radius: 6px; }
+  .mission-goal { font-size: 14px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; }
+  .badge {
+    padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 600; letter-spacing: 0.5px;
+  }
+  .badge-running { background: rgba(63,184,165,0.15); color: var(--accent); }
+  .badge-done { background: rgba(79,175,120,0.15); color: var(--success); }
+  .step { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-family: monospace; font-size: 12px; }
+  .step .sym { width: 16px; text-align: center; }
+  .step .name { flex: 1; }
+  .step.done .sym { color: var(--success); } .step.done .name { color: var(--secondary-text); }
+  .step.running .sym { color: var(--accent); } .step.running .name { color: var(--primary-text); }
+  .step.pending .sym { color: var(--disabled-text); } .step.pending .name { color: var(--disabled-text); }
+  .step .agent-tag { font-size: 10px; color: var(--tertiary-text); }
+  /* ── Agent Manager ── */
+  #agents { background: var(--main-bg); }
+  .agent-table { padding: 0 16px; }
+  .agent-header {
+    display: flex; padding: 8px 0; font-size: 10px; font-weight: 600; color: var(--tertiary-text);
+    letter-spacing: 0.5px; border-bottom: 1px solid var(--subtle-border);
+  }
+  .agent-header span:nth-child(1) { flex: 1; }
+  .agent-header span:nth-child(2) { width: 50px; }
+  .agent-header span:nth-child(3) { flex: 1; }
+  .agent-row {
+    display: flex; align-items: center; padding: 10px 0;
+    border-bottom: 1px solid rgba(42,51,62,0.3); font-family: monospace; font-size: 12px;
+  }
+  .agent-row span:nth-child(1) { flex: 1; font-weight: 500; }
+  .agent-row span:nth-child(2) { width: 50px; font-size: 10px; }
+  .agent-row span:nth-child(3) { flex: 1; color: var(--secondary-text); font-size: 11px; }
+  .agent-controls {
+    display: flex; gap: 8px; padding: 8px 16px; border-top: 1px solid var(--subtle-border);
+    background: var(--deep-bg); margin-top: auto;
+  }
+  .ctrl-btn {
+    flex: 1; padding: 4px 8px; border: 1px solid var(--strong-border); border-radius: 4px;
+    background: transparent; color: var(--secondary-text); font-size: 10px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+  /* ── Terminal ── */
+  #terminal { background: var(--deep-bg); }
+  .term-content { flex: 1; padding: 12px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 13px; }
+  .term-line { padding: 1px 0; white-space: pre-wrap; word-break: break-all; }
+  .term-line.system { color: var(--tertiary-text); }
+  .term-line.cmd { color: var(--primary-text); }
+  .term-line.output { color: var(--secondary-text); }
+  .term-line.error { color: var(--error); }
+  .term-line.success { color: var(--success); }
+  .term-prompt { display: flex; align-items: center; }
+  .term-prompt .ps { color: var(--accent); }
+  .term-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--primary-text); font-family: 'Courier New', monospace; font-size: 13px; caret-color: var(--accent);
+  }
+  /* ── PEGASUS Command ── */
+  #command { background: rgba(9,12,16,0.97); align-items: center; padding: 60px 24px; }
+  #command .pegasus-icon { font-size: 24px; color: var(--accent); margin-bottom: 12px; }
+  .cmd-input-wrap {
+    width: 100%; background: var(--primary-surface); border-radius: 8px;
+    display: flex; align-items: center; padding: 0 12px;
+  }
+  .cmd-input {
+    flex: 1; background: transparent; border: none; outline: none; padding: 12px 0;
+    color: var(--primary-text); font-size: 14px;
+  }
+  .cmd-input::placeholder { color: var(--tertiary-text); }
+  .cmd-send { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 18px; }
+  .quick-header { margin-top: 24px; font-size: 10px; font-weight: 600; color: var(--tertiary-text); letter-spacing: 1px; }
+  .quick-cmds { width: 100%; margin-top: 8px; }
+  .quick-cmd {
+    padding: 8px 12px; border-radius: 4px; background: var(--secondary-bg);
+    color: var(--secondary-text); font-size: 12px; margin: 3px 0; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .quick-cmd:hover { background: var(--primary-surface); }
+  /* ── Memory ── */
+  #memory { background: var(--main-bg); }
+  .mem-section { padding: 0 16px; margin-top: 16px; }
+  .mem-label { font-size: 10px; font-weight: 600; color: var(--tertiary-text); letter-spacing: 1.5px; margin-bottom: 6px; }
+  .mem-card { background: var(--primary-surface); border-radius: 6px; padding: 12px; font-size: 14px; }
+  .mem-item {
+    display: flex; align-items: center; gap: 8px; padding: 8px 12px; margin: 3px 0;
+    background: var(--primary-surface); border-radius: 4px;
+  }
+  .mem-item .bullet { color: var(--accent); font-size: 10px; }
+  .mem-item .text { flex: 1; font-size: 13px; }
+  .mem-controls { display: flex; gap: 8px; padding: 16px; }
+  .mem-btn {
+    flex: 1; padding: 6px 8px; border: 1px solid var(--strong-border); border-radius: 4px;
+    background: transparent; color: var(--secondary-text); font-size: 11px; cursor: pointer;
+  }
+  .mem-disable {
+    margin: 0 16px 16px; padding: 8px; border: 1px solid rgba(208,92,92,0.4); border-radius: 4px;
+    background: transparent; color: var(--error); font-size: 12px; cursor: pointer; width: calc(100% - 32px);
+  }
+  /* ── Files ── */
+  #files { background: var(--main-bg); }
+  .path-bar { padding: 8px 12px; background: var(--secondary-bg); display: flex; align-items: center; gap: 6px; }
+  .path-bar .home-icon { font-size: 14px; color: var(--tertiary-text); }
+  .path-bar .path { font-size: 11px; font-family: monospace; color: var(--secondary-text); }
+  .file-row {
+    display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer;
+  }
+  .file-row:hover { background: var(--primary-surface); }
+  .file-row .file-icon { font-size: 18px; }
+  .file-row .file-icon.folder { color: var(--warning); }
+  .file-row .file-icon.file { color: var(--secondary-text); }
+  .file-row .file-info { flex: 1; }
+  .file-row .file-name { font-size: 13px; font-weight: 500; }
+  .file-row .file-meta { font-size: 10px; color: var(--tertiary-text); }
+  .storage-bar { padding: 8px 16px; border-top: 1px solid var(--subtle-border); background: var(--deep-bg);
+    display: flex; justify-content: space-between; font-size: 10px; color: var(--tertiary-text); }
+  /* ── Settings ── */
+  #settings { background: var(--main-bg); overflow-y: auto; }
+  .set-section { padding: 8px 16px 0; font-size: 10px; font-weight: 600; color: var(--tertiary-text); letter-spacing: 1.5px; }
+  .set-item {
+    display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer;
+  }
+  .set-item:hover { background: var(--primary-surface); }
+  .set-item .set-icon { font-size: 18px; color: var(--secondary-text); width: 20px; text-align: center; }
+  .set-item .set-info { flex: 1; }
+  .set-item .set-title { font-size: 14px; }
+  .set-item .set-sub { font-size: 11px; color: var(--tertiary-text); }
+  .set-item .set-arrow { color: var(--disabled-text); font-size: 14px; }
+  /* ── Workspaces ── */
+  #workspaces { background: var(--main-bg); }
+  .ws-card {
+    margin: 0 16px 8px; padding: 14px; border-radius: 6px; cursor: pointer;
+    background: var(--primary-surface); display: flex; align-items: center; gap: 12px;
+    transition: background 0.15s;
+  }
+  .ws-card.active { background: var(--accent-bg); }
+  .ws-card .ws-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .ws-card .ws-dot.on { background: var(--accent); }
+  .ws-card .ws-info { flex: 1; }
+  .ws-card .ws-name { font-size: 14px; font-weight: 600; letter-spacing: 1px; }
+  .ws-card.active .ws-name { color: var(--accent); }
+  .ws-card .ws-desc { font-size: 11px; color: var(--tertiary-text); }
+  .ws-card .ws-apps { font-size: 10px; color: var(--disabled-text); margin-top: 4px; }
+  .ws-card .ws-active-tag { font-size: 9px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; }
+  /* ── Intelligence ── */
+  #intel { background: var(--main-bg); overflow-y: auto; }
+  .intel-card { margin: 12px 16px; padding: 14px; background: var(--primary-surface); border-radius: 6px; }
+  .intel-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .intel-new { padding: 1px 6px; border-radius: 3px; background: rgba(63,184,165,0.15);
+    font-size: 8px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; }
+  .intel-relevance { font-size: 9px; letter-spacing: 0.3px; }
+  .intel-title { font-size: 14px; font-weight: 500; line-height: 1.3; margin-bottom: 6px; }
+  .intel-why { font-size: 9px; font-weight: 600; color: var(--tertiary-text); letter-spacing: 0.5px; margin-bottom: 2px; }
+  .intel-reason { font-size: 12px; color: var(--secondary-text); line-height: 1.4; }
+  /* Bottom nav for scrolling screens */
+  .scroll-body { flex: 1; overflow-y: auto; padding-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="phone-notch"></div>
+
+  <!-- ═══════ BOOT SCREEN ═══════ -->
+  <div id="boot" class="screen active">
+    <div class="title">PEGASUS OS</div>
+    <div class="version">v0.1.0</div>
+    <div class="line" id="bl1"><span class="check">✓</span><span class="label">SYSTEM ................. </span><span class="status">OK</span></div>
+    <div class="line" id="bl2"><span class="check">✓</span><span class="label">KERNEL ................. </span><span class="status">OK</span></div>
+    <div class="line" id="bl3"><span class="check">✓</span><span class="label">HARDWARE ............... </span><span class="status">OK</span></div>
+    <div class="line" id="bl4"><span class="check">✓</span><span class="label">NETWORK ................ </span><span class="status">OK</span></div>
+    <div class="line" id="bl5"><span class="check">✓</span><span class="label">STORAGE ................ </span><span class="status">OK</span></div>
+    <div class="line" id="bl6"><span class="check" style="color:var(--accent)">✓</span><span class="label">PEGASUS CORE ........... </span><span class="status">ONLINE</span></div>
+    <div class="ready" id="bootReady">SYSTEM READY</div>
+  </div>
+
+  <!-- ═══════ HOME SCREEN ═══════ -->
+  <div id="home" class="screen">
+    <div class="sysbar">
+      <div class="sysbar-left">
+        <div class="dot-accent"></div>
+        <span class="pegasus-label">PEGASUS</span>
+        <span style="color:var(--subtle-border);font-size:8px">•</span>
+        <span class="workspace-label">HOME</span>
+      </div>
+      <div class="sysbar-right">
+        <span style="color:var(--success);font-size:13px">📶</span>
+        <span style="color:var(--success);font-size:13px">🔋</span>
+        <span class="time" id="clock">12:00</span>
+      </div>
+    </div>
+    <div class="content">
+      <div class="pegasus-icon">◉</div>
+      <div class="pegasus-word">PEGASUS</div>
+      <div class="core-status" style="color:var(--success)">CORE ONLINE</div>
+    </div>
+    <div class="dock">
+      <div class="dock-item" onclick="showScreen('launcher')"><div class="icon">⊞</div><div class="label">Apps</div></div>
+      <div class="dock-item" onclick="showScreen('workspaces')"><div class="icon">▦</div><div class="label">Workspaces</div></div>
+      <div class="dock-item" onclick="showScreen('missions')"><div class="icon">📋</div><div class="label">Missions</div></div>
+      <div class="dock-item" onclick="showScreen('agents')"><div class="icon">⬡</div><div class="label">Agents</div></div>
+      <div class="dock-item" onclick="showScreen('files')"><div class="icon">📁</div><div class="label">Files</div></div>
+      <div class="dock-item" onclick="showScreen('terminal')"><div class="icon">⌨</div><div class="label">Terminal</div></div>
+      <div class="dock-item" onclick="showScreen('settings')"><div class="icon">⚙</div><div class="label">Settings</div></div>
+      <div class="dock-pegasus" onclick="showScreen('command')"><div class="icon">◉</div></div>
+    </div>
+  </div>
+
+  <!-- ═══════ LAUNCHER ═══════ -->
+  <div id="launcher" class="screen">
+    <div class="launcher-header">
+      <span class="title">APPLICATIONS</span>
+      <span class="back" onclick="showScreen('home')">←</span>
+    </div>
+    <div class="cat-tabs">
+      <div class="cat-tab active" onclick="switchCat(this)">System</div>
+      <div class="cat-tab" onclick="switchCat(this)">Development</div>
+      <div class="cat-tab" onclick="switchCat(this)">Internet</div>
+      <div class="cat-tab" onclick="switchCat(this)">Research</div>
+      <div class="cat-tab" onclick="switchCat(this)">Files</div>
+      <div class="cat-tab" onclick="switchCat(this)">Utilities</div>
+      <div class="cat-tab" onclick="switchCat(this)">Settings</div>
+    </div>
+    <div class="app-grid">
+      <div class="app-item"><div class="app-icon">⌨</div><div class="app-name">Terminal</div></div>
+      <div class="app-item"><div class="app-icon">📁</div><div class="app-name">Files</div></div>
+      <div class="app-item"><div class="app-icon">⚙</div><div class="app-name">Settings</div></div>
+      <div class="app-item"><div class="app-icon">◉</div><div class="app-name">Memory</div></div>
+      <div class="app-item"><div class="app-icon">📋</div><div class="app-name">Missions</div></div>
+      <div class="app-item"><div class="app-icon">⬡</div><div class="app-name">Agents</div></div>
+      <div class="app-item" onclick="showScreen('terminal')"><div class="app-icon" style="color:var(--accent)">⌨</div><div class="app-name" style="color:var(--accent)">Code Editor</div></div>
+      <div class="app-item"><div class="app-icon">📊</div><div class="app-name">Git</div></div>
+    </div>
+  </div>
+
+  <!-- ═══════ MISSION CONTROL ═══════ -->
+  <div id="missions" class="screen">
+    <div class="screen-header">
+      <span class="back" onclick="showScreen('home')">←</span>
+      <span class="title">MISSION CONTROL</span>
+    </div>
+    <div class="scroll-body">
+      <div class="mission-card">
+        <div class="mission-goal">
+          <span>Battery Cooling Research</span>
+          <span class="badge badge-running">RUNNING</span>
+        </div>
+        <div style="margin-top:12px">
+          <div class="step done"><span class="sym">✓</span><span class="name">Planning</span></div>
+          <div class="step done"><span class="sym">✓</span><span class="name">Research</span><span class="agent-tag">Research Agent</span></div>
+          <div class="step running"><span class="sym">●</span><span class="name">Analysis</span><span class="agent-tag">Research Agent</span></div>
+          <div class="step pending"><span class="sym">○</span><span class="name">Code Simulation</span><span class="agent-tag">Coding Agent</span></div>
+          <div class="step pending"><span class="sym">○</span><span class="name">Test & Execute</span><span class="agent-tag">Coding Agent</span></div>
+          <div class="step pending"><span class="sym">○</span><span class="name">Report</span></div>
+        </div>
+      </div>
+      <div class="mission-card">
+        <div class="mission-goal">
+          <span>Research Python 3.13 Features</span>
+          <span class="badge badge-done">DONE</span>
+        </div>
+        <div style="margin-top:12px">
+          <div class="step done"><span class="sym">✓</span><span class="name">Search sources</span></div>
+          <div class="step done"><span class="sym">✓</span><span class="name">Extract information</span></div>
+          <div class="step done"><span class="sym">✓</span><span class="name">Summarize findings</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ AGENT MANAGER ═══════ -->
+  <div id="agents" class="screen">
+    <div class="screen-header">
+      <span class="back" onclick="showScreen('home')">←</span>
+      <span class="title">AGENTS</span>
+    </div>
+    <div class="agent-table">
+      <div class="agent-header"><span>AGENT</span><span>STATE</span><span>TASK</span></div>
+      <div class="agent-row">
+        <span>Research Agent</span>
+        <span style="color:var(--accent)">RUNNING</span>
+        <span>Analyzing cooling methods</span>
+      </div>
+      <div class="agent-row">
+        <span>Coding Agent</span>
+        <span style="color:var(--tertiary-text)">IDLE</span>
+        <span>-</span>
+      </div>
+      <div class="agent-row">
+        <span>Device Agent</span>
+        <span style="color:var(--tertiary-text)">IDLE</span>
+        <span>-</span>
+      </div>
+      <div class="agent-row">
+        <span>Monitoring Agent</span>
+        <span style="color:var(--tertiary-text)">IDLE</span>
+        <span>-</span>
+      </div>
+    </div>
+    <div class="agent-controls">
+      <button class="ctrl-btn">⏸ Pause</button>
+      <button class="ctrl-btn">▶ Resume</button>
+      <button class="ctrl-btn">⏹ Stop</button>
+      <button class="ctrl-btn">ℹ Inspect</button>
+    </div>
+  </div>
+
+  <!-- ═══════ TERMINAL ═══════ -->
+  <div id="terminal" class="screen">
+    <div class="screen-header" style="background:var(--deep-bg)">
+      <span class="back" onclick="showScreen('home')">←</span>
+      <span class="title">TERMINAL</span>
+    </div>
+    <div style="height:1px;background:var(--subtle-border)"></div>
+    <div class="term-content" id="termContent">
+      <div class="term-line system">PEGASUS OS Terminal v0.1.0</div>
+      <div class="term-line system">Type 'help' for available commands.</div>
+      <div class="term-line" style="height:8px"></div>
+    </div>
+    <div style="padding:8px 12px;border-top:1px solid var(--subtle-border)">
+      <div class="term-prompt">
+        <span class="ps">pegasus@device:~$ </span>
+        <input class="term-input" id="termInput" placeholder="" onkeydown="if(event.key==='Enter')runCmd()">
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ FILES ═══════ -->
+  <div id="files" class="screen">
+    <div class="screen-header">
+      <span class="back" onclick="showScreen('home')">←</span>
+      <span class="title">FILES</span>
+    </div>
+    <div class="path-bar"><span class="home-icon">🏠</span><span class="path">/storage/emulated/0</span></div>
+    <div class="scroll-body">
+      <div class="file-row"><span class="file-icon folder">📁</span><div class="file-info"><div class="file-name">Documents</div><div class="file-meta">Folder • 12 items</div></div></div>
+      <div class="file-row"><span class="file-icon folder">📁</span><div class="file-info"><div class="file-name">Downloads</div><div class="file-meta">Folder • 5 items</div></div></div>
+      <div class="file-row"><span class="file-icon folder">📁</span><div class="file-info"><div class="file-name">Projects</div><div class="file-meta">Folder • 3 items</div></div></div>
+      <div class="file-row"><span class="file-icon folder">📁</span><div class="file-info"><div class="file-name">Pictures</div><div class="file-meta">Folder • 24 items</div></div></div>
+      <div class="file-row"><span class="file-icon folder">📁</span><div class="file-info"><div class="file-name">pegasus-core</div><div class="file-meta">Folder • Agent system</div></div></div>
+      <div class="file-row"><span class="file-icon file">📄</span><div class="file-info"><div class="file-name">research-battery.py</div><div class="file-meta">Python • 14.2 KB</div></div></div>
+      <div class="file-row"><span class="file-icon file">📄</span><div class="file-info"><div class="file-name">simulation.py</div><div class="file-meta">Python • 8.7 KB</div></div></div>
+      <div class="file-row"><span class="file-icon file">📄</span><div class="file-info"><div class="file-name">notes.md</div><div class="file-meta">Markdown • 2.1 KB</div></div></div>
+    </div>
+    <div class="storage-bar"><span>Storage: 78.2 GB / 128 GB</span><span>60% used</span></div>
+  </div>
+
+  <!-- ═══════ SETTINGS ═══════ -->
+  <div id="settings" class="screen">
+    <div class="screen-header">
+      <span class="back" onclick="showScreen('home')">←</span>
+      <span class="title">SETTINGS</span>
+    </div>
+    <div class="scroll-body">
+      <div class="set-section">SYSTEM</div>
+      <div class="set-item"><span class="set-icon">🔆</span><div class="set-info"><div class="set-title">Display</div><div class="set-sub">Brightness, theme, font size</div></div><span class="set-arrow">›</span></div>
+      <div class="set-item"><span class="set-icon">📶</span><div class="set-info"><div class="set-title">Network</div><div class="set-sub">Wi-Fi, mobile data, proxy</div></div><span class="set-arrow">›</span></div>
+      <div class="set-item"><span class="set-icon">🔊</span><div class="set-info"><div class="set-title">Sound</div><div class="set-sub">Volume, notifications, alerts</div></div><span class="set-arrow">›</span></div>
+      <div class="set-item"><span class="set-icon">🔋</span><div class="set-info"><div class="set-title">Power</div><div class="set-sub">Battery usage, power saving</div></div><span class="set-arrow">›</span></div>
+      <div class="set-item"><span class="set-icon">💾</span><div class="set-info"><div class="set-title">Storage</div><div class="set-sub">78.2 GB / 128 GB used</div></div><span class="set-arrow">›</span></div>
+      <div class="set-section" style="margin-top:12px">SECURITY</div>
+      <div class="set-item"><span class="set-icon">🔒</span><div class="set-info"><div class="set-title">Privacy</div><div class="set-sub">Data protection, permissions</div></div><span class="set-arrow">›</span></div>
+      <div class="set-item"><span class="set-icon">🛡</span><div class="set-info"><div class="set-title">Permissions</div><div class="set-sub">App and agent permissions</div></div><span class="set-arrow">›</span></div>
+      <div class="set-section" style="margin-top:12px">PEGASUS</div>
+      <div class="set-item"><span class="set-icon">🤖</span><div class="set-info"><div class="set-title">AI Models</div><div class="set-sub">Local and remote model config</div></div><span class="set-arrow">›</span></div>
+      <div class="set-item"><span class="set-icon">⬡</span><div class="set-info"><div class="set-title">Agents</div><div class="set-sub">Agent permissions and config</div></div><span class="set-arrow">›</span></div>
+      <div class="set-item" onclick="showScreen('memory')"><span class="set-icon">◉</span><div class="set-info"><div class="set-title">Memory</div><div class="set-sub">View and manage PEGASUS memory</div></div><span class="set-arrow">›</span></div>
+      <div class="set-item"><span class="set-icon">🧠</span><div class="set-info"><div class="set-title">Context</div><div class="set-sub">Context management settings</div></div><span class="set-arrow">›</span></div>
+    </div>
+  </div>
+
+  <!-- ═══════ MEMORY ═══════ -->
+  <div id="memory" class="screen">
+    <div class="screen-header">
+      <span class="back" onclick="showScreen('settings')">←</span>
+      <span class="title">PEGASUS MEMORY</span>
+    </div>
+    <div class="scroll-body">
+      <div class="mem-section">
+        <div class="mem-label">USER</div>
+        <div class="mem-card">Engineering student</div>
+      </div>
+      <div class="mem-section">
+        <div class="mem-label">PROJECTS</div>
+        <div class="mem-item"><span class="bullet">•</span><span class="text">Battery Research</span><span>›</span></div>
+        <div class="mem-item"><span class="bullet">•</span><span class="text">Robotics</span><span>›</span></div>
+        <div class="mem-item"><span class="bullet">•</span><span class="text">PEGASUS OS</span><span>›</span></div>
+      </div>
+      <div class="mem-section">
+        <div class="mem-label">PREFERENCES</div>
+        <div class="mem-item"><span class="bullet">•</span><span class="text">Python</span><span>›</span></div>
+        <div class="mem-item"><span class="bullet">•</span><span class="text">Dark UI</span><span>›</span></div>
+        <div class="mem-item"><span class="bullet">•</span><span class="text">Technical explanations</span><span>›</span></div>
+      </div>
+      <div class="mem-controls">
+        <button class="mem-btn">✏ Edit</button>
+        <button class="mem-btn">🔄 Forget</button>
+        <button class="mem-btn">🗑 Delete</button>
+      </div>
+      <button class="mem-disable">⚠ Disable Memory</button>
+    </div>
+  </div>
+
+  <!-- ═══════ PEGASUS COMMAND ═══════ -->
+  <div id="command" class="screen" onclick="if(event.target===this)showScreen('home')">
+    <div class="pegasus-icon">◉</div>
+    <div class="cmd-input-wrap">
+      <input class="cmd-input" placeholder="Ask PEGASUS or give a command" autofocus>
+      <button class="cmd-send">➤</button>
+    </div>
+    <div class="quick-header">QUICK COMMANDS</div>
+    <div class="quick-cmds">
+      <div class="quick-cmd">Open my engineering workspace</div>
+      <div class="quick-cmd">Show system status</div>
+      <div class="quick-cmd">Research battery cooling</div>
+      <div class="quick-cmd">Create a new project</div>
+    </div>
+  </div>
+
+  <!-- ═══════ WORKSPACES ═══════ -->
+  <div id="workspaces" class="screen">
+    <div class="screen-header">
+      <span class="back" onclick="showScreen('home')">←</span>
+      <span class="title">WORKSPACES</span>
+    </div>
+    <div class="scroll-body" style="padding:16px">
+      <div class="ws-card active">
+        <div class="ws-dot on"></div>
+        <div class="ws-info">
+          <div class="ws-name">HOME</div>
+          <div class="ws-desc">Default workspace</div>
+        </div>
+        <div class="ws-active-tag">ACTIVE</div>
+      </div>
+      <div class="ws-card">
+        <div class="ws-info" style="padding-left:16px">
+          <div class="ws-name">ENGINEERING</div>
+          <div class="ws-desc">Development environment</div>
+          <div class="ws-apps">Terminal • Code Editor • Files</div>
+        </div>
+      </div>
+      <div class="ws-card">
+        <div class="ws-info" style="padding-left:16px">
+          <div class="ws-name">RESEARCH</div>
+          <div class="ws-desc">Research workspace</div>
+          <div class="ws-apps">Browser • Notes • Research Agent</div>
+        </div>
+      </div>
+      <div class="ws-card">
+        <div class="ws-info" style="padding-left:16px">
+          <div class="ws-name">PERSONAL</div>
+          <div class="ws-desc">Personal space</div>
+          <div class="ws-apps">Files • Notes</div>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <button style="width:100%;padding:8px;border:1px solid var(--accent);border-radius:4px;background:transparent;color:var(--accent);font-size:12px;cursor:pointer">+ Create Workspace</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ INTELLIGENCE ═══════ -->
+  <div id="intel" class="screen">
+    <div class="screen-header">
+      <span class="back" onclick="showScreen('home')">←</span>
+      <span class="title">INTELLIGENCE</span>
+    </div>
+    <div class="scroll-body">
+      <div class="intel-card">
+        <div class="intel-top">
+          <span class="intel-new">NEW</span>
+          <span class="intel-relevance" style="color:var(--success)">Relevance: HIGH</span>
+        </div>
+        <div class="intel-title">Battery cooling paper detected</div>
+        <div class="intel-why">WHY IT MATTERS</div>
+        <div class="intel-reason">Related to your current battery project.</div>
+      </div>
+      <div class="intel-card">
+        <div class="intel-top">
+          <span class="intel-new">NEW</span>
+          <span class="intel-relevance" style="color:var(--warning)">Relevance: MEDIUM</span>
+        </div>
+        <div class="intel-title">New Python 3.13 features relevant to your simulation</div>
+        <div class="intel-why">WHY IT MATTERS</div>
+        <div class="intel-reason">You use Python for simulation projects.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Screen Navigation ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function switchCat(el) {
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Clock ──
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toTimeString().slice(0,5);
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Boot Sequence ──
+function bootSequence() {
+  const lines = ['bl1','bl2','bl3','bl4','bl5','bl6'];
+  lines.forEach((id, i) => {
+    setTimeout(() => { document.getElementById(id).style.opacity = '1'; }, 300 * (i + 1));
+  });
+  setTimeout(() => { document.getElementById('bootReady').style.opacity = '1'; }, 300 * 7);
+  setTimeout(() => { showScreen('home'); }, 300 * 9);
+}
+bootSequence();
+
+// ── Terminal ──
+const termHistory = [];
+let cmdIdx = 0;
+function runCmd() {
+  const input = document.getElementById('termInput');
+  const cmd = input.value.trim();
+  if (!cmd) return;
+  input.value = '';
+  const content = document.getElementById('termContent');
+  content.innerHTML += `<div class="term-line cmd">pegasus@device:~$ ${escHtml(cmd)}</div>`;
+  let output = '';
+  switch(cmd) {
+    case 'help':
+      output = `<div class="term-line system">Available commands:</div>
+<div class="term-line output">  help          Show this help</div>
+<div class="term-line output">  status        Show PEGASUS status</div>
+<div class="term-line output">  agents        List active agents</div>
+<div class="term-line output">  clear         Clear terminal</div>`;
+      break;
+    case 'status':
+      output = `<div class="term-line system">Checking PEGASUS status...</div>
+<div class="term-line success">PEGASUS Core: Responding</div>`;
+      break;
+    case 'agents':
+      output = `<div class="term-line system">Querying agents...</div>
+<div class="term-line output">  Research Agent       RUNNING</div>
+<div class="term-line output">  Coding Agent         IDLE</div>`;
+      break;
+    case 'clear':
+      content.innerHTML = '';
+      return;
+    default:
+      output = `<div class="term-line error">bash: ${escHtml(cmd)}: command not found</div>`;
+  }
+  content.innerHTML += output + '<div class="term-line" style="height:4px"></div>';
+  content.scrollTop = content.scrollHeight;
+}
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>

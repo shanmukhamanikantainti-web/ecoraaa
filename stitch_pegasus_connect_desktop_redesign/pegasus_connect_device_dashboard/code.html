@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-container":"#edecfc","surface-variant":"#e2e1f1","secondary":"#5b5d70","secondary-fixed":"#e0e1f7","tertiary":"#595c60","on-tertiary-fixed":"#191c1f","on-secondary-container":"#606174","surface-container-high":"#e7e7f7","outline":"#717783","error-container":"#ffdad6","on-primary-fixed":"#001c3b","on-background":"#191b26","background":"#fbf8ff","secondary-container":"#dedef4","surface-container-low":"#f4f2ff","inverse-on-surface":"#f0efff","surface-container-highest":"#e2e1f1","tertiary-container":"#727578","primary-fixed":"#d5e3ff","on-error-container":"#93000a","on-surface-variant":"#414752","on-tertiary":"#ffffff","primary-fixed-dim":"#a7c8ff","surface-dim":"#d9d9e8","inverse-surface":"#2e303b","tertiary-fixed":"#e0e2e6","surface":"#fbf8ff","on-secondary":"#ffffff","surface-container-lowest":"#ffffff","on-primary-container":"#fefcff","on-primary-fixed-variant":"#004787","tertiary-fixed-dim":"#c4c7ca","on-primary":"#ffffff","on-error":"#ffffff","error":"#ba1a1a","on-tertiary-container":"#fcfcff","inverse-primary":"#a7c8ff","primary":"#005cad","secondary-fixed-dim":"#c4c5db","surface-tint":"#005eb1","on-secondary-fixed":"#181a2a","on-surface":"#191b26","outline-variant":"#c1c6d4","surface-bright":"#fbf8ff","on-tertiary-fixed-variant":"#44474a","on-secondary-fixed-variant":"#444657","primary-container":"#2075d0"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"panel-gutter":"8px","space-2xs":"2px","table-row-compact":"28px","space-xs":"4px","window-margin":"16px","space-xl":"24px","space-base":"16px","space-lg":"20px","table-row-default":"36px","space-2xl":"32px","space-md":"12px","space-sm":"8px"},"fontFamily":{"headline-md":["Inter"],"display-lg":["Inter"],"title-sm":["Inter"],"label-default":["Inter"],"body-dense":["Inter"],"body-medium":["Inter"],"caption":["Inter"],"label-mono":["JetBrains Mono"],"headline-lg":["Inter"],"body-default":["Inter"]},"fontSize":{"headline-md":["15px",{"lineHeight":"20px","letterSpacing":"-0.005em","fontWeight":"600"}],"display-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}],"title-sm":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"600"}],"label-default":["11px",{"lineHeight":"14px","letterSpacing":"0.04em","fontWeight":"600"}],"body-dense":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}],"body-medium":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"500"}],"caption":["10px",{"lineHeight":"12px","letterSpacing":"0.02em","fontWeight":"500"}],"label-mono":["11px",{"lineHeight":"14px","letterSpacing":"0.02em","fontWeight":"500"}],"headline-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-default":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}]}}}}</script></head><body class="bg-surface font-body-default text-body-default text-on-surface antialiased select-none"><header class="fixed top-0 left-0 right-0 h-14 bg-surface-container-lowest z-50 flex items-center justify-between px-space-base shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs"><div class="w-3 h-3 rounded-full bg-error"></div><div class="w-3 h-3 rounded-full bg-secondary-fixed-dim"></div><div class="w-3 h-3 rounded-full bg-primary-fixed-dim"></div></div><div class="h-4 w-px bg-outline-variant mx-space-2xs"></div><div class="flex items-center gap-space-sm"><div class="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-md text-title-sm">P</div><span class="font-headline-md text-title-sm text-on-surface tracking-tight">PEGASUS <span class="font-body-default text-title-sm text-primary">Connect</span></span></div><div class="flex items-center gap-space-2xs font-caption text-caption text-on-surface-variant"><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="font-body-medium text-caption text-secondary">Workstation</span></div></div><div class="flex-1 max-w-xl mx-space-xl"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[18px]">search</span><input class="w-full h-8 pl-9 pr-14 bg-surface-container-low rounded-lg text-body-dense font-body-dense text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary shadow-[0_1px_2px_rgba(0,0,0,0.02)]" placeholder="Search files, commands, AI memory, logs..." type="text"/><div class="absolute right-2 flex items-center gap-space-2xs"><kbd class="px-space-xs py-space-2xs bg-surface-container-lowest text-on-surface-variant font-label-mono text-caption rounded shadow-[0_1px_2px_rgba(0,0,0,0.04)]">Ctrl + K</kbd></div></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center bg-surface-container-high p-space-2xs rounded-lg gap-space-2xs"><button class="px-space-sm h-6 rounded font-label-default text-label-default bg-surface-container-lowest text-on-surface shadow-[0_1px_2px_rgba(0,0,0,0.04)]">WS 1: Dev</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 2: Debug</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 3: AI</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 4: Monitor</button></div><div class="relative flex items-center"><button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span></div><button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">settings</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-space-xs"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><aside class="fixed left-0 top-14 bottom-10 w-64 bg-surface-container-low z-40 flex flex-col justify-between shadow-[1px_0_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col"><div class="px-space-base py-space-md flex items-center justify-between"><span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider">PEGASUS Connect</span><span class="px-space-xs py-space-2xs rounded bg-surface-container-high font-label-mono text-caption text-secondary">v2.4 (ARM64)</span></div><div class="px-space-md py-space-xs"><div class="px-space-sm py-space-xs font-label-default text-label-default text-outline uppercase tracking-wider">Workspace</div><nav class="flex flex-col gap-space-2xs mt-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a aria-current="page" class="flex items-center gap-space-sm px-space-sm h-8 rounded-lg transition-colors bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]" data-path="dashboard-overview" href="#"><span class="material-symbols-outlined text-[18px]">dashboard</span><span>Dashboard (Overview)</span></a><a class="flex items-center gap-space-sm px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="files-and-storage" href="#"><span class="material-symbols-outlined text-[18px]">folder</span><span>Files &amp; Storage</span></a><a class="flex items-center gap-space-sm px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="console-and-logs" href="#"><span class="material-symbols-outlined text-[18px]">terminal</span><span>Console &amp; Logs</span></a><a class="flex items-center gap-space-sm px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="screen-mirroring" href="#"><span class="material-symbols-outlined text-[18px]">devices</span><span>Screen Mirroring</span></a><a class="flex items-center gap-space-sm px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="cases-and-workspaces" href="#"><span class="material-symbols-outlined text-[18px]">workspaces</span><span>Cases &amp; Workspaces</span></a><a class="flex items-center gap-space-sm px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="ai-and-memory-hub" href="#"><span class="material-symbols-outlined text-[18px]">psychology</span><span>AI &amp; Memory Hub</span></a></nav></div><div class="px-space-md py-space-xs mt-space-sm"><div class="px-space-sm py-space-xs font-label-default text-label-default text-outline uppercase tracking-wider">System</div><nav class="flex flex-col gap-space-2xs mt-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-md"><a class="flex items-center gap-space-sm px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[18px]">settings</span><span>Settings</span></a><a class="flex items-center gap-space-sm px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="help-and-support" href="#"><span class="material-symbols-outlined text-[18px]">help</span><span>Help &amp; Support</span></a></nav></div></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container-lowest shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex flex-col gap-space-sm"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-default text-label-default text-primary">Connected</span></div><span class="font-caption text-caption text-secondary">Wi-Fi + USB 3.2</span></div><div><div class="font-headline-md text-title-sm text-on-surface truncate">PEGASUS Phone</div><div class="font-caption text-caption text-secondary">Android 14 · ARM64</div></div><div class="pt-space-xs flex flex-col gap-space-2xs"><div class="flex justify-between items-center font-caption text-caption text-secondary"><span>Battery</span><span class="font-body-medium text-on-surface">82%</span></div><div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden"><div class="bg-primary h-full rounded-full" style="width: 82%"></div></div></div><div class="flex justify-between items-center font-caption text-caption text-secondary"><span>Storage</span><span class="font-label-mono text-caption text-on-surface">14.2 / 32 GB</span></div></div></aside><div class="pl-64"><main class="w-full pt-14 pb-10 bg-surface min-h-[calc(100vh-2.5rem)]"><div class="flex flex-col w-full">
+<div class="p-space-base flex flex-col gap-space-lg w-full max-w-[1720px] mx-auto">
+<!-- Top Actionable Header Bar -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md bg-surface-container-lowest p-space-base rounded-xl shadow-sm">
+<div class="flex flex-col gap-space-2xs min-w-0">
+<div class="flex flex-wrap items-center gap-space-sm">
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">Device Dashboard</h1>
+<span class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-surface-container-high text-primary font-label-default text-label-default">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Connected (Wi-Fi + USB 3.2 Gen2x2)
+          </span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-high font-label-mono text-caption text-secondary">
+            v3.8-STABLE
+          </span>
+</div>
+<p class="font-body-dense text-body-dense text-secondary truncate">
+          ARM64 · Android 14 · PegasusKernel 6.1 · Device ID: <span class="font-label-mono text-on-surface font-body-medium">PEG-ARM64-8840</span>
+</p>
+</div>
+<div class="flex items-center gap-space-sm self-start xl:self-center shrink-0">
+<button class="inline-flex items-center gap-space-xs px-space-md h-8 rounded-lg bg-primary text-on-primary font-label-default text-label-default shadow-sm hover:opacity-95 transition-all active:scale-[0.98]" id="btn-sync">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>Sync Device</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md h-8 rounded-lg bg-surface-container-high text-on-surface font-label-default text-label-default hover:bg-surface-container transition-colors" id="btn-sec-scan">
+<span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
+<span>Security Scan</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md h-8 rounded-lg bg-error-container text-on-error-container font-label-default text-label-default hover:opacity-90 transition-opacity" id="btn-disconnect">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+<span>Disconnect</span>
+</button>
+</div>
+</div>
+<!-- Telemetry Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-space-md">
+<!-- CPU Metric Card -->
+<div class="flex flex-col justify-between p-space-base rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-default text-label-default uppercase tracking-wider text-secondary">CPU Workload</span>
+<span class="p-1 rounded bg-surface-container-high text-primary">
+<span class="material-symbols-outlined text-[16px]">memory</span>
+</span>
+</div>
+<div class="my-space-sm flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface" id="cpu-val">20</span>
+<span class="font-headline-md text-headline-md text-secondary">%</span>
+</div>
+<span class="font-label-mono text-caption text-secondary">8 Cores · 2.8 GHz</span>
+</div>
+<div>
+<!-- Inline Clean Sparkline SVG -->
+<svg class="w-full h-8 overflow-visible text-primary" fill="none" viewbox="0 0 100 24">
+<path d="M0 18 Q 12 16, 25 15 T 50 11 T 75 16 T 100 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M0 18 Q 12 16, 25 15 T 50 11 T 75 16 T 100 12 L 100 24 L 0 24 Z" fill="currentColor" fill-opacity="0.08"></path>
+</svg>
+</div>
+</div>
+<!-- RAM Metric Card -->
+<div class="flex flex-col justify-between p-space-base rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-default text-label-default uppercase tracking-wider text-secondary">System Memory</span>
+<span class="p-1 rounded bg-surface-container-high text-primary">
+<span class="material-symbols-outlined text-[16px]">memory_alt</span>
+</span>
+</div>
+<div class="my-space-sm flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface">3.5</span>
+<span class="font-title-sm text-title-sm text-secondary">/ 8.0 GB</span>
+</div>
+<span class="font-label-mono text-caption text-primary font-body-medium">44% Used</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full transition-all duration-500" style="width: 44%"></div>
+</div>
+</div>
+<!-- Storage Metric Card -->
+<div class="flex flex-col justify-between p-space-base rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-default text-label-default uppercase tracking-wider text-secondary">NVMe Storage</span>
+<span class="p-1 rounded bg-surface-container-high text-primary">
+<span class="material-symbols-outlined text-[16px]">folder_data</span>
+</span>
+</div>
+<div class="my-space-sm flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface">14.2</span>
+<span class="font-title-sm text-title-sm text-secondary">/ 32 GB</span>
+</div>
+<span class="font-label-mono text-caption text-secondary">17.8 GB Free</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 44.3%"></div>
+</div>
+</div>
+<!-- Battery Metric Card -->
+<div class="flex flex-col justify-between p-space-base rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-default text-label-default uppercase tracking-wider text-secondary">Power &amp; Temp</span>
+<span class="p-1 rounded bg-surface-container-high text-primary">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+</span>
+</div>
+<div class="my-space-sm flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface">82</span>
+<span class="font-headline-md text-headline-md text-secondary">%</span>
+</div>
+<span class="font-label-mono text-caption text-secondary">34.2°C Normal</span>
+</div>
+<div class="flex items-center justify-between font-caption text-caption text-secondary">
+<span class="inline-flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[12px]">flash_on</span> Fast Charging
+          </span>
+<span class="font-label-mono">~32m to full</span>
+</div>
+</div>
+<!-- Link & Latency Card -->
+<div class="flex flex-col justify-between p-space-base rounded-xl bg-surface-container-lowest shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-default text-label-default uppercase tracking-wider text-secondary">Channel Throughput</span>
+<span class="p-1 rounded bg-surface-container-high text-primary">
+<span class="material-symbols-outlined text-[16px]">network_check</span>
+</span>
+</div>
+<div class="my-space-sm flex flex-col">
+<div class="flex items-center justify-between">
+<span class="font-body-dense text-body-dense text-secondary">USB 3.2 Gen2x2</span>
+<span class="font-label-mono text-caption text-on-surface font-body-medium">20 Gbps</span>
+</div>
+<div class="flex items-center justify-between mt-1">
+<span class="font-body-dense text-body-dense text-secondary">Wi-Fi 6E (6GHz)</span>
+<span class="font-label-mono text-caption text-on-surface font-body-medium">1.2 Gbps</span>
+</div>
+</div>
+<div class="flex items-center justify-between font-caption text-caption text-secondary">
+<span class="font-label-mono text-primary font-body-medium">RTT 1.2ms</span>
+<span>Buffer: 0 Dropped</span>
+</div>
+</div>
+</div>
+<!-- Quick Actions Row -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-space-sm bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center gap-space-xs px-space-xs font-label-default text-label-default uppercase tracking-wider text-secondary">
+<span class="material-symbols-outlined text-[16px] text-primary">flash_auto</span>
+<span>Quick Workflows</span>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<button class="flex-1 sm:flex-none inline-flex items-center justify-center gap-space-xs px-space-md h-8 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-label-default text-label-default transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary">cast_connected</span>
+<span>Open Mirror</span>
+</button>
+<button class="flex-1 sm:flex-none inline-flex items-center justify-center gap-space-xs px-space-md h-8 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-label-default text-label-default transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary">drive_file_move</span>
+<span>Sync USB Storage</span>
+</button>
+<button class="flex-1 sm:flex-none inline-flex items-center justify-center gap-space-xs px-space-md h-8 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-label-default text-label-default transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary">terminal</span>
+<span>Launch Console</span>
+</button>
+<button class="flex-1 sm:flex-none inline-flex items-center justify-center gap-space-xs px-space-md h-8 rounded-lg bg-primary-container text-on-primary-container font-label-default text-label-default hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[16px]">psychology</span>
+<span>Query PEGASUS AI</span>
+</button>
+<button class="flex-1 sm:flex-none inline-flex items-center justify-center gap-space-xs px-space-md h-8 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-label-default text-label-default transition-colors">
+<span class="material-symbols-outlined text-[16px] text-secondary">bug_report</span>
+<span>Capture Bugreport</span>
+</button>
+</div>
+</div>
+<!-- Split Operational Canvas: System Architecture & Activity Stream -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-base items-start">
+<!-- Left Column: System Architecture & Services Table (7 cols) -->
+<div class="lg:col-span-7 flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<div class="p-space-base flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">dns</span>
+<span class="font-headline-md text-title-sm text-on-surface">System Architecture &amp; Core Services</span>
+</div>
+<span class="font-label-mono text-caption text-secondary">5 Active Daemons</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-dense text-body-dense">
+<thead>
+<tr class="bg-surface-container-high text-secondary font-label-default text-caption uppercase tracking-wider h-8">
+<th class="px-space-base py-space-xs font-semibold">Service / Subsystem</th>
+<th class="px-space-base py-space-xs font-semibold">Specification</th>
+<th class="px-space-base py-space-xs font-semibold">Runtime Status</th>
+<th class="px-space-base py-space-xs font-semibold text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y-0">
+<!-- Boot Medium -->
+<tr class="hover:bg-surface-container-low transition-colors h-table-row-default">
+<td class="px-space-base py-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">hard_drive</span>
+<div>
+<div class="font-body-medium text-body-dense text-on-surface">Boot Medium</div>
+<div class="font-caption text-caption text-secondary">SanDisk Extreme 1TB</div>
+</div>
+</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="font-label-mono text-caption text-on-surface">Mounted on /dev/sda1 ext4</span>
+<div class="font-caption text-caption text-secondary">RW 980 MB/s Burst</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-high font-label-default text-caption text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    MOUNTED_ROBUST
+                  </span>
+</td>
+<td class="px-space-base py-space-sm text-right">
+<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+</button>
+</td>
+</tr>
+<!-- Persistent Store -->
+<tr class="hover:bg-surface-container-low transition-colors h-table-row-default bg-surface-container-lowest">
+<td class="px-space-base py-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">dataset</span>
+<div>
+<div class="font-body-medium text-body-dense text-on-surface">Persistent Data Store</div>
+<div class="font-caption text-caption text-secondary">SQLite 3.45 + pgvector</div>
+</div>
+</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="font-label-mono text-caption text-on-surface">Schema v4.2 · WAL Mode</span>
+<div class="font-caption text-caption text-secondary">7.1ms avg query latency</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-high font-label-default text-caption text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    HEALTHY
+                  </span>
+</td>
+<td class="px-space-base py-space-sm text-right">
+<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+</button>
+</td>
+</tr>
+<!-- Companion Bridge -->
+<tr class="hover:bg-surface-container-low transition-colors h-table-row-default">
+<td class="px-space-base py-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">hub</span>
+<div>
+<div class="font-body-medium text-body-dense text-on-surface">Companion Bridge</div>
+<div class="font-caption text-caption text-secondary">Secure WebSocket · TLS 1.3</div>
+</div>
+</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="font-label-mono text-caption text-on-surface">Port 48291 · Protocol v3.8</span>
+<div class="font-caption text-caption text-secondary">Dual-stack IPv4/IPv6</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-high font-label-default text-caption text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    AUTHENTICATED
+                  </span>
+</td>
+<td class="px-space-base py-space-sm text-right">
+<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+</button>
+</td>
+</tr>
+<!-- AI Memory Daemon -->
+<tr class="hover:bg-surface-container-low transition-colors h-table-row-default bg-surface-container-lowest">
+<td class="px-space-base py-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">neurology</span>
+<div>
+<div class="font-body-medium text-body-dense text-on-surface">AI Memory Daemon</div>
+<div class="font-caption text-caption text-secondary">HNSW Hierarchical Graph</div>
+</div>
+</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="font-label-mono text-caption text-on-surface">GGUF Quantized 4-bit</span>
+<div class="font-caption text-caption text-secondary">24,812 embeddings mapped</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-high font-label-default text-caption text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    RUNNING
+                  </span>
+</td>
+<td class="px-space-base py-space-sm text-right">
+<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+</button>
+</td>
+</tr>
+<!-- Security Enclave -->
+<tr class="hover:bg-surface-container-low transition-colors h-table-row-default">
+<td class="px-space-base py-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">lock</span>
+<div>
+<div class="font-body-medium text-body-dense text-on-surface">Security Enclave</div>
+<div class="font-caption text-caption text-secondary">Hardware KeyStore (StrongBox)</div>
+</div>
+</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="font-label-mono text-caption text-on-surface">Zero Trust Ephemeral</span>
+<div class="font-caption text-caption text-secondary">Curve25519 · Ed25519</div>
+</td>
+<td class="px-space-base py-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-high font-label-default text-caption text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    VERIFIED
+                  </span>
+</td>
+<td class="px-space-base py-space-sm text-right">
+<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Column: Recent Activity Stream (5 cols) -->
+<div class="lg:col-span-5 flex flex-col bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<div class="p-space-base flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">terminal</span>
+<span class="font-headline-md text-title-sm text-on-surface">Live Developer Audit Stream</span>
+</div>
+<div class="flex items-center gap-space-xs font-label-mono text-caption text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span>LIVE</span>
+</div>
+</div>
+<div class="p-space-base flex flex-col gap-space-sm font-label-mono text-body-dense">
+<div class="flex items-start gap-space-sm p-space-xs rounded hover:bg-surface-container-low transition-colors">
+<span class="text-secondary shrink-0">15:09:42</span>
+<span class="px-space-2xs rounded bg-surface-container-high text-primary font-semibold shrink-0">[mirror]</span>
+<span class="text-on-surface">Screen mirror protocol v2 negotiated (<span class="text-primary font-body-medium">60fps</span>, 21ms)</span>
+</div>
+<div class="flex items-start gap-space-sm p-space-xs rounded hover:bg-surface-container-low transition-colors">
+<span class="text-secondary shrink-0">15:09:30</span>
+<span class="px-space-2xs rounded bg-surface-container-high text-secondary font-semibold shrink-0">[vector]</span>
+<span class="text-on-surface">AI memory vector graph synchronized (14 new embeddings)</span>
+</div>
+<div class="flex items-start gap-space-sm p-space-xs rounded hover:bg-surface-container-low transition-colors">
+<span class="text-secondary shrink-0">15:09:24</span>
+<span class="px-space-2xs rounded bg-surface-container-high text-secondary font-semibold shrink-0">[storage]</span>
+<span class="text-on-surface">USB block differential sync completed (<span class="text-primary font-body-medium">42.1 MB</span> transferred)</span>
+</div>
+<div class="flex items-start gap-space-sm p-space-xs rounded hover:bg-surface-container-low transition-colors">
+<span class="text-secondary shrink-0">15:09:12</span>
+<span class="px-space-2xs rounded bg-surface-container-high text-primary font-semibold shrink-0">[bridge]</span>
+<span class="text-on-surface">Device heartbeat ACK received · RTT 1.2ms</span>
+</div>
+<div class="flex items-start gap-space-sm p-space-xs rounded hover:bg-surface-container-low transition-colors">
+<span class="text-secondary shrink-0">15:09:06</span>
+<span class="px-space-2xs rounded bg-surface-container-high text-secondary font-semibold shrink-0">[usb]</span>
+<span class="text-on-surface">Device connected via USB 3.2 Type-C (ID: PEG-ARM64-8840)</span>
+</div>
+</div>
+<div class="px-space-base py-space-sm bg-surface-container-high/50 flex items-center justify-between font-caption text-caption text-secondary">
+<span>Filtering: None (ALL_SUBSYSTEMS)</span>
+<button class="font-label-default text-caption text-primary hover:underline">Export Full Log</button>
+</div>
+</div>
+</div>
+<!-- Diagnostic Visual Context Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="p-space-base rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-base">
+<div class="w-16 h-16 rounded-xl bg-surface-container-high shrink-0 overflow-hidden flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="High-tech macro photograph of modern mobile ARM64 processor socket and thermal silicon core in an enterprise workstation environment, clean cool laboratory lighting with blue and silver accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4CfzenVw8ZkFtC61DLtpo6fSNhRMEj0waAWbqru-DKA46V8Nlk6RltwNJqM7eveJsFSBUqu7ctO5qWh33upVWmpxxpWtGcL7RCbc-664xDPO3Xrq6YLOJiCWNpBa4efwe7MTLjIQ7iz6CdGX7B_IBBBonenuhPxiK6Wxub6218GeE1lTrSl7NWLbMfv2ukQ2b6gMJCVSb3Ma94PBgFfdXvFVf9FGg5brKMCYWuhW3ybabbF_jDSs"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-default text-label-default text-secondary uppercase">Silicon Architecture</span>
+<span class="font-headline-md text-title-sm text-on-surface truncate">Snapdragon 8 Gen 2 for PEGASUS</span>
+<span class="font-body-dense text-body-dense text-secondary truncate">TSMC 4nm · Adreno 740 GPU</span>
+</div>
+</div>
+<div class="p-space-base rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-base">
+<div class="w-16 h-16 rounded-xl bg-surface-container-high shrink-0 overflow-hidden flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Professional studio photo of ultra fast braided USB-C 3.2 Gen2x2 connector plugged into a brushed aluminum engineering dock with glowing minimal status LED." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGgV5awccXLKt7i614VyGnBS9Wg-9yi1IrLKNORNDWB6EseoGhW2OMBM9MwWR8gcQgsSNWGXF7et2Te4IzdGN2t1dQcTgDe4JH_U4sf9abgmcMtVdoogzT0Aox1b7PpAJwmHEm0f-XLuO4f48r2yWWq0CWXNKzimb2CkmtdsLhVxZArjQIzL-2uoMNU9rl5yVp4fzt5fOSZ-vMv_chVUZqWr9RMRCDdQeTMbRIyfacXEI5yK4Tty8"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-default text-label-default text-secondary uppercase">Physical Physical Interconnect</span>
+<span class="font-headline-md text-title-sm text-on-surface truncate">E-Marked 100W PD + 20Gbps Link</span>
+<span class="font-body-dense text-body-dense text-secondary truncate">Active handshake verified · 0.02% jitter</span>
+</div>
+</div>
+<div class="p-space-base rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-base">
+<div class="w-16 h-16 rounded-xl bg-surface-container-high shrink-0 overflow-hidden flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Digital representation of secure hardware cryptography chip module with geometric light patterns, clean modern enterprise industrial aesthetic in white and muted slate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAttrmcpHWhrgF1lDJ3WrFlv3Gju0yWdrELJFsPIttQcFhmS_vBeEJwth_3cgdNDVxW0ogw-Oi7g37NgHZKlmCHplBY3gGPLqUJ-EHupsuh8p4N5ugyAy7E2KMM-FXLzkTceOxwfUGpr0_bLokR45RdKYgYcDT9vC8KGPA6u4HAP8TZR8_G9KNb64XoWArWnpfMxFWHuTf15AFE8tlDrD4OO-GyTyPqxrNWIJugHKWDNcJWRBjce0A"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-default text-label-default text-secondary uppercase">Trust Boundary</span>
+<span class="font-headline-md text-title-sm text-on-surface truncate">Titan-grade Enclave Ready</span>
+<span class="font-body-dense text-body-dense text-secondary truncate">Zero memory leaks · FIPS 140-3 Level 3</span>
+</div>
+</div>
+</div>
+</div>
+<script>
+    (function() {
+      // Micro-interactions and subtle telemetry animation
+      const syncBtn = document.getElementById('btn-sync');
+      const cpuVal = document.getElementById('cpu-val');
+      
+      if (syncBtn) {
+        syncBtn.addEventListener('click', function() {
+          const icon = this.querySelector('.material-symbols-outlined');
+          if (icon) {
+            icon.classList.add('animate-spin');
+            setTimeout(() => {
+              icon.classList.remove('animate-spin');
+            }, 1200);
+          }
+        });
+      }
+
+      // Periodically fluctuate CPU load slightly to simulate live telemetry
+      if (cpuVal) {
+        setInterval(() => {
+          const current = parseInt(cpuVal.textContent, 10);
+          const delta = (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 3);
+          const next = Math.min(38, Math.max(16, current + delta));
+          cpuVal.textContent = next;
+        }, 4000);
+      }
+    })();
+  </script>
+</div></main></div><footer class="fixed bottom-0 left-0 right-0 h-10 bg-surface-container-lowest z-50 flex items-center justify-between px-space-base shadow-[0_-1px_4px_rgba(0,0,0,0.03)]"><div class="flex items-center gap-space-md"><button class="w-6 h-6 rounded bg-primary flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors"><span class="font-headline-md text-label-default">P</span></button><div class="h-4 w-px bg-outline-variant"></div><div class="flex items-center gap-space-xs"><span class="px-space-sm h-6 rounded flex items-center font-label-default text-caption bg-surface-container text-on-surface font-body-medium">Dashboard</span><span class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high">Files</span><span class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high">Console</span><span class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high">Mirror</span><span class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high">Cases</span><span class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high">AI</span></div></div><div class="flex items-center gap-space-base"><div class="flex items-center gap-space-xs"><span class="font-label-mono text-caption text-outline">WS:</span><div class="flex items-center gap-space-2xs"><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption bg-primary-container text-on-primary-container">1</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">2</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">3</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">4</span></div></div><div class="h-3 w-px bg-outline-variant"></div><div class="flex items-center gap-space-xs font-caption text-caption text-secondary"><span class="material-symbols-outlined text-primary text-[14px]">sync</span><span>Synced 12s ago</span></div></div><div class="flex items-center gap-space-md font-label-mono text-caption text-secondary"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">memory</span><span>CPU 20%</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">storage</span><span>RAM 3.5/8GB</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">speed</span><span>24ms</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">wifi</span><span>Connected</span></div><div class="h-3 w-px bg-outline-variant"></div><div class="font-body-default text-caption text-on-surface">14:32:08 UTC</div></div></footer></body></html>

@@ -1,0 +1,41 @@
+# PEGASUS OS — Git Ignore
+
+# Android
+/android/.gradle/
+/android/build/
+/android/app/build/
+/android/local.properties
+/android/.idea/
+/android/*.iml
+/android/captures/
+/android/externalNativeBuild/
+/android/.cxx/
+
+# Python
+/backend/__pycache__/
+/backend/**/__pycache__/
+/backend/*.pyc
+/backend/.env
+/backend/pegasus_memory.db
+/backend/*.egg-info/
+/backend/dist/
+/backend/build/
+/backend/.venv/
+/backend/venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Project
+pegasus_memory.json
+pegasus_activity.log
+*.log

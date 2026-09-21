@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-primary":"#ffffff","on-secondary-fixed":"#181a2a","tertiary-container":"#727578","primary-fixed-dim":"#a7c8ff","tertiary":"#595c60","tertiary-fixed-dim":"#c4c7ca","surface-dim":"#d9d9e8","on-secondary":"#ffffff","on-surface-variant":"#414752","surface-container-low":"#f4f2ff","on-primary-container":"#fefcff","on-error-container":"#93000a","primary":"#005cad","tertiary-fixed":"#e0e2e6","inverse-on-surface":"#f0efff","on-primary-fixed":"#001c3b","on-tertiary-fixed":"#191c1f","on-error":"#ffffff","surface":"#fbf8ff","secondary-fixed-dim":"#c4c5db","outline-variant":"#c1c6d4","error":"#ba1a1a","surface-variant":"#e2e1f1","on-secondary-fixed-variant":"#444657","on-tertiary-container":"#fcfcff","inverse-primary":"#a7c8ff","primary-fixed":"#d5e3ff","primary-container":"#2075d0","secondary-fixed":"#e0e1f7","on-surface":"#191b26","surface-bright":"#fbf8ff","surface-tint":"#005eb1","secondary-container":"#dedef4","on-tertiary":"#ffffff","error-container":"#ffdad6","surface-container":"#edecfc","on-secondary-container":"#606174","secondary":"#5b5d70","inverse-surface":"#2e303b","surface-container-high":"#e7e7f7","background":"#fbf8ff","on-primary-fixed-variant":"#004787","surface-container-lowest":"#ffffff","outline":"#717783","on-background":"#191b26","surface-container-highest":"#e2e1f1","on-tertiary-fixed-variant":"#44474a"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"panel-gutter":"8px","space-md":"12px","space-lg":"20px","space-base":"16px","table-row-default":"36px","window-margin":"16px","table-row-compact":"28px","space-xs":"4px","space-2xl":"32px","space-xl":"24px","space-sm":"8px","space-2xs":"2px"},"fontFamily":{"headline-md":["Inter"],"label-default":["Inter"],"body-default":["Inter"],"display-lg":["Inter"],"title-sm":["Inter"],"label-mono":["JetBrains Mono"],"body-medium":["Inter"],"headline-lg":["Inter"],"caption":["Inter"],"body-dense":["Inter"]},"fontSize":{"headline-md":["15px",{"lineHeight":"20px","letterSpacing":"-0.005em","fontWeight":"600"}],"label-default":["11px",{"lineHeight":"14px","letterSpacing":"0.04em","fontWeight":"600"}],"body-default":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}],"display-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}],"title-sm":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"600"}],"label-mono":["11px",{"lineHeight":"14px","letterSpacing":"0.02em","fontWeight":"500"}],"body-medium":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"500"}],"headline-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"caption":["10px",{"lineHeight":"12px","letterSpacing":"0.02em","fontWeight":"500"}],"body-dense":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}]}}}}</script></head><body class="bg-surface font-body-default text-body-default text-on-surface antialiased select-none"><header class="fixed top-0 left-0 right-0 h-14 bg-surface-container-lowest z-50 flex items-center justify-between px-space-base shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs"><div class="w-3 h-3 rounded-full bg-error"></div><div class="w-3 h-3 rounded-full bg-secondary-fixed-dim"></div><div class="w-3 h-3 rounded-full bg-primary-fixed-dim"></div></div><div class="h-4 w-px bg-outline-variant mx-space-2xs"></div><div class="flex items-center gap-space-sm"><div class="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-md text-title-sm">P</div><span class="font-headline-md text-title-sm text-on-surface tracking-tight">PEGASUS <span class="font-body-default text-title-sm text-primary">Connect</span></span></div><div class="flex items-center gap-space-2xs font-caption text-caption text-on-surface-variant"><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="font-body-medium text-caption text-secondary">Workstation</span></div></div><div class="flex-1 max-w-xl mx-space-xl"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[18px]">search</span><input class="w-full h-8 pl-9 pr-14 bg-surface-container-low rounded-lg text-body-dense font-body-dense text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary shadow-[0_1px_2px_rgba(0,0,0,0.02)]" placeholder="Search files, commands, AI memory, logs..." type="text"/><div class="absolute right-2 flex items-center gap-space-2xs"><kbd class="px-space-xs py-space-2xs bg-surface-container-lowest text-on-surface-variant font-label-mono text-caption rounded shadow-[0_1px_2px_rgba(0,0,0,0.04)]">Ctrl + K</kbd></div></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center bg-surface-container-high p-space-2xs rounded-lg gap-space-2xs"><button class="px-space-sm h-6 rounded font-label-default text-label-default bg-surface-container-lowest text-on-surface shadow-[0_1px_2px_rgba(0,0,0,0.04)]">WS 1: Dev</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 2: Debug</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 3: AI</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 4: Monitor</button></div><div class="relative flex items-center"><button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span></div><button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">settings</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-space-xs"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><aside class="fixed left-0 top-14 bottom-10 w-64 bg-surface-container-low z-40 flex flex-col justify-between shadow-[1px_0_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col"><div class="px-space-base py-space-md flex items-center justify-between"><span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider">PEGASUS Connect</span><span class="px-space-xs py-space-2xs rounded bg-surface-container-high font-label-mono text-caption text-secondary">v2.4 (ARM64)</span></div><div class="px-space-md py-space-xs"><div class="px-space-sm py-space-xs font-label-default text-label-default text-outline uppercase tracking-wider">Workspace</div><nav class="flex flex-col gap-space-2xs mt-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span>Dashboard (Overview)</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="files" href="#"><span>Files &amp; Storage</span></a><a aria-current="page" class="flex items-center px-space-sm h-8 rounded-lg transition-colors bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]" data-path="console" href="#"><span>Console &amp; Logs</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="screen" href="#"><span>Screen Mirroring</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="cases" href="#"><span>Cases &amp; Workspaces</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="ai" href="#"><span>AI &amp; Memory Hub</span></a></nav></div><div class="px-space-md py-space-xs mt-space-sm"><div class="px-space-sm py-space-xs font-label-default text-label-default text-outline uppercase tracking-wider">System</div><nav class="flex flex-col gap-space-2xs mt-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings" href="#"><span>Settings</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="help" href="#"><span>Help &amp; Support</span></a></nav></div></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container-lowest shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex flex-col gap-space-sm"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-default text-label-default text-primary">Connected</span></div><span class="font-caption text-caption text-secondary">Wi-Fi + USB 3.2</span></div><div><div class="font-headline-md text-title-sm text-on-surface truncate">PEGASUS Phone</div><div class="font-caption text-caption text-secondary">Android 14 · ARM64</div></div><div class="pt-space-xs flex flex-col gap-space-2xs"><div class="flex justify-between items-center font-caption text-caption text-secondary"><span>Battery</span><span class="font-body-medium text-on-surface">82%</span></div><div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden"><div class="bg-primary h-full rounded-full" style="width: 82%"></div></div></div><div class="flex justify-between items-center font-caption text-caption text-secondary"><span>Storage</span><span class="font-label-mono text-caption text-on-surface">14.2 / 32 GB</span></div></div></aside><div class="pl-64"><main class="w-full pt-14 pb-10 bg-surface min-h-[calc(100vh-2.5rem)]"><div class="flex flex-col w-full px-space-base py-space-md gap-space-md">
+<!-- Top Command & Action Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-md bg-surface-container-lowest p-space-md rounded-lg shadow-sm">
+<div class="flex flex-col gap-space-2xs min-w-0">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-headline-lg text-headline-lg text-on-surface">Console Shell</span>
+<span class="inline-flex items-center gap-space-xs px-space-xs py-space-2xs rounded bg-surface-container text-primary font-label-default text-caption">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+          PEGASUS Phone (ARM64) · Online
+        </span>
+<span class="font-label-mono text-caption text-secondary bg-surface-container px-space-xs py-space-2xs rounded">
+          ttyS0 · 115200 8N1
+        </span>
+</div>
+<p class="font-body-default text-body-dense text-secondary">
+        Run commands, view logs and monitor real-time system events on ARM64 workstation.
+      </p>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="inline-flex items-center gap-space-2xs px-space-sm h-8 rounded bg-primary text-on-primary font-body-medium text-body-dense hover:bg-primary-container transition-colors shadow-sm" id="btn-new-tab">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>New Tab</span>
+</button>
+<button class="inline-flex items-center gap-space-2xs px-space-sm h-8 rounded bg-surface-container-high text-on-surface font-body-medium text-body-dense hover:bg-surface-variant transition-colors" id="btn-clear-term">
+<span class="material-symbols-outlined text-[16px] text-secondary">delete_sweep</span>
+<span>Clear</span>
+</button>
+<button class="inline-flex items-center gap-space-2xs px-space-sm h-8 rounded bg-surface-container-high text-on-surface font-body-medium text-body-dense hover:bg-surface-variant transition-colors" id="btn-export-buf">
+<span class="material-symbols-outlined text-[16px] text-secondary">download</span>
+<span>Export Buffer</span>
+</button>
+<div class="relative">
+<button class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors" id="btn-more-options">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Primary Subsystem Segmented Nav -->
+<div class="flex items-center justify-between bg-surface-container-low p-space-2xs rounded-lg shadow-sm">
+<div class="flex items-center gap-space-2xs" id="nav-mode-tabs">
+<button class="tab-btn px-space-md h-7 rounded font-body-medium text-body-dense bg-surface-container-lowest text-primary shadow-sm flex items-center gap-space-xs" data-target="panel-terminal">
+<span class="material-symbols-outlined text-[15px]">terminal</span>
+<span>Terminal (Active)</span>
+</button>
+<button class="tab-btn px-space-md h-7 rounded font-body-medium text-body-dense text-secondary hover:text-on-surface flex items-center gap-space-xs" data-target="panel-logs">
+<span class="material-symbols-outlined text-[15px]">receipt_long</span>
+<span>System Logs</span>
+<span class="font-label-mono text-caption px-space-2xs bg-surface-container rounded text-secondary">42</span>
+</button>
+<button class="tab-btn px-space-md h-7 rounded font-body-medium text-body-dense text-secondary hover:text-on-surface flex items-center gap-space-xs" data-target="panel-events">
+<span class="material-symbols-outlined text-[15px]">sensors</span>
+<span>System Events</span>
+<span class="font-label-mono text-caption px-space-2xs bg-surface-container rounded text-secondary">12</span>
+</button>
+</div>
+<div class="flex items-center gap-space-sm px-space-sm font-label-mono text-caption text-secondary">
+<span class="flex items-center gap-space-2xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Buffer: 1,024 lines
+      </span>
+<span>UTF-8</span>
+<span>Pty #3</span>
+</div>
+</div>
+<!-- Central Workspace: Terminal (70%) + Utility Deck (30%) -->
+<div class="grid grid-cols-1 xl:grid-cols-10 gap-space-md">
+<!-- Left 70% Terminal Canvas -->
+<div class="xl:col-span-7 flex flex-col rounded-lg bg-surface-container-lowest shadow-sm overflow-hidden">
+<!-- Terminal Window Bar -->
+<div class="flex items-center justify-between bg-surface-container px-space-sm py-space-xs">
+<div class="flex items-center gap-space-2xs" id="term-tab-bar">
+<div class="flex items-center gap-space-xs bg-[#1e202a] text-[#ffffff] px-space-sm py-space-2xs rounded-t font-label-mono text-caption shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>pegasus-sh (Active)</span>
+<span class="material-symbols-outlined text-[14px] cursor-pointer hover:text-error">close</span>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low text-secondary px-space-sm py-space-2xs rounded font-label-mono text-caption cursor-pointer hover:bg-surface-container-high">
+<span>adb logcat</span>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-low text-secondary px-space-sm py-space-2xs rounded font-label-mono text-caption cursor-pointer hover:bg-surface-container-high">
+<span>cargo test</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-secondary">
+<button class="w-6 h-6 rounded flex items-center justify-center hover:bg-surface-container-high" id="btn-font-scale" title="Toggle Compact Font">
+<span class="material-symbols-outlined text-[15px]">text_fields</span>
+</button>
+<button class="w-6 h-6 rounded flex items-center justify-center hover:bg-surface-container-high" id="btn-maximize-term" title="Full Screen View">
+<span class="material-symbols-outlined text-[15px]">fullscreen</span>
+</button>
+</div>
+</div>
+<!-- Terminal Output Display (Dark Charcoal Aesthetic) -->
+<div class="bg-[#191b26] text-[#e0e2e6] font-label-mono text-body-dense p-space-base h-[360px] overflow-y-auto flex flex-col gap-space-2xs select-text" id="terminal-screen">
+<div class="text-tertiary">================================================================</div>
+<div class="text-primary font-headline-md">PEGASUS Console v1.0.0 (ARM64 Debug Bridge ttyS0)</div>
+<div class="text-tertiary font-label-mono text-caption">Architecture: aarch64-linux-android | Session: 0x9AF2 · 10Gbps USB-C Link</div>
+<div class="text-tertiary mb-space-xs">================================================================</div>
+<div class="flex items-center gap-space-xs">
+<span class="text-primary font-headline-md">pegasus@device:~$</span>
+<span class="text-on-primary">adb devices</span>
+</div>
+<div class="text-secondary pl-space-base">List of devices attached</div>
+<div class="pl-space-base text-[#ffffff]">PEGASUS-001      <span class="text-primary">device</span> (Android 14, ARM64-v8a)</div>
+<div class="flex items-center gap-space-xs mt-space-xs">
+<span class="text-primary font-headline-md">pegasus@device:~$</span>
+<span class="text-on-primary">pegasus status</span>
+</div>
+<div class="grid grid-cols-1 gap-space-2xs pl-space-base">
+<div><span class="text-tertiary">Device     :</span> <span class="text-[#84e1bc]">Online</span> (USB 3.2 Gen2x2 + Wi-Fi 6E dual-stack)</div>
+<div><span class="text-tertiary">USB           :</span> Mounted (/dev/block/sda2 on /data, ext4, rw, noatime)</div>
+<div><span class="text-tertiary">AI             :</span> <span class="text-[#a7c8ff]">Ready</span> (HNSW Vector Index 24,812 items active)</div>
+<div><span class="text-tertiary">Mirror    :</span> Ready (H.265 HW DRM Stream 60 FPS · 1080x2400)</div>
+<div><span class="text-tertiary">Storage  :</span> 14.2 / 32.0 GB (44% Used · 17.8 GB Free)</div>
+<div><span class="text-tertiary">Battery  :</span> <span class="text-[#84e1bc]">82%</span> (Fast Charging 18W, 34.2°C · Health: Good)</div>
+</div>
+<div class="flex flex-col gap-space-2xs" id="dynamic-term-lines"></div>
+<div class="flex items-center gap-space-xs mt-space-2xs" id="cursor-line">
+<span class="text-primary font-headline-md">pegasus@device:~$</span>
+<span class="text-on-primary font-label-mono" id="typing-preview"></span>
+<span class="w-2 h-4 bg-primary inline-block animate-pulse"></span>
+</div>
+</div>
+<!-- Terminal Input Command Bar -->
+<div class="p-space-sm bg-surface-container-low flex items-center gap-space-sm">
+<div class="flex items-center gap-space-xs font-label-mono text-body-dense text-primary font-headline-md pl-space-xs">
+<span>$</span>
+</div>
+<div class="relative flex-1">
+<input autocomplete="off" class="w-full h-8 px-space-sm bg-surface-container-lowest text-on-surface font-label-mono text-body-dense rounded focus:outline-none focus:ring-2 focus:ring-primary shadow-sm placeholder:text-outline" id="cli-input" placeholder="Enter command (e.g., pegasus status, adb devices, top)..." spellcheck="false" type="text"/>
+</div>
+<button class="px-space-md h-8 rounded bg-primary text-on-primary font-body-medium text-body-dense hover:bg-primary-container transition-colors shadow-sm flex items-center gap-space-2xs" id="cli-execute">
+<span>Run</span>
+<kbd class="font-label-mono text-caption bg-on-primary/20 px-space-2xs rounded">↵</kbd>
+</button>
+<button class="w-8 h-8 rounded bg-surface-container text-secondary hover:text-on-surface flex items-center justify-center" id="cli-clear-btn" title="Clear input">
+<span class="material-symbols-outlined text-[16px]">backspace</span>
+</button>
+</div>
+</div>
+<!-- Right 30% Utility Deck: Quick Commands + Command History -->
+<div class="xl:col-span-3 flex flex-col gap-space-md">
+<!-- Quick Commands Card -->
+<div class="flex flex-col bg-surface-container-lowest rounded-lg p-space-md shadow-sm gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">bolt</span>
+<span class="font-headline-md text-title-sm text-on-surface">Quick Commands</span>
+</div>
+<span class="font-caption text-caption text-secondary">1-Click Run</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs">
+<button class="quick-cmd-btn flex items-center justify-between px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container font-label-mono text-caption text-on-surface transition-colors shadow-sm text-left" data-quick="adb devices">
+<span>adb devices</span>
+<span class="material-symbols-outlined text-[12px] text-outline">play_arrow</span>
+</button>
+<button class="quick-cmd-btn flex items-center justify-between px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container font-label-mono text-caption text-on-surface transition-colors shadow-sm text-left" data-quick="pegasus status">
+<span>pegasus status</span>
+<span class="material-symbols-outlined text-[12px] text-outline">play_arrow</span>
+</button>
+<button class="quick-cmd-btn flex items-center justify-between px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container font-label-mono text-caption text-on-surface transition-colors shadow-sm text-left" data-quick="logcat -v time">
+<span>logcat -v time</span>
+<span class="material-symbols-outlined text-[12px] text-outline">play_arrow</span>
+</button>
+<button class="quick-cmd-btn flex items-center justify-between px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container font-label-mono text-caption text-on-surface transition-colors shadow-sm text-left" data-quick="dumpsys battery">
+<span>dumpsys battery</span>
+<span class="material-symbols-outlined text-[12px] text-outline">play_arrow</span>
+</button>
+<button class="quick-cmd-btn flex items-center justify-between px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container font-label-mono text-caption text-on-surface transition-colors shadow-sm text-left" data-quick="df -h">
+<span>df -h</span>
+<span class="material-symbols-outlined text-[12px] text-outline">play_arrow</span>
+</button>
+<button class="quick-cmd-btn flex items-center justify-between px-space-sm py-space-xs rounded bg-surface-container-low hover:bg-surface-container font-label-mono text-caption text-on-surface transition-colors shadow-sm text-left" data-quick="top -n 1">
+<span>top -n 1</span>
+<span class="material-symbols-outlined text-[12px] text-outline">play_arrow</span>
+</button>
+</div>
+</div>
+<!-- Telemetry Sparkline & Resource Micro Card -->
+<div class="flex flex-col bg-surface-container-lowest rounded-lg p-space-md shadow-sm gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-title-sm text-on-surface">Bridge Throughput</span>
+<span class="font-label-mono text-caption text-primary">842 KB/s</span>
+</div>
+<div class="h-10 w-full flex items-end gap-1 pt-space-xs">
+<div class="flex-1 bg-surface-container-high rounded-t hover:bg-primary transition-all h-[40%]"></div>
+<div class="flex-1 bg-surface-container-high rounded-t hover:bg-primary transition-all h-[65%]"></div>
+<div class="flex-1 bg-surface-container-high rounded-t hover:bg-primary transition-all h-[30%]"></div>
+<div class="flex-1 bg-surface-container-high rounded-t hover:bg-primary transition-all h-[85%]"></div>
+<div class="flex-1 bg-surface-container-high rounded-t hover:bg-primary transition-all h-[55%]"></div>
+<div class="flex-1 bg-surface-container-high rounded-t hover:bg-primary transition-all h-[95%]"></div>
+<div class="flex-1 bg-surface-container-high rounded-t hover:bg-primary transition-all h-[70%]"></div>
+<div class="flex-1 bg-primary rounded-t h-[80%]"></div>
+</div>
+<div class="flex justify-between font-caption text-caption text-secondary pt-space-2xs">
+<span>Packets: 4,112 TX</span>
+<span>Latency: 1.8ms</span>
+</div>
+</div>
+<!-- Command History Card -->
+<div class="flex-1 flex flex-col bg-surface-container-lowest rounded-lg p-space-md shadow-sm gap-space-sm min-h-[220px]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">history</span>
+<span class="font-headline-md text-title-sm text-on-surface">Command History</span>
+</div>
+<button class="font-caption text-caption text-secondary hover:text-primary" id="btn-clear-history">Clear</button>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1.5 text-outline text-[16px]">search</span>
+<input class="w-full h-7 pl-7 pr-2 bg-surface-container-low rounded text-caption font-body-dense text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary" id="search-history" placeholder="Filter recent commands..." type="text"/>
+</div>
+<div class="flex flex-col gap-space-2xs overflow-y-auto max-h-[160px]" id="history-container">
+<div class="history-item flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors" data-cmd="pegasus status">
+<span class="font-label-mono text-caption text-on-surface truncate">pegasus status</span>
+<span class="font-label-mono text-caption text-secondary shrink-0">15:09:42</span>
+</div>
+<div class="history-item flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors" data-cmd="adb devices">
+<span class="font-label-mono text-caption text-on-surface truncate">adb devices</span>
+<span class="font-label-mono text-caption text-secondary shrink-0">15:08:10</span>
+</div>
+<div class="history-item flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors" data-cmd="ls -la /sdcard/pegasus">
+<span class="font-label-mono text-caption text-on-surface truncate">ls -la /sdcard/pegasus</span>
+<span class="font-label-mono text-caption text-secondary shrink-0">14:52:19</span>
+</div>
+<div class="history-item flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors" data-cmd="dumpsys battery">
+<span class="font-label-mono text-caption text-on-surface truncate">dumpsys battery</span>
+<span class="font-label-mono text-caption text-secondary shrink-0">14:30:05</span>
+</div>
+<div class="history-item flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors" data-cmd="df -h /data">
+<span class="font-label-mono text-caption text-on-surface truncate">df -h /data</span>
+<span class="font-label-mono text-caption text-secondary shrink-0">14:15:22</span>
+</div>
+<div class="history-item flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors" data-cmd="cargo test --package auth">
+<span class="font-label-mono text-caption text-on-surface truncate">cargo test --package auth</span>
+<span class="font-label-mono text-caption text-secondary shrink-0">13:58:00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: System Logs & Event Stream -->
+<div class="flex flex-col bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden">
+<!-- Log Filter & Header Deck -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm p-space-md bg-surface-container-low">
+<div class="flex items-center gap-space-xs flex-wrap" id="log-level-filters">
+<span class="font-headline-md text-title-sm text-on-surface mr-space-xs">Event Logs</span>
+<button class="log-filter-btn px-space-sm h-7 rounded bg-surface-container-lowest text-primary font-body-medium text-body-dense shadow-sm" data-level="all">
+          All
+        </button>
+<button class="log-filter-btn px-space-sm h-7 rounded bg-surface-container text-secondary hover:text-on-surface font-body-medium text-body-dense flex items-center gap-space-2xs" data-level="info">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>Info (24)</span>
+</button>
+<button class="log-filter-btn px-space-sm h-7 rounded bg-surface-container text-secondary hover:text-on-surface font-body-medium text-body-dense flex items-center gap-space-2xs" data-level="success">
+<span class="w-2 h-2 rounded-full bg-[#137a43]"></span>
+<span>Success (12)</span>
+</button>
+<button class="log-filter-btn px-space-sm h-7 rounded bg-surface-container text-secondary hover:text-on-surface font-body-medium text-body-dense flex items-center gap-space-2xs" data-level="warning">
+<span class="w-2 h-2 rounded-full bg-[#b25900]"></span>
+<span>Warning (4)</span>
+</button>
+<button class="log-filter-btn px-space-sm h-7 rounded bg-surface-container text-secondary hover:text-on-surface font-body-medium text-body-dense flex items-center gap-space-2xs" data-level="error">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span>Error (2)</span>
+</button>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-1.5 text-outline text-[16px]">filter_alt</span>
+<input class="h-7 pl-8 pr-space-sm bg-surface-container-lowest rounded text-caption font-body-dense text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary shadow-sm w-56" id="log-search" placeholder="Search subsystem or message..." type="text"/>
+</div>
+<button class="h-7 px-space-sm rounded bg-surface-container-high text-on-surface font-body-medium text-body-dense hover:bg-surface-variant transition-colors flex items-center gap-space-2xs" id="btn-export-csv">
+<span class="material-symbols-outlined text-[15px] text-secondary">table_view</span>
+<span>Export CSV</span>
+</button>
+</div>
+</div>
+<!-- Log Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-default text-body-dense">
+<thead class="bg-surface-container text-secondary font-label-default text-label-default uppercase tracking-wider">
+<tr>
+<th class="py-space-xs px-space-md w-28">Timestamp</th>
+<th class="py-space-xs px-space-md w-24">Level</th>
+<th class="py-space-xs px-space-md w-36">Subsystem</th>
+<th class="py-space-xs px-space-md">Message &amp; Payload</th>
+<th class="py-space-xs px-space-md w-20 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y-0" id="logs-tbody">
+<tr class="log-row bg-surface-container-lowest hover:bg-surface-container-low transition-colors" data-level="success">
+<td class="py-space-xs px-space-md font-label-mono text-caption text-secondary">15:10:04.291</td>
+<td class="py-space-xs px-space-md">
+<span class="inline-flex items-center px-space-xs py-space-2xs rounded bg-[#e6f5ed] text-[#137a43] font-label-default text-caption">SUCCESS</span>
+</td>
+<td class="py-space-xs px-space-md font-label-mono text-caption text-on-surface font-headline-md">HNSW_INDEXER</td>
+<td class="py-space-xs px-space-md text-on-surface">
+              Vector quantization index rebuilt: 24,812 embedding vectors synchronized across NPU buffer.
+            </td>
+<td class="py-space-xs px-space-md text-right">
+<button class="text-secondary hover:text-primary font-caption text-caption">Details</button>
+</td>
+</tr>
+<tr class="log-row bg-surface-container-low/40 hover:bg-surface-container-low transition-colors" data-level="info">
+<td class="py-space-xs px-space-md font-label-mono text-caption text-secondary">15:09:58.112</td>
+<td class="py-space-xs px-space-md">
+<span class="inline-flex items-center px-space-xs py-space-2xs rounded bg-[#d5e3ff] text-primary font-label-default text-caption">INFO</span>
+</td>
+<td class="py-space-xs px-space-md font-label-mono text-caption text-on-surface font-headline-md">MIRROR_SERVER</td>
+<td class="py-space-xs px-space-md text-on-surface">
+              HEVC hardware encoder negotiated at 2560x1600@60fps (bitrate: 22 Mbps, CBR).
+            </td>
+<td class="py-space-xs px-space-md text-right">
+<button class="text-secondary hover:text-primary font-caption text-caption">Details</button>
+</td>
+</tr>
+<tr class="log-row bg-surface-container-lowest hover:bg-surface-container-low transition-colors" data-level="warning">
+<td class="py-space-xs px-space-md font-label-mono text-caption text-secondary">15:08:44.908</td>
+<td class="py-space-xs px-space-md">
+<span class="inline-flex items-center px-space-xs py-space-2xs rounded bg-[#fff4e5] text-[#b25900] font-label-default text-caption">WARN</span>
+</td>
+<td class="py-space-xs px-space-md font-label-mono text-caption text-on-surface font-headline-md">THERMAL_MGMT</td>
+<td class="py-space-xs px-space-md text-on-surface">
+              Surface sensor reached 38.5°C under USB fast charging. Throttling bridge telemetry sync to 500ms.
+            </td>
+<td class="py-space-xs px-space-md text-right">
+<button class="text-secondary hover:text-primary font-caption text-caption">Details</button>
+</td>
+</tr>
+<tr class="log-row bg-surface-container-low/40 hover:bg-surface-container-low transition-colors" data-level="info">
+<td class="py-space-xs px-space-md font-label-mono text-caption text-secondary">15:07:31.020</td>
+<td class="py-space-xs px-space-md">
+<span class="inline-flex items-center px-space-xs py-space-2xs rounded bg-[#d5e3ff] text-primary font-label-default text-caption">INFO</span>
+</td>
+<td class="py-space-xs px-space-md font-label-mono text-caption text-on-surface font-headline-md">ADB_DAEMON</td>
+<td class="py-space-xs px-space-md text-on-surface">
+              Client session attached via Unix domain socket `/tmp/pegasus-adb.sock`.
+            </td>
+<td class="py-space-xs px-space-md text-right">
+<button class="text-secondary hover:text-primary font-caption text-caption">Details</button>
+</td>
+</tr>
+<tr class="log-row bg-surface-container-lowest hover:bg-surface-container-low transition-colors" data-level="error">
+<td class="py-space-xs px-space-md font-label-mono text-caption text-secondary">15:02:18.441</td>
+<td class="py-space-xs px-space-md">
+<span class="inline-flex items-center px-space-xs py-space-2xs rounded bg-[#ffdad6] text-error font-label-default text-caption">ERROR</span>
+</td>
+<td class="py-space-xs px-space-md font-label-mono text-caption text-on-surface font-headline-md">STORAGE_VFS</td>
+<td class="py-space-xs px-space-md text-on-surface">
+              I/O error block #419082 during direct memory write. Retrying mount flag with sync semantics.
+            </td>
+<td class="py-space-xs px-space-md text-right">
+<button class="text-secondary hover:text-primary font-caption text-caption">Details</button>
+</td>
+</tr>
+<tr class="log-row bg-surface-container-low/40 hover:bg-surface-container-low transition-colors" data-level="success">
+<td class="py-space-xs px-space-md font-label-mono text-caption text-secondary">14:59:02.108</td>
+<td class="py-space-xs px-space-md">
+<span class="inline-flex items-center px-space-xs py-space-2xs rounded bg-[#e6f5ed] text-[#137a43] font-label-default text-caption">SUCCESS</span>
+</td>
+<td class="py-space-xs px-space-md font-label-mono text-caption text-on-surface font-headline-md">AUTH_SERVICE</td>
+<td class="py-space-xs px-space-md text-on-surface">
+              Mutual TLS handshake verified against workstation CA certificate `sha256:7f4a...90bc`.
+            </td>
+<td class="py-space-xs px-space-md text-right">
+<button class="text-secondary hover:text-primary font-caption text-caption">Details</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer with Real-time Status -->
+<div class="flex items-center justify-between px-space-md py-space-xs bg-surface-container text-secondary font-caption text-caption">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>Streaming logs via Pegasus Journald bridge</span>
+</div>
+<div class="flex items-center gap-space-sm font-label-mono">
+<span>Showing 6 of 42 entries</span>
+<button class="text-primary hover:underline">View All</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const cliInput = document.getElementById('cli-input');
+    const cliExecute = document.getElementById('cli-execute');
+    const dynamicLines = document.getElementById('dynamic-term-lines');
+    const typingPreview = document.getElementById('typing-preview');
+    const terminalScreen = document.getElementById('terminal-screen');
+    const clearTermBtn = document.getElementById('btn-clear-term');
+    const cliClearBtn = document.getElementById('cli-clear-btn');
+    const quickCmdBtns = document.querySelectorAll('.quick-cmd-btn');
+    const historyContainer = document.getElementById('history-container');
+    const searchHistoryInput = document.getElementById('search-history');
+    const filterButtons = document.querySelectorAll('.log-filter-btn');
+    const logRows = document.querySelectorAll('.log-row');
+    const logSearch = document.getElementById('log-search');
+
+    const commandOutputs = {
+      'adb devices': [
+        'List of devices attached',
+        'PEGASUS-001    device (Android 14, ARM64-v8a)'
+      ],
+      'pegasus status': [
+        'Device     : Online (USB 3.2 Gen2x2 + Wi-Fi 6E)',
+        'USB        : Mounted (/dev/block/sda2 on /data)',
+        'AI         : Ready (HNSW Vector Index 24,812 items)',
+        'Mirror     : Ready (H.265 HW DRM Stream 60 FPS)',
+        'Storage    : 14.2 / 32.0 GB (44% Used)',
+        'Battery    : 82% (Fast Charging 18W, 34.2°C)'
+      ],
+      'logcat -v time': [
+        '05-18 15:10:04.291 I/pegasus-daemon: [OK] Heartbeat echo ACK 1.2ms',
+        '05-18 15:10:05.102 D/surfaceflinger: [FRAME] Render queue depth 1/3 (16.6ms)',
+        '05-18 15:10:06.010 I/vold: Mounted disk block uuid 90A1-3312'
+      ],
+      'dumpsys battery': [
+        'Current Battery Service state:',
+        '  AC powered: true',
+        '  USB powered: true',
+        '  Max charging current: 3000000',
+        '  Max charging voltage: 9000000',
+        '  level: 82',
+        '  scale: 100',
+        '  voltage: 4180 mV',
+        '  temperature: 342 (34.2 C)',
+        '  technology: Li-poly'
+      ],
+      'df -h': [
+        'Filesystem      Size  Used Avail Use% Mounted on',
+        '/dev/root       3.8G  2.1G  1.7G  56% /',
+        '/dev/block/sda2  32G   14G   18G  44% /data',
+        'tmpfs           3.7G  1.2M  3.7G   1% /dev'
+      ],
+      'top -n 1': [
+        'User 8%, System 12%, IOW 0%, IRQ 0%',
+        'User 41 + Nice 0 + Sys 58 + Idle 401 + IOW 0 = 500',
+        '  PID USER     PR  NI CPU% S  #THR     VSS     RSS PCY Name',
+        ' 1284 pegasus  20   0  11% S    14 124932K  42104K  fg pegasus-server',
+        '  742 system   20   0   4% S    22  89410K  21890K  fg surfaceflinger',
+        ' 2011 shell    20   0   2% R     1   4210K   1840K  fg top'
+      ]
+    };
+
+    function appendCommandOutput(cmd) {
+      if (!cmd.trim()) return;
+
+      const cmdBlock = document.createElement('div');
+      cmdBlock.className = 'flex flex-col gap-space-2xs mt-space-xs';
+
+      const promptLine = document.createElement('div');
+      promptLine.className = 'flex items-center gap-space-xs';
+      promptLine.innerHTML = `<span class="text-primary font-headline-md">pegasus@device:~$</span><span class="text-on-primary">${escapeHtml(cmd)}</span>`;
+      cmdBlock.appendChild(promptLine);
+
+      const resolved = commandOutputs[cmd.trim()];
+      const outputContainer = document.createElement('div');
+      outputContainer.className = 'pl-space-base text-on-surface-variant flex flex-col gap-space-2xs text-body-dense';
+
+      if (resolved) {
+        resolved.forEach(line => {
+          const l = document.createElement('div');
+          l.textContent = line;
+          l.className = 'font-label-mono text-[#dedef4]';
+          outputContainer.appendChild(l);
+        });
+      } else {
+        const errorLine = document.createElement('div');
+        errorLine.className = 'text-error font-label-mono';
+        errorLine.textContent = `pegasus-sh: command not found: ${cmd}`;
+        outputContainer.appendChild(errorLine);
+      }
+
+      cmdBlock.appendChild(outputContainer);
+      dynamicLines.appendChild(cmdBlock);
+      terminalScreen.scrollTop = terminalScreen.scrollHeight;
+
+      addHistoryEntry(cmd);
+    }
+
+    function addHistoryEntry(cmd) {
+      const now = new Date();
+      const timeStr = [now.getHours(), now.getMinutes(), now.getSeconds()]
+        .map(n => String(n).padStart(2, '0'))
+        .join(':');
+
+      const item = document.createElement('div');
+      item.className = 'history-item flex items-center justify-between p-space-xs rounded hover:bg-surface-container cursor-pointer transition-colors';
+      item.setAttribute('data-cmd', cmd);
+      item.innerHTML = `
+        <span class="font-label-mono text-caption text-on-surface truncate">${escapeHtml(cmd)}</span>
+        <span class="font-label-mono text-caption text-secondary shrink-0">${timeStr}</span>
+      `;
+      item.addEventListener('click', () => {
+        cliInput.value = cmd;
+        typingPreview.textContent = cmd;
+        cliInput.focus();
+      });
+      historyContainer.prepend(item);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[tag] || tag));
+    }
+
+    cliInput.addEventListener('input', (e) => {
+      typingPreview.textContent = e.target.value;
+    });
+
+    cliInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const cmd = cliInput.value;
+        appendCommandOutput(cmd);
+        cliInput.value = '';
+        typingPreview.textContent = '';
+      }
+    });
+
+    cliExecute.addEventListener('click', () => {
+      const cmd = cliInput.value;
+      if (cmd) {
+        appendCommandOutput(cmd);
+        cliInput.value = '';
+        typingPreview.textContent = '';
+      }
+    });
+
+    clearTermBtn.addEventListener('click', () => {
+      dynamicLines.innerHTML = '';
+      cliInput.value = '';
+      typingPreview.textContent = '';
+    });
+
+    cliClearBtn.addEventListener('click', () => {
+      cliInput.value = '';
+      typingPreview.textContent = '';
+      cliInput.focus();
+    });
+
+    quickCmdBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cmd = btn.getAttribute('data-quick');
+        appendCommandOutput(cmd);
+      });
+    });
+
+    document.querySelectorAll('.history-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const cmd = item.getAttribute('data-cmd');
+        if (cmd) {
+          cliInput.value = cmd;
+          typingPreview.textContent = cmd;
+          cliInput.focus();
+        }
+      });
+    });
+
+    document.getElementById('btn-clear-history').addEventListener('click', () => {
+      historyContainer.innerHTML = '<div class="font-caption text-caption text-outline p-space-xs">No recent commands.</div>';
+    });
+
+    searchHistoryInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('.history-item').forEach(el => {
+        const text = el.getAttribute('data-cmd') || '';
+        el.style.display = text.toLowerCase().includes(query) ? 'flex' : 'none';
+      });
+    });
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+          b.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+          b.classList.add('bg-surface-container', 'text-secondary');
+        });
+        btn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        btn.classList.remove('bg-surface-container', 'text-secondary');
+
+        const level = btn.getAttribute('data-level');
+        logRows.forEach(row => {
+          if (level === 'all' || row.getAttribute('data-level') === level) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    logSearch.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      logRows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(q) ? '' : 'none';
+      });
+    });
+
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      alert('PEGASUS Bridge: Exported 42 journal logs to workstation download queue: ./pegasus-journal-export.csv');
+    });
+
+    document.getElementById('btn-export-buf').addEventListener('click', () => {
+      alert('PEGASUS Terminal Buffer: 1,024 lines copied to system clipboard.');
+    });
+
+    document.getElementById('btn-new-tab').addEventListener('click', () => {
+      const count = document.getElementById('term-tab-bar').children.length + 1;
+      const newTab = document.createElement('div');
+      newTab.className = 'flex items-center gap-space-xs bg-surface-container-low text-secondary px-space-sm py-space-2xs rounded font-label-mono text-caption cursor-pointer hover:bg-surface-container-high';
+      newTab.innerHTML = `<span>bash-${count}</span>`;
+      document.getElementById('term-tab-bar').appendChild(newTab);
+    });
+
+    document.getElementById('btn-maximize-term').addEventListener('click', () => {
+      const isMax = terminalScreen.style.height === '580px';
+      terminalScreen.style.height = isMax ? '360px' : '580px';
+    });
+  })();
+</script></main></div><footer class="fixed bottom-0 left-0 right-0 h-10 bg-surface-container-lowest z-50 flex items-center justify-between px-space-base shadow-[0_-1px_4px_rgba(0,0,0,0.03)]"><div class="flex items-center gap-space-md"><button class="w-6 h-6 rounded bg-primary flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors"><span class="font-headline-md text-label-default">P</span></button><div class="h-4 w-px bg-outline-variant"></div><nav class="flex items-center gap-space-xs" data-active-classes="bg-surface-container text-on-surface font-body-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="dashboard" href="#">Dashboard</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="files" href="#">Files</a><a aria-current="page" class="px-space-sm h-6 rounded flex items-center bg-surface-container text-on-surface font-body-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)]" data-path="console" href="#">Console</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="screen" href="#">Screen</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="cases" href="#">Cases</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="ai" href="#">AI Hub</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="settings" href="#">Settings</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="help" href="#">Help</a></nav></div><div class="flex items-center gap-space-base"><div class="flex items-center gap-space-xs"><span class="font-label-mono text-caption text-outline">WS:</span><div class="flex items-center gap-space-2xs"><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption bg-primary-container text-on-primary-container">1</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">2</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">3</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">4</span></div></div><div class="h-3 w-px bg-outline-variant"></div><div class="flex items-center gap-space-xs font-caption text-caption text-secondary"><span class="material-symbols-outlined text-primary text-[14px]">sync</span><span>Synced 12s ago</span></div></div><div class="flex items-center gap-space-md font-label-mono text-caption text-secondary"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">memory</span><span>CPU 20%</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">storage</span><span>RAM 3.5/8GB</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">speed</span><span>24ms</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">wifi</span><span>Connected</span></div><div class="h-3 w-px bg-outline-variant"></div><div class="font-body-default text-caption text-on-surface">14:32:08 UTC</div></div></footer></body></html>

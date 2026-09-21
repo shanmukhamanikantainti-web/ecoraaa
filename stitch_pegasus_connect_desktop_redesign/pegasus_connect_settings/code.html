@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-primary":"#ffffff","on-secondary-fixed":"#181a2a","tertiary-container":"#727578","primary-fixed-dim":"#a7c8ff","tertiary":"#595c60","tertiary-fixed-dim":"#c4c7ca","surface-dim":"#d9d9e8","on-secondary":"#ffffff","on-surface-variant":"#414752","surface-container-low":"#f4f2ff","on-primary-container":"#fefcff","on-error-container":"#93000a","primary":"#005cad","tertiary-fixed":"#e0e2e6","inverse-on-surface":"#f0efff","on-primary-fixed":"#001c3b","on-tertiary-fixed":"#191c1f","on-error":"#ffffff","surface":"#fbf8ff","secondary-fixed-dim":"#c4c5db","outline-variant":"#c1c6d4","error":"#ba1a1a","surface-variant":"#e2e1f1","on-secondary-fixed-variant":"#444657","on-tertiary-container":"#fcfcff","inverse-primary":"#a7c8ff","primary-fixed":"#d5e3ff","primary-container":"#2075d0","secondary-fixed":"#e0e1f7","on-surface":"#191b26","surface-bright":"#fbf8ff","surface-tint":"#005eb1","secondary-container":"#dedef4","on-tertiary":"#ffffff","error-container":"#ffdad6","surface-container":"#edecfc","on-secondary-container":"#606174","secondary":"#5b5d70","inverse-surface":"#2e303b","surface-container-high":"#e7e7f7","background":"#fbf8ff","on-primary-fixed-variant":"#004787","surface-container-lowest":"#ffffff","outline":"#717783","on-background":"#191b26","surface-container-highest":"#e2e1f1","on-tertiary-fixed-variant":"#44474a"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"panel-gutter":"8px","space-md":"12px","space-lg":"20px","space-base":"16px","table-row-default":"36px","window-margin":"16px","table-row-compact":"28px","space-xs":"4px","space-2xl":"32px","space-xl":"24px","space-sm":"8px","space-2xs":"2px"},"fontFamily":{"headline-md":["Inter"],"label-default":["Inter"],"body-default":["Inter"],"display-lg":["Inter"],"title-sm":["Inter"],"label-mono":["JetBrains Mono"],"body-medium":["Inter"],"headline-lg":["Inter"],"caption":["Inter"],"body-dense":["Inter"]},"fontSize":{"headline-md":["15px",{"lineHeight":"20px","letterSpacing":"-0.005em","fontWeight":"600"}],"label-default":["11px",{"lineHeight":"14px","letterSpacing":"0.04em","fontWeight":"600"}],"body-default":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}],"display-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}],"title-sm":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"600"}],"label-mono":["11px",{"lineHeight":"14px","letterSpacing":"0.02em","fontWeight":"500"}],"body-medium":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"500"}],"headline-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"caption":["10px",{"lineHeight":"12px","letterSpacing":"0.02em","fontWeight":"500"}],"body-dense":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}]}}}}</script></head><body class="bg-surface font-body-default text-body-default text-on-surface antialiased select-none"><header class="fixed top-0 left-0 right-0 h-14 bg-surface-container-lowest z-50 flex items-center justify-between px-space-base shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs"><div class="w-3 h-3 rounded-full bg-error"></div><div class="w-3 h-3 rounded-full bg-secondary-fixed-dim"></div><div class="w-3 h-3 rounded-full bg-primary-fixed-dim"></div></div><div class="h-4 w-px bg-outline-variant mx-space-2xs"></div><div class="flex items-center gap-space-sm"><div class="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-md text-title-sm">P</div><span class="font-headline-md text-title-sm text-on-surface tracking-tight">PEGASUS <span class="font-body-default text-title-sm text-primary">Connect</span></span></div><div class="flex items-center gap-space-2xs font-caption text-caption text-on-surface-variant"><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="font-body-medium text-caption text-secondary">Workstation</span></div></div><div class="flex-1 max-w-xl mx-space-xl"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[18px]">search</span><input class="w-full h-8 pl-9 pr-14 bg-surface-container-low rounded-lg text-body-dense font-body-dense text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary shadow-[0_1px_2px_rgba(0,0,0,0.02)]" placeholder="Search files, commands, AI memory, logs..." type="text"/><div class="absolute right-2 flex items-center gap-space-2xs"><kbd class="px-space-xs py-space-2xs bg-surface-container-lowest text-on-surface-variant font-label-mono text-caption rounded shadow-[0_1px_2px_rgba(0,0,0,0.04)]">Ctrl + K</kbd></div></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center bg-surface-container-high p-space-2xs rounded-lg gap-space-2xs"><button class="px-space-sm h-6 rounded font-label-default text-label-default bg-surface-container-lowest text-on-surface shadow-[0_1px_2px_rgba(0,0,0,0.04)]">WS 1: Dev</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 2: Debug</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 3: AI</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 4: Monitor</button></div><div class="relative flex items-center"><button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span></div><button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">settings</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-space-xs"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><aside class="fixed left-0 top-14 bottom-10 w-64 bg-surface-container-low z-40 flex flex-col justify-between shadow-[1px_0_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col"><div class="px-space-base py-space-md flex items-center justify-between"><span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider">PEGASUS Connect</span><span class="px-space-xs py-space-2xs rounded bg-surface-container-high font-label-mono text-caption text-secondary">v2.4 (ARM64)</span></div><div class="px-space-md py-space-xs"><div class="px-space-sm py-space-xs font-label-default text-label-default text-outline uppercase tracking-wider">Workspace</div><nav class="flex flex-col gap-space-2xs mt-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span>Dashboard (Overview)</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="files" href="#"><span>Files &amp; Storage</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="console" href="#"><span>Console &amp; Logs</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="screen" href="#"><span>Screen Mirroring</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="cases" href="#"><span>Cases &amp; Workspaces</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="ai" href="#"><span>AI &amp; Memory Hub</span></a></nav></div><div class="px-space-md py-space-xs mt-space-sm"><div class="px-space-sm py-space-xs font-label-default text-label-default text-outline uppercase tracking-wider">System</div><nav class="flex flex-col gap-space-2xs mt-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a aria-current="page" class="flex items-center px-space-sm h-8 rounded-lg transition-colors bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]" data-path="settings" href="#"><span>Settings</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="help" href="#"><span>Help &amp; Support</span></a></nav></div></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container-lowest shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex flex-col gap-space-sm"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-default text-label-default text-primary">Connected</span></div><span class="font-caption text-caption text-secondary">Wi-Fi + USB 3.2</span></div><div><div class="font-headline-md text-title-sm text-on-surface truncate">PEGASUS Phone</div><div class="font-caption text-caption text-secondary">Android 14 · ARM64</div></div><div class="pt-space-xs flex flex-col gap-space-2xs"><div class="flex justify-between items-center font-caption text-caption text-secondary"><span>Battery</span><span class="font-body-medium text-on-surface">82%</span></div><div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden"><div class="bg-primary h-full rounded-full" style="width: 82%"></div></div></div><div class="flex justify-between items-center font-caption text-caption text-secondary"><span>Storage</span><span class="font-label-mono text-caption text-on-surface">14.2 / 32 GB</span></div></div></aside><div class="pl-64"><main class="w-full pt-14 pb-10 bg-surface min-h-[calc(100vh-2.5rem)]"><div class="flex flex-col w-full">
+<div class="p-space-base flex flex-col gap-space-md">
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px]">tune</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Settings</h1>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container font-label-mono text-caption text-secondary">PREF_GLOBAL_V2</span>
+</div>
+<p class="font-body-default text-body-dense text-secondary">Customize PEGASUS Connect to fit your mission-critical workflow.</p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm w-full md:w-auto">
+<div class="relative flex items-center w-full md:w-80">
+<span class="material-symbols-outlined absolute left-2.5 text-outline text-[16px]">search</span>
+<input class="w-full h-8 pl-8 pr-16 bg-surface-container-low rounded-lg text-body-dense font-body-dense text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest shadow-sm transition-all" placeholder="Search settings and preferences (Ctrl+,)..." type="text"/>
+<kbd class="absolute right-2 px-space-xs py-space-2xs bg-surface-container text-on-surface-variant font-label-mono text-caption rounded shadow-sm">Ctrl+,</kbd>
+</div>
+<button class="h-8 px-space-md rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-body-medium text-body-dense flex items-center gap-space-xs transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+<span>Discard</span>
+</button>
+</div>
+</section>
+<div class="flex flex-col lg:flex-row gap-space-base items-start w-full">
+<nav class="w-full lg:w-[220px] shrink-0 bg-surface-container-lowest rounded-xl p-space-sm shadow-sm flex flex-col gap-space-2xs">
+<div class="px-space-sm py-space-xs font-label-default text-caption uppercase tracking-wider text-outline">
+          Configuration Nodes
+        </div>
+<a class="flex items-center justify-between px-space-sm h-8 rounded-lg bg-primary text-on-primary font-body-medium text-body-dense shadow-sm" href="#general">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">widgets</span>
+<span>General</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-on-primary"></span>
+</a>
+<a class="flex items-center justify-between px-space-sm h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-medium text-body-dense transition-colors" href="#devices">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">usb</span>
+<span>Device Connection</span>
+</div>
+<span class="font-label-mono text-caption text-outline">1</span>
+</a>
+<a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-medium text-body-dense transition-colors" href="#appearance">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">palette</span>
+<span>Appearance</span>
+</div>
+</a>
+<a class="flex items-center justify-between px-space-sm h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-medium text-body-dense transition-colors" href="#workspaces">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">grid_view</span>
+<span>Workspaces</span>
+</div>
+<span class="font-label-mono text-caption text-secondary">4 active</span>
+</a>
+<a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-medium text-body-dense transition-colors" href="#ai">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">psychology</span>
+<span>AI &amp; Memory</span>
+</div>
+</a>
+<a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-medium text-body-dense transition-colors" href="#recording">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">fiber_manual_record</span>
+<span>Recording &amp; Logs</span>
+</div>
+</a>
+<a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-medium text-body-dense transition-colors" href="#shortcuts">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">keyboard</span>
+<span>Shortcuts</span>
+</div>
+</a>
+<a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-medium text-body-dense transition-colors" href="#storage">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">hard_drive</span>
+<span>Data &amp; Storage</span>
+</div>
+</a>
+<a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-medium text-body-dense transition-colors" href="#privacy">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">security</span>
+<span>Privacy &amp; Security</span>
+</div>
+</a>
+<div class="my-space-xs h-px bg-surface-container"></div>
+<a class="flex items-center justify-between px-space-sm h-8 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-body-medium text-body-dense transition-colors" href="#about">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span>About</span>
+</div>
+<span class="px-space-xs py-space-2xs bg-surface-container-high rounded text-caption font-label-mono text-secondary">v2.4.1</span>
+</a>
+</nav>
+<div class="flex-1 min-w-0 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">power_settings_new</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">App Startup</h2>
+</div>
+<span class="font-caption text-caption text-secondary">SYSTEM DAEMON BOOTSTRAP</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex flex-col">
+<span class="font-body-medium text-title-sm text-on-surface">Start PEGASUS Connect at system login</span>
+<span class="font-body-default text-caption text-secondary">Launches headless daemon agent with USB hotplug detection</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="toggle-startup" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-on-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-primary after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex flex-col">
+<span class="font-body-medium text-title-sm text-on-surface">Start minimized to system tray</span>
+<span class="font-body-default text-caption text-secondary">Keep interface hidden until hotkey invocation or hardware connect</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" id="toggle-tray" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-on-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-primary after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex flex-col">
+<span class="font-body-medium text-title-sm text-on-surface">Restore previous workspace session on launch</span>
+<span class="font-body-default text-caption text-secondary">Reopens open telemetry panels, shell logs, and screen mirror grids</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" id="toggle-restore" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-on-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-primary after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">public</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Language &amp; Region</h2>
+</div>
+<span class="font-caption text-caption text-secondary">I18N &amp; ENCODING</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-default text-caption uppercase text-secondary">Application Language</label>
+<div class="relative flex items-center">
+<select class="w-full h-8 pl-space-sm pr-8 bg-surface-container-low rounded-lg text-body-dense font-body-medium text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm appearance-none cursor-pointer">
+<option selected="">English (US)</option>
+<option>English (UK)</option>
+<option>Deutsch (DE)</option>
+<option>Français (FR)</option>
+<option>日本語 (JP)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 pointer-events-none text-outline text-[16px]">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-default text-caption uppercase text-secondary">Date &amp; Time Format</label>
+<div class="relative flex items-center">
+<select class="w-full h-8 pl-space-sm pr-8 bg-surface-container-low rounded-lg text-body-dense font-body-medium text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm appearance-none cursor-pointer">
+<option selected="">24-Hour (14:32:08 UTC)</option>
+<option>12-Hour (02:32:08 PM)</option>
+<option>ISO 8601 (2025-05-18T14:32:08Z)</option>
+<option>Epoch Timestamp (Seconds)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 pointer-events-none text-outline text-[16px]">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-default text-caption uppercase text-secondary">Character Encoding</label>
+<div class="relative flex items-center">
+<select class="w-full h-8 pl-space-sm pr-8 bg-surface-container-low rounded-lg text-body-dense font-body-medium text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm appearance-none cursor-pointer">
+<option selected="">Unicode (UTF-8)</option>
+<option>Unicode (UTF-16LE)</option>
+<option>ASCII Strict (7-bit)</option>
+<option>ISO-8859-1 (Latin-1)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 pointer-events-none text-outline text-[16px]">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">system_update_alt</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Software Updates</h2>
+</div>
+<span class="px-space-xs py-space-2xs bg-primary/10 text-primary font-label-mono text-caption rounded">OTA UP-TO-DATE</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex flex-col">
+<span class="font-body-medium text-title-sm text-on-surface">Check for updates automatically</span>
+<span class="font-body-default text-caption text-secondary">Hourly background query to repository mirror</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-on-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-primary after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex flex-col">
+<span class="font-body-medium text-title-sm text-on-surface">Update Channel</span>
+<span class="font-body-default text-caption text-secondary">Current target distribution ring</span>
+</div>
+<div class="relative flex items-center">
+<select class="h-8 pl-space-sm pr-7 bg-surface-container-lowest rounded-lg text-body-dense font-body-medium text-on-surface focus:outline-none shadow-sm appearance-none cursor-pointer">
+<option selected="">Stable (v2.4.1)</option>
+<option>Beta (v2.5.0-rc2)</option>
+<option>Nightly / Canary</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 pointer-events-none text-outline text-[16px]">expand_more</span>
+</div>
+</div>
+</div>
+<div class="p-space-md bg-surface-container rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest shadow-sm flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs font-body-medium text-title-sm text-on-surface">
+<span>Version 2.4.1-arm64</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-body-default text-secondary text-body-dense">Build 890422.prod</span>
+</div>
+<div class="font-caption text-caption text-secondary">Latest stable release · SHA256: 7f3b891d4e0...</div>
+</div>
+</div>
+<button class="h-8 px-space-md rounded-lg bg-primary hover:bg-primary-container text-on-primary font-body-medium text-body-dense flex items-center justify-center gap-space-xs shadow-sm transition-colors" id="btn-check-updates">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>Check for Updates Now</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">bolt</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Quick Preferences</h2>
+</div>
+<span class="font-caption text-caption text-secondary">OPERATIONAL FLAGS</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex flex-col pr-space-sm">
+<span class="font-body-medium text-body-dense text-on-surface">Enable desktop notifications</span>
+<span class="font-body-default text-caption text-secondary">Toast alerts for ADB connections and captures</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-on-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-primary after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex flex-col pr-space-sm">
+<span class="font-body-medium text-body-dense text-on-surface">Play audio for debug panics</span>
+<span class="font-body-default text-caption text-secondary">Acoustic chime on kernel panic or dropped frame</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-on-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-primary after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex flex-col pr-space-sm">
+<span class="font-body-medium text-body-dense text-on-surface">Display file extensions in storage</span>
+<span class="font-body-default text-caption text-secondary">Show raw .apk, .pcap, .bin suffixes in explorer</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-on-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-primary after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+<div class="flex flex-col pr-space-sm">
+<span class="font-body-medium text-body-dense text-on-surface">Developer Mode &amp; Extended ADB</span>
+<span class="font-body-default text-caption text-secondary">Expose raw socket inspection &amp; root bridges</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-on-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-primary after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full lg:w-[300px] shrink-0 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-title-sm text-on-surface">Appearance &amp; Preview</span>
+<span class="material-symbols-outlined text-outline text-[18px]">desktop_windows</span>
+</div>
+<div class="p-space-sm bg-surface-container rounded-lg flex flex-col gap-space-xs">
+<span class="font-label-default text-caption uppercase text-secondary tracking-wider">Live Workspace Frame</span>
+<div class="w-full h-32 rounded-lg bg-surface-container-lowest shadow-inner p-space-xs flex flex-col gap-space-2xs overflow-hidden">
+<div class="h-3 w-full bg-surface-container flex items-center justify-between px-space-xs rounded">
+<div class="flex items-center gap-space-2xs">
+<div class="w-1.5 h-1.5 rounded-full bg-error"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-primary"></div>
+</div>
+<span class="font-label-mono text-[8px] text-outline">PEGASUS WS-1</span>
+<div class="w-2 h-1 bg-surface-container-highest rounded-full"></div>
+</div>
+<div class="flex-1 flex gap-space-2xs">
+<div class="w-10 bg-surface-container-low rounded p-space-2xs flex flex-col gap-1">
+<div class="h-1.5 w-full bg-primary rounded"></div>
+<div class="h-1.5 w-3/4 bg-surface-container-high rounded"></div>
+<div class="h-1.5 w-4/5 bg-surface-container-high rounded"></div>
+<div class="h-1.5 w-1/2 bg-surface-container-high rounded"></div>
+<div class="mt-auto h-2 w-full bg-primary/20 rounded"></div>
+</div>
+<div class="flex-1 bg-surface rounded p-space-2xs flex flex-col gap-space-2xs">
+<div class="flex items-center justify-between">
+<div class="h-2 w-14 bg-surface-container-high rounded"></div>
+<div class="h-2 w-4 bg-primary rounded"></div>
+</div>
+<div class="grid grid-cols-2 gap-space-2xs flex-1">
+<div class="bg-surface-container-lowest rounded p-1 flex flex-col justify-between">
+<div class="h-1 w-full bg-primary/40 rounded"></div>
+<div class="h-2 w-6 bg-surface-container-high rounded"></div>
+</div>
+<div class="bg-surface-container-lowest rounded p-1 flex flex-col justify-between">
+<div class="h-1 w-full bg-secondary/30 rounded"></div>
+<div class="h-2 w-8 bg-surface-container-high rounded"></div>
+</div>
+</div>
+</div>
+<div class="w-12 bg-surface-container-low rounded p-space-2xs flex flex-col gap-1">
+<div class="h-1.5 w-full bg-surface-container-high rounded"></div>
+<div class="h-8 w-full bg-primary/10 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-[10px] text-primary">analytics</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded"></div>
+</div>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded flex items-center justify-between px-space-xs">
+<span class="font-label-mono text-[6px] text-secondary">ARM64 · 24ms</span>
+<span class="font-label-mono text-[6px] text-primary">SYNC OK</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-default text-caption uppercase text-secondary">Desktop Theme Mode</label>
+<div class="grid grid-cols-3 gap-space-2xs bg-surface-container p-space-2xs rounded-lg">
+<button class="h-7 rounded font-label-default text-caption bg-surface-container-lowest text-on-surface shadow-sm font-body-medium flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">light_mode</span>
+<span>Light</span>
+</button>
+<button class="h-7 rounded font-label-default text-caption text-secondary hover:text-on-surface flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">dark_mode</span>
+<span>Dark</span>
+</button>
+<button class="h-7 rounded font-label-default text-caption text-secondary hover:text-on-surface flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">desktop_mac</span>
+<span>System</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-default text-caption uppercase text-secondary">Theme Accent Palette</label>
+<span class="font-label-mono text-caption text-primary">PEGASUS Blue (#2F7EDA)</span>
+</div>
+<div class="flex items-center justify-between p-space-xs bg-surface-container-low rounded-lg">
+<button class="w-6 h-6 rounded-full bg-primary ring-2 ring-primary ring-offset-2 flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</button>
+<button class="w-6 h-6 rounded-full bg-secondary-fixed hover:scale-105 transition-transform"></button>
+<button class="w-6 h-6 rounded-full bg-tertiary hover:scale-105 transition-transform"></button>
+<button class="w-6 h-6 rounded-full bg-primary-container hover:scale-105 transition-transform"></button>
+<button class="w-6 h-6 rounded-full bg-inverse-surface hover:scale-105 transition-transform"></button>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-label-default text-caption uppercase text-secondary">
+<span>Hardware Acceleration</span>
+<span class="font-label-mono text-primary">VULKAN / DRM</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface">
+<span class="material-symbols-outlined text-primary text-[18px]">memory</span>
+<span class="font-body-medium text-body-dense">Direct Rendering Active</span>
+</div>
+<div class="flex justify-between font-caption text-caption text-secondary">
+<span>Driver: Mesa Panfrost</span>
+<span>Buffer: Triple 120Hz</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<button class="w-full h-8 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-body-medium text-body-dense flex items-center justify-center gap-space-xs shadow-sm transition-colors" id="btn-save-settings">
+<span class="material-symbols-outlined text-[16px]">save</span>
+<span>Save Changes</span>
+</button>
+<button class="w-full h-8 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-body-medium text-body-dense flex items-center justify-center gap-space-xs transition-colors">
+<span>Reset to Defaults</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between font-label-default text-caption uppercase text-secondary">
+<span>Diagnostics Telemetry</span>
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+</div>
+<div class="flex flex-col gap-space-xs font-label-mono text-caption text-secondary">
+<div class="flex justify-between">
+<span>Kernel Bridge:</span>
+<span class="text-on-surface">v6.6.21-pegasus</span>
+</div>
+<div class="flex justify-between">
+<span>Config Schema:</span>
+<span class="text-on-surface">JSON-V2.4 (valid)</span>
+</div>
+<div class="flex justify-between">
+<span>Config Path:</span>
+<span class="text-on-surface truncate max-w-[140px]">~/.config/pegasus.json</span>
+</div>
+</div>
+<div class="pt-space-xs flex gap-space-xs">
+<button class="flex-1 h-7 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-default text-caption flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">file_open</span>
+<span>Open File</span>
+</button>
+<button class="flex-1 h-7 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-default text-caption flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Copy Path</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const saveBtn = document.getElementById('btn-save-settings');
+    const updateBtn = document.getElementById('btn-check-updates');
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Saving...</span>';
+        saveBtn.classList.add('opacity-80');
+        setTimeout(() => {
+          saveBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span><span>Saved Successfully</span>';
+          setTimeout(() => {
+            saveBtn.innerHTML = originalText;
+            saveBtn.classList.remove('opacity-80');
+          }, 1500);
+        }, 600);
+      });
+    }
+
+    if (updateBtn) {
+      updateBtn.addEventListener('click', () => {
+        const original = updateBtn.innerHTML;
+        updateBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Querying Mirror...</span>';
+        setTimeout(() => {
+          updateBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">verified</span><span>Version is Current</span>';
+          setTimeout(() => {
+            updateBtn.innerHTML = original;
+          }, 2000);
+        }, 800);
+      });
+    }
+  })();
+</script></main></div><footer class="fixed bottom-0 left-0 right-0 h-10 bg-surface-container-lowest z-50 flex items-center justify-between px-space-base shadow-[0_-1px_4px_rgba(0,0,0,0.03)]"><div class="flex items-center gap-space-md"><button class="w-6 h-6 rounded bg-primary flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors"><span class="font-headline-md text-label-default">P</span></button><div class="h-4 w-px bg-outline-variant"></div><nav class="flex items-center gap-space-xs" data-active-classes="bg-surface-container text-on-surface font-body-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="dashboard" href="#">Dashboard</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="files" href="#">Files</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="console" href="#">Console</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="screen" href="#">Screen</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="cases" href="#">Cases</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="ai" href="#">AI Hub</a><a aria-current="page" class="px-space-sm h-6 rounded flex items-center bg-surface-container text-on-surface font-body-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)]" data-path="settings" href="#">Settings</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="help" href="#">Help</a></nav></div><div class="flex items-center gap-space-base"><div class="flex items-center gap-space-xs"><span class="font-label-mono text-caption text-outline">WS:</span><div class="flex items-center gap-space-2xs"><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption bg-primary-container text-on-primary-container">1</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">2</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">3</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">4</span></div></div><div class="h-3 w-px bg-outline-variant"></div><div class="flex items-center gap-space-xs font-caption text-caption text-secondary"><span class="material-symbols-outlined text-primary text-[14px]">sync</span><span>Synced 12s ago</span></div></div><div class="flex items-center gap-space-md font-label-mono text-caption text-secondary"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">memory</span><span>CPU 20%</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">storage</span><span>RAM 3.5/8GB</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">speed</span><span>24ms</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">wifi</span><span>Connected</span></div><div class="h-3 w-px bg-outline-variant"></div><div class="font-body-default text-caption text-on-surface">14:32:08 UTC</div></div></footer></body></html>

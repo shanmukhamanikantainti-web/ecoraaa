@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEGASUS OS — Desktop Environment</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --deep-bg: #090C10;
+    --main-bg: #0D1117;
+    --secondary-bg: #11161D;
+    --primary-surface: #151B23;
+    --elevated-surface: #202833;
+    --subtle-border: #2A333E;
+    --strong-border: #36414D;
+    --accent: #3FB8A5;
+    --accent-hover: #52C7B5;
+    --dark-accent: #287F73;
+    --accent-bg: #102A27;
+    --primary-text: #E6EDF3;
+    --secondary-text: #9DA7B3;
+    --tertiary-text: #687481;
+    --disabled-text: #4B5561;
+    --success: #4FAF78;
+    --warning: #D6A84F;
+    --error: #D05C5C;
+    --info: #6B9FC8;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--deep-bg);
+    color: var(--primary-text);
+    overflow: hidden;
+    height: 100vh;
+    user-select: none;
+  }
+
+  /* ── TASKBAR ── */
+  .taskbar {
+    height: 36px;
+    background: var(--deep-bg);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 8px;
+    border-bottom: 1px solid var(--subtle-border);
+    z-index: 100;
+  }
+
+  .pegasus-btn {
+    height: 28px;
+    padding: 0 10px;
+    background: var(--accent-bg);
+    border: 1px solid var(--dark-accent);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .pegasus-btn:hover { background: var(--dark-accent); }
+  .pegasus-btn .dot { color: var(--accent); font-size: 12px; }
+  .pegasus-btn span { color: var(--accent); font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+
+  .workspace-indicator {
+    height: 28px;
+    padding: 0 10px;
+    background: var(--primary-surface);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    font-size: 10px;
+    color: var(--secondary-text);
+  }
+
+  .taskbar-apps {
+    flex: 1;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+
+  .taskbar-tab {
+    height: 26px;
+    padding: 0 10px;
+    background: var(--primary-surface);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-size: 10px;
+    color: var(--secondary-text);
+  }
+  .taskbar-tab.active {
+    background: var(--elevated-surface);
+    color: var(--primary-text);
+  }
+  .taskbar-tab:hover { background: var(--elevated-surface); }
+  .taskbar-tab .icon { font-size: 11px; }
+  .taskbar-tab .close {
+    font-size: 13px;
+    color: var(--tertiary-text);
+    margin-left: 4px;
+    cursor: pointer;
+  }
+  .taskbar-tab .close:hover { color: var(--error); }
+
+  .system-tray {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .system-tray .tray-icon { font-size: 12px; }
+  .system-tray .time { font-size: 11px; font-weight: 500; color: var(--secondary-text); }
+
+  /* ── DESKTOP ── */
+  .desktop {
+    position: relative;
+    height: calc(100vh - 36px - 28px);
+    background: var(--main-bg);
+    overflow: hidden;
+  }
+
+  .desktop-empty {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 0;
+  }
+  .desktop-empty .big-dot { font-size: 28px; color: rgba(63,184,165,0.35); }
+  .desktop-empty .label { font-size: 12px; color: var(--tertiary-text); letter-spacing: 3px; margin-top: 10px; }
+  .desktop-empty .hint { font-size: 10px; color: var(--disabled-text); margin-top: 6px; }
+
+  /* ── WINDOWS ── */
+  .window {
+    position: absolute;
+    background: var(--main-bg);
+    border: 1px solid var(--subtle-border);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    transition: box-shadow 0.15s;
+    cursor: default;
+  }
+  .window.focused { border-color: rgba(63,184,165,0.35); }
+  .window.maximized {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0;
+  }
+
+  .window-titlebar {
+    height: 32px;
+    background: var(--primary-surface);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 8px;
+    cursor: move;
+    flex-shrink: 0;
+  }
+  .window.focused .window-titlebar { background: var(--elevated-surface); }
+  .window-titlebar .app-icon { font-size: 13px; color: var(--tertiary-text); }
+  .window.focused .window-titlebar .app-icon { color: var(--accent); }
+  .window-titlebar .title {
+    flex: 1;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--secondary-text);
+  }
+  .window.focused .window-titlebar .title { color: var(--primary-text); }
+
+  .window-controls { display: flex; gap: 2px; }
+  .win-btn {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--tertiary-text);
+    transition: background 0.1s;
+  }
+  .win-btn:hover { background: rgba(255,255,255,0.08); }
+  .win-btn.close:hover { background: rgba(208,92,92,0.2); color: var(--error); }
+
+  .window-content {
+    flex: 1;
+    overflow: auto;
+    background: var(--main-bg);
+  }
+
+  /* ── TERMINAL ── */
+  .terminal-content {
+    background: var(--deep-bg);
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .terminal-content .prompt { color: var(--accent); }
+  .terminal-content .cmd { color: var(--primary-text); }
+  .terminal-content .output { color: var(--secondary-text); }
+  .terminal-content .error { color: var(--error); }
+  .terminal-content .success { color: var(--success); }
+
+  /* ── CODE EDITOR ── */
+  .code-layout { display: flex; height: 100%; }
+  .file-tree {
+    width: 150px;
+    background: var(--secondary-bg);
+    border-right: 1px solid var(--subtle-border);
+    padding: 8px 0;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .file-tree-header {
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--primary-text);
+  }
+  .file-tree-header .icon { color: var(--accent); font-size: 12px; }
+  .file-item {
+    padding: 4px 10px 4px 20px;
+    font-size: 11px;
+    color: var(--secondary-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .file-item:hover { background: var(--primary-surface); }
+  .file-item.active { background: var(--accent-bg); color: var(--accent); }
+  .file-item .fi-icon { font-size: 10px; color: var(--tertiary-text); }
+  .file-item.active .fi-icon { color: var(--accent); }
+
+  .editor-area { flex: 1; display: flex; flex-direction: column; }
+  .editor-tabs {
+    background: var(--primary-surface);
+    padding: 0 4px;
+    display: flex;
+    border-bottom: 1px solid var(--subtle-border);
+  }
+  .editor-tab {
+    padding: 5px 12px;
+    font-size: 11px;
+    color: var(--primary-text);
+    background: var(--elevated-surface);
+    border-radius: 4px 4px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .editor-tab .close { color: var(--tertiary-text); font-size: 12px; cursor: pointer; }
+  .code-lines {
+    padding: 10px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .code-line { display: flex; gap: 12px; }
+  .line-num { color: var(--disabled-text); min-width: 28px; text-align: right; }
+  .line-code { color: var(--primary-text); }
+  .kw { color: var(--info); }
+  .str { color: var(--success); }
+  .fn { color: var(--accent); }
+  .cm { color: var(--tertiary-text); }
+
+  /* ── MISSION CONTROL ── */
+  .mission-content { padding: 12px; }
+  .mission-header {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary-text);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .mission-goal {
+    font-size: 13px;
+    color: var(--primary-text);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mission-badge {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .badge-running { background: rgba(63,184,165,0.15); color: var(--accent); }
+  .badge-done { background: rgba(79,175,120,0.15); color: var(--success); }
+
+  .step-row {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+    gap: 10px;
+  }
+  .step-icon { font-size: 12px; width: 16px; text-align: center; }
+  .step-icon.done { color: var(--success); }
+  .step-icon.running { color: var(--accent); }
+  .step-icon.pending { color: var(--disabled-text); }
+  .step-name {
+    flex: 1;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .step-name.done { color: var(--secondary-text); }
+  .step-name.running { color: var(--primary-text); }
+  .step-name.pending { color: var(--disabled-text); }
+  .step-agent { font-size: 10px; color: var(--tertiary-text); }
+
+  /* ── AGENT MANAGER ── */
+  .agent-content { padding: 12px; }
+  .agent-table { width: 100%; border-collapse: collapse; }
+  .agent-table th {
+    text-align: left;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--tertiary-text);
+    letter-spacing: 1px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--subtle-border);
+  }
+  .agent-table td {
+    padding: 6px 0;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .agent-table .name { color: var(--secondary-text); }
+  .agent-table .state-idle { color: var(--disabled-text); }
+  .agent-table .state-running { color: var(--accent); }
+
+  /* ── FILE MANAGER ── */
+  .fm-content { padding: 12px; }
+  .fm-path {
+    font-size: 11px;
+    color: var(--tertiary-text);
+    padding: 6px 10px;
+    background: var(--secondary-bg);
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .fm-path .sep { color: var(--disabled-text); margin: 0 4px; }
+  .fm-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .fm-item:hover { background: var(--primary-surface); }
+  .fm-item .icon { font-size: 14px; }
+  .fm-item .name { flex: 1; color: var(--secondary-text); }
+  .fm-item .meta { font-size: 10px; color: var(--tertiary-text); }
+
+  /* ── SYSTEM MONITOR ── */
+  .monitor-content { padding: 12px; }
+  .monitor-section {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--tertiary-text);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    margin-top: 12px;
+  }
+  .monitor-section:first-child { margin-top: 0; }
+  .resource-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+  .resource-name {
+    font-size: 10px;
+    font-family: monospace;
+    color: var(--secondary-text);
+    width: 48px;
+  }
+  .resource-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--elevated-surface);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .resource-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+  .resource-pct {
+    font-size: 10px;
+    font-family: monospace;
+    color: var(--tertiary-text);
+    width: 30px;
+    text-align: right;
+  }
+
+  /* ── WORKSPACE INDICATOR ── */
+  .workspace-bar {
+    height: 28px;
+    background: var(--deep-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border-top: 1px solid var(--subtle-border);
+  }
+  .ws-tab {
+    height: 22px;
+    padding: 0 14px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-size: 10px;
+    color: var(--secondary-text);
+  }
+  .ws-tab:hover { background: var(--primary-surface); }
+  .ws-tab.active {
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
+  .ws-tab .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .ws-tab .count { font-size: 8px; color: var(--tertiary-text); }
+
+  /* ── START MENU ── */
+  .start-menu-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 200;
+    display: none;
+  }
+  .start-menu-overlay.visible { display: block; }
+  .start-menu-backdrop {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+  }
+  .start-menu {
+    position: absolute;
+    top: 40px;
+    left: 8px;
+    width: 320px;
+    background: var(--primary-surface);
+    border: 1px solid var(--subtle-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    padding: 12px;
+    z-index: 201;
+  }
+  .start-search {
+    width: 100%;
+    padding: 8px 10px 8px 30px;
+    background: transparent;
+    border: 1px solid var(--subtle-border);
+    border-radius: 6px;
+    color: var(--primary-text);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .start-search:focus { border-color: var(--accent); }
+  .start-search::placeholder { color: var(--tertiary-text); }
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-wrap .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: var(--tertiary-text);
+  }
+
+  .section-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--tertiary-text);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    padding-left: 4px;
+  }
+
+  .pinned-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .pinned-app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .pinned-app:hover { background: var(--elevated-surface); }
+  .pinned-app .app-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--elevated-surface);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--secondary-text);
+    margin-bottom: 4px;
+  }
+  .pinned-app .app-name { font-size: 9px; color: var(--secondary-text); }
+
+  .pegasus-commands { border-top: 1px solid var(--subtle-border); padding-top: 8px; }
+  .pcmd-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--secondary-text);
+  }
+  .pcmd-item:hover { background: var(--elevated-surface); }
+  .pcmd-item .cmd-icon { font-size: 13px; color: var(--accent); }
+
+  /* ── PEGASUS COMMAND PALETTE ── */
+  .command-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 300;
+    display: none;
+    background: rgba(9,12,16,0.6);
+  }
+  .command-overlay.visible { display: flex; justify-content: center; }
+  .command-palette {
+    width: 420px;
+    margin-top: 80px;
+    background: var(--primary-surface);
+    border: 1px solid var(--subtle-border);
+    border-radius: 8px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+    padding: 12px;
+    align-self: flex-start;
+  }
+  .cmd-input {
+    width: 100%;
+    padding: 10px 10px 10px 30px;
+    background: transparent;
+    border: 1px solid var(--subtle-border);
+    border-radius: 6px;
+    color: var(--primary-text);
+    font-size: 13px;
+    outline: none;
+  }
+  .cmd-input:focus { border-color: var(--accent); }
+  .cmd-input::placeholder { color: var(--tertiary-text); }
+  .cmd-search-wrap { position: relative; margin-bottom: 12px; }
+  .cmd-search-wrap .cmd-dot {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: var(--accent);
+  }
+  .suggested-cmd {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--secondary-text);
+  }
+  .suggested-cmd:hover { background: var(--elevated-surface); }
+  .suggested-cmd .s-icon { font-size: 13px; color: var(--accent); }
+
+  /* ── UTILITY ── */
+  .divider { height: 1px; background: var(--subtle-border); margin: 8px 0; }
+</style>
+</head>
+<body>
+
+<!-- ════════ TASKBAR ════════ -->
+<div class="taskbar">
+  <div class="pegasus-btn" onclick="toggleStartMenu()">
+    <span class="dot">◉</span>
+    <span>PEGASUS</span>
+  </div>
+  <div class="workspace-indicator">Desktop 1</div>
+  <div class="taskbar-apps" id="taskbarApps">
+    <div class="taskbar-tab active" onclick="focusWindow('terminal')">
+      <span class="icon">⌨</span> Terminal
+    </div>
+    <div class="taskbar-tab" onclick="focusWindow('code')">
+      <span class="icon">📝</span> Code Editor
+    </div>
+    <div class="taskbar-tab" onclick="focusWindow('mission')">
+      <span class="icon">📋</span> Mission Control
+    </div>
+    <div class="taskbar-tab" onclick="focusWindow('monitor')">
+      <span class="icon">📊</span> System Monitor
+    </div>
+  </div>
+  <div class="system-tray">
+    <span class="tray-icon" style="color:var(--accent)">◉</span>
+    <span class="tray-icon" style="color:var(--success)">📶</span>
+    <span class="tray-icon" style="color:var(--success)">🔋</span>
+    <span class="time" id="clock">14:32</span>
+  </div>
+</div>
+
+<!-- ════════ DESKTOP ════════ -->
+<div class="desktop" id="desktop">
+  <div class="desktop-empty" id="desktopEmpty">
+    <div class="big-dot">◉</div>
+    <div class="label">PEGASUS</div>
+    <div class="hint">Click PEGASUS to open applications</div>
+  </div>
+
+  <!-- TERMINAL WINDOW -->
+  <div class="window focused" id="win-terminal" style="top:20px;left:60px;width:520px;height:320px;z-index:10">
+    <div class="window-titlebar" onmousedown="startDrag(event,'terminal')">
+      <span class="app-icon">⌨</span>
+      <span class="title">Terminal</span>
+      <div class="window-controls">
+        <div class="win-btn" onclick="minimizeWindow('terminal')">—</div>
+        <div class="win-btn" onclick="maximizeWindow('terminal')">□</div>
+        <div class="win-btn close" onclick="closeWindow('terminal')">×</div>
+      </div>
+    </div>
+    <div class="window-content terminal-content">
+      <div><span class="output">PEGASUS OS Terminal v0.1.0</span></div>
+      <div><span class="output">Type 'help' for available commands.</span></div>
+      <div>&nbsp;</div>
+      <div><span class="prompt">pegasus@device:~$ </span><span class="cmd">python -m pytest --tb=short -q</span></div>
+      <div><span class="output">========================= test session starts ==========================</span></div>
+      <div><span class="success">platform linux -- Python 3.11.0, pytest-7.4.0</span></div>
+      <div><span class="output">collecting ... collected 24 items</span></div>
+      <div>&nbsp;</div>
+      <div><span class="success">tests/test_main.py ........                                      [ 33%]</span></div>
+      <div><span class="success">tests/test_orchestrator.py ............                          [ 83%]</span></div>
+      <div><span class="error">tests/test_terminal.py F                                        [ 87%]</span></div>
+      <div><span class="success">tests/test_memory.py ..                                          [ 95%]</span></div>
+      <div><span class="success">tests/test_permissions.py .                                      [100%]</span></div>
+      <div>&nbsp;</div>
+      <div><span class="error">FAILS tests/test_terminal.py::test_command_execution</span></div>
+      <div><span class="success">========================= 21 passed, 1 failed ==========================</span></div>
+      <div>&nbsp;</div>
+      <div><span class="prompt">pegasus@device:~$ </span><span class="cmd" id="cursor">▊</span></div>
+    </div>
+  </div>
+
+  <!-- CODE EDITOR WINDOW -->
+  <div class="window" id="win-code" style="top:40px;left:300px;width:480px;height:340px;z-index:5">
+    <div class="window-titlebar" onmousedown="startDrag(event,'code')">
+      <span class="app-icon">📝</span>
+      <span class="title">Code Editor</span>
+      <div class="window-controls">
+        <div class="win-btn" onclick="minimizeWindow('code')">—</div>
+        <div class="win-btn" onclick="maximizeWindow('code')">□</div>
+        <div class="win-btn close" onclick="closeWindow('code')">×</div>
+      </div>
+    </div>
+    <div class="window-content">
+      <div class="code-layout">
+        <div class="file-tree">
+          <div class="file-tree-header"><span class="icon">📁</span> pegasus-os</div>
+          <div class="file-item active"><span class="fi-icon">🐍</span> main.py</div>
+          <div class="file-item"><span class="fi-icon">🐍</span> config.py</div>
+          <div class="file-item"><span class="fi-icon">🐍</span> utils.py</div>
+          <div class="file-item"><span class="fi-icon">🧪</span> test_main.py</div>
+          <div class="file-item"><span class="fi-icon">📄</span> requirements.txt</div>
+          <div class="file-item"><span class="fi-icon">📖</span> README.md</div>
+        </div>
+        <div class="editor-area">
+          <div class="editor-tabs">
+            <div class="editor-tab">main.py <span class="close">×</span></div>
+          </div>
+          <div class="code-lines">
+            <div class="code-line"><span class="line-num">1</span><span class="line-code"><span class="cm">#!/usr/bin/env python3</span></span></div>
+            <div class="code-line"><span class="line-num">2</span><span class="line-code"><span class="str">"""PEGASUS OS — Main Entry Point"""</span></span></div>
+            <div class="code-line"><span class="line-num">3</span><span class="line-code"></span></div>
+            <div class="code-line"><span class="line-num">4</span><span class="line-code"><span class="kw">import</span> asyncio</span></div>
+            <div class="code-line"><span class="line-num">5</span><span class="line-code"><span class="kw">from</span> pegasus.core.orchestrator <span class="kw">import</span> <span class="fn">PegasusOrchestrator</span></span></div>
+            <div class="code-line"><span class="line-num">6</span><span class="line-code"></span></div>
+            <div class="code-line"><span class="line-num">7</span><span class="line-code"><span class="kw">async def</span> <span class="fn">main</span>():</span></div>
+            <div class="code-line"><span class="line-num">8</span><span class="line-code">    orchestrator = <span class="fn">PegasusOrchestrator</span>()</span></div>
+            <div class="code-line"><span class="line-num">9</span><span class="line-code">    <span class="kw">await</span> orchestrator.<span class="fn">start</span>()</span></div>
+            <div class="code-line"><span class="line-num">10</span><span class="line-code">    <span class="fn">print</span>(<span class="str">"PEGASUS Core online"</span>)</span></div>
+            <div class="code-line"><span class="line-num">11</span><span class="line-code"></span></div>
+            <div class="code-line"><span class="line-num">12</span><span class="line-code"><span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:</span></div>
+            <div class="code-line"><span class="line-num">13</span><span class="line-code">    asyncio.<span class="fn">run</span>(<span class="fn">main</span>())</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISSION CONTROL WINDOW -->
+  <div class="window" id="win-mission" style="top:80px;left:450px;width:380px;height:300px;z-index:3">
+    <div class="window-titlebar" onmousedown="startDrag(event,'mission')">
+      <span class="app-icon">📋</span>
+      <span class="title">Mission Control</span>
+      <div class="window-controls">
+        <div class="win-btn" onclick="minimizeWindow('mission')">—</div>
+        <div class="win-btn" onclick="maximizeWindow('mission')">□</div>
+        <div class="win-btn close" onclick="closeWindow('mission')">×</div>
+      </div>
+    </div>
+    <div class="window-content mission-content">
+      <div class="mission-header">MISSION CONTROL</div>
+      <div class="mission-goal">
+        <span>Analyze software project</span>
+        <span class="mission-badge badge-running">RUNNING</span>
+      </div>
+      <div class="step-row"><span class="step-icon done">✓</span><span class="step-name done">Planning</span><span class="step-agent">Orchestrator</span></div>
+      <div class="step-row"><span class="step-icon done">✓</span><span class="step-name done">Repository Scan</span><span class="step-agent">Coding Agent</span></div>
+      <div class="step-row"><span class="step-icon done">✓</span><span class="step-name done">Test Execution</span><span class="step-agent">Testing Agent</span></div>
+      <div class="step-row"><span class="step-icon done">✓</span><span class="step-name done">Failure Analysis</span><span class="step-agent">Testing Agent</span></div>
+      <div class="step-row"><span class="step-icon running">●</span><span class="step-name running">Research Cause</span><span class="step-agent">Research Agent</span></div>
+      <div class="step-row"><span class="step-icon pending">○</span><span class="step-name pending">Code Fix</span><span class="step-agent">Coding Agent</span></div>
+      <div class="step-row"><span class="step-icon pending">○</span><span class="step-name pending">Retest</span><span class="step-agent">Testing Agent</span></div>
+      <div class="step-row"><span class="step-icon pending">○</span><span class="step-name pending">Report</span><span class="step-agent">Orchestrator</span></div>
+    </div>
+  </div>
+
+  <!-- SYSTEM MONITOR WINDOW -->
+  <div class="window" id="win-monitor" style="top:120px;left:180px;width:300px;height:320px;z-index:2">
+    <div class="window-titlebar" onmousedown="startDrag(event,'monitor')">
+      <span class="app-icon">📊</span>
+      <span class="title">System Monitor</span>
+      <div class="window-controls">
+        <div class="win-btn" onclick="minimizeWindow('monitor')">—</div>
+        <div class="win-btn" onclick="maximizeWindow('monitor')">□</div>
+        <div class="win-btn close" onclick="closeWindow('monitor')">×</div>
+      </div>
+    </div>
+    <div class="window-content monitor-content">
+      <div class="monitor-section">RESOURCES</div>
+      <div class="resource-row"><span class="resource-name">CPU</span><div class="resource-bar"><div class="resource-fill" style="width:23%;background:var(--success)"></div></div><span class="resource-pct">23%</span></div>
+      <div class="resource-row"><span class="resource-name">RAM</span><div class="resource-bar"><div class="resource-fill" style="width:45%;background:var(--success)"></div></div><span class="resource-pct">45%</span></div>
+      <div class="resource-row"><span class="resource-name">GPU</span><div class="resource-bar"><div class="resource-fill" style="width:12%;background:var(--success)"></div></div><span class="resource-pct">12%</span></div>
+      <div class="resource-row"><span class="resource-name">Storage</span><div class="resource-bar"><div class="resource-fill" style="width:67%;background:var(--warning)"></div></div><span class="resource-pct">67%</span></div>
+      <div class="resource-row"><span class="resource-name">Battery</span><div class="resource-bar"><div class="resource-fill" style="width:78%;background:var(--success)"></div></div><span class="resource-pct">78%</span></div>
+      <div class="resource-row"><span class="resource-name">Thermal</span><div class="resource-bar"><div class="resource-fill" style="width:32%;background:var(--success)"></div></div><span class="resource-pct">32%</span></div>
+
+      <div class="monitor-section">AGENTS</div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px;font-family:monospace">
+        <span style="color:var(--secondary-text)">Research Agent</span><span style="color:var(--disabled-text)">IDLE</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px;font-family:monospace">
+        <span style="color:var(--secondary-text)">Coding Agent</span><span style="color:var(--disabled-text)">IDLE</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px;font-family:monospace">
+        <span style="color:var(--secondary-text)">Testing Agent</span><span style="color:var(--accent)">RUNNING</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:11px;font-family:monospace">
+        <span style="color:var(--secondary-text)">Market Agent</span><span style="color:var(--disabled-text)">IDLE</span>
+      </div>
+
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;font-family:monospace">
+        <span style="color:var(--secondary-text)">PEGASUS Core</span><span style="color:var(--success)">ONLINE</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;font-family:monospace">
+        <span style="color:var(--secondary-text)">Uptime</span><span style="color:var(--tertiary-text)">01:23:45</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ WORKSPACE INDICATOR ════════ -->
+<div class="workspace-bar">
+  <div class="ws-tab active"><div class="dot"></div>Desktop 1 <span class="count">4</span></div>
+  <div class="ws-tab" onclick="this.classList.toggle('active')">Desktop 2</div>
+  <div class="ws-tab" onclick="this.classList.toggle('active')">Desktop 3</div>
+  <div class="ws-tab" onclick="this.classList.toggle('active')">Desktop 4</div>
+</div>
+
+<!-- ════════ START MENU ════════ -->
+<div class="start-menu-overlay" id="startMenuOverlay">
+  <div class="start-menu-backdrop" onclick="toggleStartMenu()"></div>
+  <div class="start-menu">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="start-search" placeholder="Search applications, files, commands..." autofocus>
+    </div>
+    <div class="section-label">PINNED</div>
+    <div class="pinned-grid">
+      <div class="pinned-app" onclick="openApp('terminal')"><div class="app-icon">⌨</div><div class="app-name">Terminal</div></div>
+      <div class="pinned-app" onclick="openApp('code')"><div class="app-icon">📝</div><div class="app-name">Code Editor</div></div>
+      <div class="pinned-app" onclick="openApp('files')"><div class="app-icon">📁</div><div class="app-name">Files</div></div>
+      <div class="pinned-app" onclick="openApp('browser')"><div class="app-icon">🌐</div><div class="app-name">Browser</div></div>
+      <div class="pinned-app" onclick="openApp('mission')"><div class="app-icon">📋</div><div class="app-name">Missions</div></div>
+      <div class="pinned-app" onclick="openApp('monitor')"><div class="app-icon">📊</div><div class="app-name">Monitor</div></div>
+      <div class="pinned-app" onclick="openApp('settings')"><div class="app-icon">⚙</div><div class="app-name">Settings</div></div>
+      <div class="pinned-app" onclick="openApp('memory')"><div class="app-icon">🧠</div><div class="app-name">Memory</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="pegasus-commands">
+      <div class="section-label">PEGASUS COMMANDS</div>
+      <div class="pcmd-item" onclick="toggleStartMenu();toggleCommandPalette()"><span class="cmd-icon">🔍</span>Research a topic</div>
+      <div class="pcmd-item" onclick="toggleStartMenu();toggleCommandPalette()"><span class="cmd-icon">📊</span>Analyze project</div>
+      <div class="pcmd-item" onclick="toggleStartMenu();toggleCommandPalette()"><span class="cmd-icon">🧪</span>Run tests</div>
+      <div class="pcmd-item" onclick="toggleStartMenu();toggleCommandPalette()"><span class="cmd-icon">🖥</span>Open workspace</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ COMMAND PALETTE ════════ -->
+<div class="command-overlay" id="commandOverlay" onclick="toggleCommandPalette()">
+  <div class="command-palette" onclick="event.stopPropagation()">
+    <div class="cmd-search-wrap">
+      <span class="cmd-dot">◉</span>
+      <input class="cmd-input" placeholder="Give PEGASUS a command...">
+    </div>
+    <div class="section-label">SUGGESTED</div>
+    <div class="suggested-cmd"><span class="s-icon">🧪</span>Run tests</div>
+    <div class="suggested-cmd"><span class="s-icon">🔍</span>Research a topic</div>
+    <div class="suggested-cmd"><span class="s-icon">⌨</span>Open terminal</div>
+    <div class="suggested-cmd"><span class="s-icon">📁</span>Open files</div>
+    <div class="suggested-cmd"><span class="s-icon">📊</span>Analyze project</div>
+    <div class="suggested-cmd"><span class="s-icon">📝</span>Open code editor</div>
+  </div>
+</div>
+
+<script>
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toTimeString().slice(0,5);
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // Cursor blink
+  let cursorVisible = true;
+  setInterval(() => {
+    const cursor = document.getElementById('cursor');
+    if (cursor) {
+      cursor.style.opacity = cursorVisible ? '1' : '0';
+      cursorVisible = !cursorVisible;
+    }
+  }, 530);
+
+  // Window management
+  const windows = {};
+  document.querySelectorAll('.window').forEach(w => {
+    const id = w.id.replace('win-','');
+    windows[id] = { el: w, minimized: false, maximized: false };
+  });
+
+  function focusWindow(id) {
+    document.querySelectorAll('.window').forEach(w => w.classList.remove('focused'));
+    document.querySelectorAll('.taskbar-tab').forEach(t => t.classList.remove('active'));
+    if (windows[id]) {
+      windows[id].el.classList.add('focused');
+      windows[id].el.style.zIndex = 20;
+      // Update taskbar
+      const tabs = document.querySelectorAll('.taskbar-tab');
+      tabs.forEach(t => {
+        if (t.textContent.toLowerCase().includes(id.slice(0,4))) t.classList.add('active');
+      });
+    }
+  }
+
+  function minimizeWindow(id) {
+    if (windows[id]) {
+      windows[id].el.style.display = 'none';
+      windows[id].minimized = true;
+    }
+  }
+
+  function maximizeWindow(id) {
+    if (windows[id]) {
+      windows[id].el.classList.toggle('maximized');
+      windows[id].maximized = !windows[id].maximized;
+    }
+  }
+
+  function closeWindow(id) {
+    if (windows[id]) {
+      windows[id].el.style.display = 'none';
+    }
+  }
+
+  function openApp(id) {
+    if (windows[id]) {
+      windows[id].el.style.display = 'flex';
+      windows[id].minimized = false;
+      focusWindow(id);
+    }
+  }
+
+  // Start menu
+  function toggleStartMenu() {
+    document.getElementById('startMenuOverlay').classList.toggle('visible');
+  }
+
+  // Command palette
+  function toggleCommandPalette() {
+    document.getElementById('commandOverlay').classList.toggle('visible');
+  }
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+      e.preventDefault();
+      toggleCommandPalette();
+    }
+    if (e.key === 'Escape') {
+      document.getElementById('startMenuOverlay').classList.remove('visible');
+      document.getElementById('commandOverlay').classList.remove('visible');
+    }
+  });
+
+  // Dragging
+  let dragTarget = null, dragOffset = {x:0, y:0};
+  function startDrag(e, id) {
+    if (!windows[id]) return;
+    focusWindow(id);
+    dragTarget = windows[id].el;
+    const rect = dragTarget.getBoundingClientRect();
+    dragOffset.x = e.clientX - rect.left;
+    dragOffset.y = e.clientY - rect.top;
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', stopDrag);
+  }
+  function onDrag(e) {
+    if (!dragTarget) return;
+    if (dragTarget.classList.contains('maximized')) return;
+    dragTarget.style.left = (e.clientX - dragOffset.x) + 'px';
+    dragTarget.style.top = (e.clientY - dragOffset.y) + 'px';
+  }
+  function stopDrag() {
+    dragTarget = null;
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', stopDrag);
+  }
+</script>
+</body>
+</html>

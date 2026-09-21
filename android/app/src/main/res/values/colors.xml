@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="deep_background">#FF090C10</color>
+    <color name="main_background">#FF0D1117</color>
+    <color name="secondary_background">#FF11161D</color>
+    <color name="primary_surface">#FF151B23</color>
+    <color name="secondary_surface">#FF1A212B</color>
+    <color name="elevated_surface">#FF202833</color>
+    <color name="subtle_border">#FF2A333E</color>
+    <color name="strong_border">#FF36414D</color>
+    <color name="pegasus_accent">#FF3FB8A5</color>
+    <color name="accent_hover">#FF52C7B5</color>
+    <color name="dark_accent">#FF287F73</color>
+    <color name="accent_background">#FF102A27</color>
+    <color name="primary_text">#FFE6EDF3</color>
+    <color name="secondary_text">#FF9DA7B3</color>
+    <color name="tertiary_text">#FF687481</color>
+    <color name="disabled_text">#FF4B5561</color>
+    <color name="success">#FF4FAF78</color>
+    <color name="warning">#FFD6A84F</color>
+    <color name="error">#FFD05C5C</color>
+    <color name="info">#FF6B9FC8</color>
+</resources>

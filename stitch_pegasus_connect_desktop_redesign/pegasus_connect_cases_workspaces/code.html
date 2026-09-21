@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-primary":"#ffffff","on-secondary-fixed":"#181a2a","tertiary-container":"#727578","primary-fixed-dim":"#a7c8ff","tertiary":"#595c60","tertiary-fixed-dim":"#c4c7ca","surface-dim":"#d9d9e8","on-secondary":"#ffffff","on-surface-variant":"#414752","surface-container-low":"#f4f2ff","on-primary-container":"#fefcff","on-error-container":"#93000a","primary":"#005cad","tertiary-fixed":"#e0e2e6","inverse-on-surface":"#f0efff","on-primary-fixed":"#001c3b","on-tertiary-fixed":"#191c1f","on-error":"#ffffff","surface":"#fbf8ff","secondary-fixed-dim":"#c4c5db","outline-variant":"#c1c6d4","error":"#ba1a1a","surface-variant":"#e2e1f1","on-secondary-fixed-variant":"#444657","on-tertiary-container":"#fcfcff","inverse-primary":"#a7c8ff","primary-fixed":"#d5e3ff","primary-container":"#2075d0","secondary-fixed":"#e0e1f7","on-surface":"#191b26","surface-bright":"#fbf8ff","surface-tint":"#005eb1","secondary-container":"#dedef4","on-tertiary":"#ffffff","error-container":"#ffdad6","surface-container":"#edecfc","on-secondary-container":"#606174","secondary":"#5b5d70","inverse-surface":"#2e303b","surface-container-high":"#e7e7f7","background":"#fbf8ff","on-primary-fixed-variant":"#004787","surface-container-lowest":"#ffffff","outline":"#717783","on-background":"#191b26","surface-container-highest":"#e2e1f1","on-tertiary-fixed-variant":"#44474a"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"panel-gutter":"8px","space-md":"12px","space-lg":"20px","space-base":"16px","table-row-default":"36px","window-margin":"16px","table-row-compact":"28px","space-xs":"4px","space-2xl":"32px","space-xl":"24px","space-sm":"8px","space-2xs":"2px"},"fontFamily":{"headline-md":["Inter"],"label-default":["Inter"],"body-default":["Inter"],"display-lg":["Inter"],"title-sm":["Inter"],"label-mono":["JetBrains Mono"],"body-medium":["Inter"],"headline-lg":["Inter"],"caption":["Inter"],"body-dense":["Inter"]},"fontSize":{"headline-md":["15px",{"lineHeight":"20px","letterSpacing":"-0.005em","fontWeight":"600"}],"label-default":["11px",{"lineHeight":"14px","letterSpacing":"0.04em","fontWeight":"600"}],"body-default":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}],"display-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}],"title-sm":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"600"}],"label-mono":["11px",{"lineHeight":"14px","letterSpacing":"0.02em","fontWeight":"500"}],"body-medium":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"500"}],"headline-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"caption":["10px",{"lineHeight":"12px","letterSpacing":"0.02em","fontWeight":"500"}],"body-dense":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}]}}}}</script></head><body class="bg-surface font-body-default text-body-default text-on-surface antialiased select-none"><header class="fixed top-0 left-0 right-0 h-14 bg-surface-container-lowest z-50 flex items-center justify-between px-space-base shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs"><div class="w-3 h-3 rounded-full bg-error"></div><div class="w-3 h-3 rounded-full bg-secondary-fixed-dim"></div><div class="w-3 h-3 rounded-full bg-primary-fixed-dim"></div></div><div class="h-4 w-px bg-outline-variant mx-space-2xs"></div><div class="flex items-center gap-space-sm"><div class="w-6 h-6 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-md text-title-sm">P</div><span class="font-headline-md text-title-sm text-on-surface tracking-tight">PEGASUS <span class="font-body-default text-title-sm text-primary">Connect</span></span></div><div class="flex items-center gap-space-2xs font-caption text-caption text-on-surface-variant"><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="font-body-medium text-caption text-secondary">Workstation</span></div></div><div class="flex-1 max-w-xl mx-space-xl"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[18px]">search</span><input class="w-full h-8 pl-9 pr-14 bg-surface-container-low rounded-lg text-body-dense font-body-dense text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary shadow-[0_1px_2px_rgba(0,0,0,0.02)]" placeholder="Search files, commands, AI memory, logs..." type="text"/><div class="absolute right-2 flex items-center gap-space-2xs"><kbd class="px-space-xs py-space-2xs bg-surface-container-lowest text-on-surface-variant font-label-mono text-caption rounded shadow-[0_1px_2px_rgba(0,0,0,0.04)]">Ctrl + K</kbd></div></div></div><div class="flex items-center gap-space-sm"><div class="flex items-center bg-surface-container-high p-space-2xs rounded-lg gap-space-2xs"><button class="px-space-sm h-6 rounded font-label-default text-label-default bg-surface-container-lowest text-on-surface shadow-[0_1px_2px_rgba(0,0,0,0.04)]">WS 1: Dev</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 2: Debug</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 3: AI</button><button class="px-space-sm h-6 rounded font-label-default text-label-default text-on-surface-variant hover:text-on-surface">WS 4: Monitor</button></div><div class="relative flex items-center"><button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span></div><button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">settings</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-space-xs"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><aside class="fixed left-0 top-14 bottom-10 w-64 bg-surface-container-low z-40 flex flex-col justify-between shadow-[1px_0_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col"><div class="px-space-base py-space-md flex items-center justify-between"><span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider">PEGASUS Connect</span><span class="px-space-xs py-space-2xs rounded bg-surface-container-high font-label-mono text-caption text-secondary">v2.4 (ARM64)</span></div><div class="px-space-md py-space-xs"><div class="px-space-sm py-space-xs font-label-default text-label-default text-outline uppercase tracking-wider">Workspace</div><nav class="flex flex-col gap-space-2xs mt-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span>Dashboard (Overview)</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="files" href="#"><span>Files &amp; Storage</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="console" href="#"><span>Console &amp; Logs</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="screen" href="#"><span>Screen Mirroring</span></a><a aria-current="page" class="flex items-center px-space-sm h-8 rounded-lg transition-colors bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]" data-path="cases" href="#"><span>Cases &amp; Workspaces</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="ai" href="#"><span>AI &amp; Memory Hub</span></a></nav></div><div class="px-space-md py-space-xs mt-space-sm"><div class="px-space-sm py-space-xs font-label-default text-label-default text-outline uppercase tracking-wider">System</div><nav class="flex flex-col gap-space-2xs mt-space-2xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-md shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="settings" href="#"><span>Settings</span></a><a class="flex items-center px-space-sm h-8 rounded-lg text-on-surface-variant font-body-medium text-body-dense hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="help" href="#"><span>Help &amp; Support</span></a></nav></div></div><div class="p-space-md m-space-sm rounded-lg bg-surface-container-lowest shadow-[0_1px_3px_rgba(0,0,0,0.04)] flex flex-col gap-space-sm"><div class="flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-default text-label-default text-primary">Connected</span></div><span class="font-caption text-caption text-secondary">Wi-Fi + USB 3.2</span></div><div><div class="font-headline-md text-title-sm text-on-surface truncate">PEGASUS Phone</div><div class="font-caption text-caption text-secondary">Android 14 · ARM64</div></div><div class="pt-space-xs flex flex-col gap-space-2xs"><div class="flex justify-between items-center font-caption text-caption text-secondary"><span>Battery</span><span class="font-body-medium text-on-surface">82%</span></div><div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden"><div class="bg-primary h-full rounded-full" style="width: 82%"></div></div></div><div class="flex justify-between items-center font-caption text-caption text-secondary"><span>Storage</span><span class="font-label-mono text-caption text-on-surface">14.2 / 32 GB</span></div></div></aside><div class="pl-64"><main class="w-full pt-14 pb-10 bg-surface min-h-[calc(100vh-2.5rem)]"><div class="flex flex-col w-full px-space-base py-space-md gap-space-md">
+<!-- Top Action & Filter Header -->
+<div class="flex flex-col gap-space-sm bg-surface-container-lowest p-space-base rounded-xl shadow-[0_1px_3px_rgba(30,32,42,0.05)]">
+<div class="flex flex-wrap items-center justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Cases &amp; Workspaces</h1>
+<span class="px-space-xs py-space-2xs bg-primary-fixed text-primary font-label-mono text-caption rounded">ARM64 Live Trace</span>
+</div>
+<p class="font-body-default text-body-dense text-secondary mt-space-2xs">Record, manage and analyse development sessions.</p>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="flex items-center gap-space-xs px-space-sm h-8 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-body-medium text-body-dense transition-colors">
+<span class="material-symbols-outlined text-[16px] text-secondary">tune</span>
+<span>View Mode</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-sm h-8 rounded-lg bg-surface-container-high hover:bg-surface-container text-on-surface font-body-medium text-body-dense transition-colors">
+<span class="material-symbols-outlined text-[16px] text-secondary">cloud_download</span>
+<span>Import Trace</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-base h-8 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-headline-md text-body-dense shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>+ New Case</span>
+</button>
+</div>
+</div>
+<!-- Filter Bar Controls -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- Project Selector -->
+<div class="relative flex items-center">
+<select class="appearance-none h-8 pl-space-sm pr-space-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-body-medium text-body-dense rounded-lg focus:outline-none focus:ring-1 focus:ring-primary transition-colors cursor-pointer">
+<option>All Projects (8)</option>
+<option selected="">PEGASUS OS v3.2</option>
+<option>Kernel DRM Driver</option>
+<option>Vector RAG Store</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 pointer-events-none text-secondary text-[16px]">expand_more</span>
+</div>
+<!-- Status Filter Segmented Control -->
+<div class="flex items-center bg-surface-container-high p-space-2xs rounded-lg gap-space-2xs">
+<button class="px-space-sm h-6 rounded font-label-default text-caption text-secondary hover:text-on-surface">All</button>
+<button class="px-space-sm h-6 rounded font-label-default text-caption bg-surface-container-lowest text-primary shadow-[0_1px_2px_rgba(0,0,0,0.04)] flex items-center gap-space-2xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span>Active (1)</span>
+</button>
+<button class="px-space-sm h-6 rounded font-label-default text-caption text-secondary hover:text-on-surface">Completed (10)</button>
+<button class="px-space-sm h-6 rounded font-label-default text-caption text-secondary hover:text-on-surface">Failed (1)</button>
+</div>
+</div>
+<!-- Quick Search -->
+<div class="relative flex items-center min-w-[280px]">
+<span class="material-symbols-outlined absolute left-2.5 text-outline text-[16px]">search</span>
+<input class="w-full h-8 pl-8 pr-14 bg-surface-container-low rounded-lg text-body-dense font-body-dense text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary shadow-[0_1px_2px_rgba(0,0,0,0.02)]" placeholder="Filter session name, tag or ID..." type="text"/>
+<kbd class="absolute right-2 px-space-xs py-space-2xs bg-surface-container-lowest text-outline font-label-mono text-caption rounded shadow-[0_1px_2px_rgba(0,0,0,0.04)]">Ctrl+F</kbd>
+</div>
+</div>
+</div>
+<!-- Main 2-Column Split Workspace (35% List / 65% Detail) -->
+<div class="grid grid-cols-12 gap-space-base items-start">
+<!-- LEFT COLUMN: Case Master List (4 of 12 cols ~= 33.3-35%) -->
+<section class="col-span-12 xl:col-span-4 flex flex-col bg-surface-container-lowest rounded-xl shadow-[0_1px_3px_rgba(30,32,42,0.05)] overflow-hidden">
+<!-- List Header -->
+<div class="flex items-center justify-between px-space-base py-space-sm bg-surface-container-low">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-md text-title-sm text-on-surface">Cases</span>
+<span class="px-space-xs py-space-2xs bg-surface-container-high rounded-full font-label-mono text-caption text-secondary">12</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-space-2xs font-label-default text-caption text-secondary hover:text-on-surface">
+<span>Last Updated</span>
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+</button>
+<button class="w-6 h-6 rounded flex items-center justify-center text-secondary hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Case Items Container -->
+<div class="flex flex-col divide-y-0">
+<!-- ITEM 1: Active & Selected -->
+<div class="group relative flex flex-col p-space-md bg-surface-container-low transition-all cursor-pointer shadow-[inset_3px_0_0_0_#2075d0]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-primary font-headline-md">CASE-00127</span>
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+<span class="px-space-xs py-space-2xs rounded bg-error-container text-on-error-container font-label-mono text-caption">Active</span>
+</div>
+<div class="flex items-center gap-space-2xs font-label-mono text-caption text-secondary">
+<span class="material-symbols-outlined text-[14px] text-error">timer</span>
+<span class="text-error font-body-medium">14:32</span>
+</div>
+</div>
+<div class="font-headline-md text-body-medium text-on-surface mt-space-2xs group-hover:text-primary transition-colors">Build Failure Investigation</div>
+<div class="flex flex-wrap items-center gap-space-2xs mt-space-xs">
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-lowest text-secondary font-label-mono text-caption shadow-[0_1px_2px_rgba(0,0,0,0.02)]">build</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-lowest text-secondary font-label-mono text-caption shadow-[0_1px_2px_rgba(0,0,0,0.02)]">rust</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-lowest text-secondary font-label-mono text-caption shadow-[0_1px_2px_rgba(0,0,0,0.02)]">auth</span>
+<span class="ml-auto font-caption text-caption text-outline">10:31 AM</span>
+</div>
+</div>
+<!-- ITEM 2 -->
+<div class="group relative flex flex-col p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">CASE-00126</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-high text-secondary font-label-mono text-caption">Completed</span>
+</div>
+<div class="flex items-center gap-space-2xs font-label-mono text-caption text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>08:14</span>
+</div>
+</div>
+<div class="font-body-medium text-body-medium text-on-surface mt-space-2xs group-hover:text-primary transition-colors">Authentication Issue</div>
+<div class="flex flex-wrap items-center gap-space-2xs mt-space-xs">
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">jwt</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">session</span>
+<span class="ml-auto font-caption text-caption text-outline">Yesterday</span>
+</div>
+</div>
+<!-- ITEM 3 -->
+<div class="group relative flex flex-col p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">CASE-00125</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-high text-secondary font-label-mono text-caption">Completed</span>
+</div>
+<div class="flex items-center gap-space-2xs font-label-mono text-caption text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>22:41</span>
+</div>
+</div>
+<div class="font-body-medium text-body-medium text-on-surface mt-space-2xs group-hover:text-primary transition-colors">USB Boot Analysis</div>
+<div class="flex flex-wrap items-center gap-space-2xs mt-space-xs">
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">kernel</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">usb</span>
+<span class="ml-auto font-caption text-caption text-outline">Nov 18</span>
+</div>
+</div>
+<!-- ITEM 4: Failed -->
+<div class="group relative flex flex-col p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">CASE-00124</span>
+<span class="px-space-xs py-space-2xs rounded bg-error-container text-on-error-container font-label-mono text-caption">Failed</span>
+</div>
+<div class="flex items-center gap-space-2xs font-label-mono text-caption text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>11:26</span>
+</div>
+</div>
+<div class="font-body-medium text-body-medium text-on-surface mt-space-2xs group-hover:text-primary transition-colors">AI Integration Test</div>
+<div class="flex flex-wrap items-center gap-space-2xs mt-space-xs">
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">hnsw</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">vector</span>
+<span class="ml-auto font-caption text-caption text-outline">Nov 17</span>
+</div>
+</div>
+<!-- ITEM 5 -->
+<div class="group relative flex flex-col p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">CASE-00123</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-high text-secondary font-label-mono text-caption">Completed</span>
+</div>
+<div class="flex items-center gap-space-2xs font-label-mono text-caption text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>09:18</span>
+</div>
+</div>
+<div class="font-body-medium text-body-medium text-on-surface mt-space-2xs group-hover:text-primary transition-colors">Performance Profiling</div>
+<div class="flex flex-wrap items-center gap-space-2xs mt-space-xs">
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">cpu</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">thermal</span>
+<span class="ml-auto font-caption text-caption text-outline">Nov 16</span>
+</div>
+</div>
+<!-- ITEM 6 -->
+<div class="group relative flex flex-col p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">CASE-00122</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-high text-secondary font-label-mono text-caption">Completed</span>
+</div>
+<div class="flex items-center gap-space-2xs font-label-mono text-caption text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>16:52</span>
+</div>
+</div>
+<div class="font-body-medium text-body-medium text-on-surface mt-space-2xs group-hover:text-primary transition-colors">File Sync Debug</div>
+<div class="flex flex-wrap items-center gap-space-2xs mt-space-xs">
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">storage</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">f2fs</span>
+<span class="ml-auto font-caption text-caption text-outline">Nov 15</span>
+</div>
+</div>
+<!-- ITEM 7 -->
+<div class="group relative flex flex-col p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">CASE-00121</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container-high text-secondary font-label-mono text-caption">Completed</span>
+</div>
+<div class="flex items-center gap-space-2xs font-label-mono text-caption text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>12:11</span>
+</div>
+</div>
+<div class="font-body-medium text-body-medium text-on-surface mt-space-2xs group-hover:text-primary transition-colors">Screen Mirror Latency</div>
+<div class="flex flex-wrap items-center gap-space-2xs mt-space-xs">
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">h265</span>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">drm</span>
+<span class="ml-auto font-caption text-caption text-outline">Nov 14</span>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Selected Case Detail (8 of 12 cols ~= 66%) -->
+<section class="col-span-12 xl:col-span-8 flex flex-col gap-space-base">
+<!-- Case Meta Card -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl shadow-[0_1px_3px_rgba(30,32,42,0.05)] p-space-base gap-space-md">
+<!-- Top identification and action row -->
+<div class="flex flex-wrap items-start justify-between gap-space-md">
+<div class="flex flex-col gap-space-2xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-mono text-caption px-space-xs py-space-2xs rounded bg-primary-fixed text-on-primary-fixed font-headline-md">CASE-00127</span>
+<span class="font-body-medium text-body-dense text-secondary">Project: <span class="text-on-surface font-headline-md">PEGASUS OS v3.2</span></span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-caption text-caption text-secondary">Created by <strong class="text-on-surface">Developer (Local)</strong></span>
+</div>
+<h2 class="font-headline-lg text-display-lg text-on-surface tracking-tight mt-space-2xs">Build Failure Investigation</h2>
+</div>
+<!-- Quick Action Buttons -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<button class="flex items-center gap-space-xs px-space-md h-8 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-headline-md text-body-dense shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all">
+<span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+<span>✦ Analyze with PEGASUS AI</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-sm h-8 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-body-medium text-body-dense transition-colors">
+<span class="material-symbols-outlined text-[16px] text-secondary">terminal</span>
+<span>Console</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-sm h-8 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-body-medium text-body-dense transition-colors">
+<span class="material-symbols-outlined text-[16px] text-secondary">receipt_long</span>
+<span>Logs</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-container-low hover:bg-surface-container text-secondary hover:text-on-surface transition-colors" title="Export Report">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-surface-container-low hover:bg-surface-container text-secondary hover:text-on-surface transition-colors" title="Share Case">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</button>
+</div>
+</div>
+<!-- Telemetry Pill Summary Strip -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-xs">
+<div class="flex flex-col p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-caption text-caption text-secondary uppercase tracking-wider">Started</span>
+<span class="font-body-medium text-body-dense text-on-surface mt-space-2xs">Today, 10:31:02</span>
+</div>
+<div class="flex flex-col p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-caption text-caption text-secondary uppercase tracking-wider">Elapsed Time</span>
+<span class="font-label-mono text-body-dense text-error font-headline-md mt-space-2xs">14m 32s</span>
+</div>
+<div class="flex flex-col p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-caption text-caption text-secondary uppercase tracking-wider">Telemetry Stream</span>
+<span class="font-body-medium text-body-dense text-primary flex items-center gap-space-2xs mt-space-2xs">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+              USB 3.2 High-Speed
+            </span>
+</div>
+<div class="flex flex-col p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-caption text-caption text-secondary uppercase tracking-wider">Target Node</span>
+<span class="font-label-mono text-body-dense text-on-surface mt-space-2xs">ARM64 Cortex-A78</span>
+</div>
+</div>
+<!-- Sub Navigation Tabs -->
+<div class="flex items-center gap-space-xs bg-surface-container-low p-space-2xs rounded-lg">
+<button class="px-space-md h-7 rounded font-label-default text-body-dense bg-surface-container-lowest text-primary shadow-[0_1px_2px_rgba(0,0,0,0.04)] font-headline-md flex items-center gap-space-xs">
+<span>Overview</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</button>
+<button class="px-space-md h-7 rounded font-label-default text-body-dense text-secondary hover:text-on-surface flex items-center gap-space-xs">
+<span>Timeline</span>
+<span class="font-label-mono text-caption px-space-2xs rounded bg-surface-container-high">5</span>
+</button>
+<button class="px-space-md h-7 rounded font-label-default text-body-dense text-secondary hover:text-on-surface">Logs</button>
+<button class="px-space-md h-7 rounded font-label-default text-body-dense text-secondary hover:text-on-surface flex items-center gap-space-xs">
+<span>Files Changed</span>
+<span class="font-label-mono text-caption px-space-2xs rounded bg-surface-container-high">2</span>
+</button>
+<button class="px-space-md h-7 rounded font-label-default text-body-dense text-secondary hover:text-on-surface flex items-center gap-space-2xs">
+<span class="material-symbols-outlined text-[14px] text-primary">auto_awesome</span>
+<span>AI Analysis</span>
+</button>
+</div>
+</div>
+<!-- Live Recording Banner -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md p-space-base rounded-xl bg-surface-container-lowest shadow-[0_1px_3px_rgba(30,32,42,0.05)]">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-error-container flex items-center justify-center text-error flex-shrink-0">
+<span class="material-symbols-outlined text-[24px] animate-pulse">radio_button_checked</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-md text-title-sm text-on-surface uppercase tracking-wider">Live Recording Active</span>
+<span class="font-label-mono text-caption text-error font-headline-md">(14:32 elapsed)</span>
+</div>
+<div class="flex items-center gap-space-sm font-label-mono text-caption text-secondary mt-space-2xs">
+<span>184 system events</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-error font-headline-md">1 fatal error trapped</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Memory buffer 8.4 MB</span>
+</div>
+</div>
+</div>
+<!-- Waveform visualizer inline SVG -->
+<div class="hidden lg:flex items-center gap-space-2xs h-8 px-space-sm bg-surface-container-low rounded-lg">
+<svg class="text-primary overflow-visible" height="24" viewbox="0 0 120 24" width="120">
+<rect fill="currentColor" height="8" opacity="0.3" rx="1.5" width="3" x="0" y="8"></rect>
+<rect fill="currentColor" height="16" opacity="0.5" rx="1.5" width="3" x="6" y="4"></rect>
+<rect fill="currentColor" height="10" opacity="0.4" rx="1.5" width="3" x="12" y="7"></rect>
+<rect fill="currentColor" height="20" opacity="0.8" rx="1.5" width="3" x="18" y="2"></rect>
+<rect fill="currentColor" height="6" opacity="0.3" rx="1.5" width="3" x="24" y="9"></rect>
+<rect fill="currentColor" height="14" opacity="0.6" rx="1.5" width="3" x="30" y="5"></rect>
+<rect fill="#ba1a1a" height="22" opacity="1" rx="1.5" width="3" x="36" y="1"></rect>
+<rect fill="currentColor" height="12" opacity="0.5" rx="1.5" width="3" x="42" y="6"></rect>
+<rect fill="currentColor" height="8" opacity="0.4" rx="1.5" width="3" x="48" y="8"></rect>
+<rect fill="currentColor" height="18" opacity="0.7" rx="1.5" width="3" x="54" y="3"></rect>
+<rect fill="currentColor" height="10" opacity="0.4" rx="1.5" width="3" x="60" y="7"></rect>
+<rect fill="currentColor" height="16" opacity="0.6" rx="1.5" width="3" x="66" y="4"></rect>
+<rect fill="currentColor" height="4" opacity="0.3" rx="1.5" width="3" x="72" y="10"></rect>
+<rect fill="currentColor" height="14" opacity="0.5" rx="1.5" width="3" x="78" y="5"></rect>
+<rect fill="currentColor" height="20" opacity="0.9" rx="1.5" width="3" x="84" y="2"></rect>
+<rect fill="currentColor" height="12" opacity="0.6" rx="1.5" width="3" x="90" y="6"></rect>
+<rect fill="currentColor" height="8" opacity="0.4" rx="1.5" width="3" x="96" y="8"></rect>
+<rect fill="currentColor" height="18" opacity="0.7" rx="1.5" width="3" x="102" y="3"></rect>
+<rect fill="currentColor" height="10" opacity="0.5" rx="1.5" width="3" x="108" y="7"></rect>
+<rect fill="currentColor" height="6" opacity="0.3" rx="1.5" width="3" x="114" y="9"></rect>
+</svg>
+</div>
+<div class="flex items-center gap-space-xs self-end sm:self-center">
+<button class="px-space-sm h-8 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-body-medium text-body-dense flex items-center gap-space-2xs transition-colors">
+<span class="material-symbols-outlined text-[16px]">pause</span>
+<span>Pause</span>
+</button>
+<button class="px-space-sm h-8 rounded-lg bg-error text-on-error hover:bg-on-error-container font-headline-md text-body-dense flex items-center gap-space-2xs shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[16px]">stop</span>
+<span>Stop Recording</span>
+</button>
+<button class="px-space-sm h-8 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-body-medium text-body-dense flex items-center gap-space-2xs transition-colors">
+<span class="material-symbols-outlined text-[16px]">note_add</span>
+<span>+ Add Note</span>
+</button>
+</div>
+</div>
+<!-- Case Summary & Diagnostics Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-base">
+<!-- Diagnostic Summary Card -->
+<div class="col-span-2 flex flex-col p-space-base bg-surface-container-lowest rounded-xl shadow-[0_1px_3px_rgba(30,32,42,0.05)] gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-title-sm text-on-surface">Case Summary &amp; Scope</span>
+<span class="px-space-xs py-space-2xs bg-error-container text-on-error-container font-label-mono text-caption rounded">P1 Regression</span>
+</div>
+<p class="font-body-default text-body-dense text-secondary leading-relaxed">
+            Automated session triggered by pipeline panic during <code class="font-label-mono bg-surface-container px-1 py-0.5 rounded text-on-surface text-caption">cargo test --package pegasus-auth</code>.
+            Assertion failed in authentication middleware during expired token evaluation. Client received unexpected 500 internal status code instead of graceful 401 unauthorized response.
+          </p>
+<div class="flex flex-wrap items-center gap-space-xs pt-space-xs">
+<span class="font-caption text-caption text-outline uppercase tracking-wider mr-space-2xs">Tags:</span>
+<span class="px-space-sm py-space-2xs rounded-full bg-surface-container-low text-on-surface font-label-mono text-caption">build-system</span>
+<span class="px-space-sm py-space-2xs rounded-full bg-surface-container-low text-on-surface font-label-mono text-caption">dependencies</span>
+<span class="px-space-sm py-space-2xs rounded-full bg-surface-container-low text-on-surface font-label-mono text-caption">authentication</span>
+<span class="px-space-sm py-space-2xs rounded-full bg-surface-container-low text-on-surface font-label-mono text-caption">cargo-panic</span>
+</div>
+</div>
+<!-- Session Metrics Donut/Gauge -->
+<div class="col-span-1 flex flex-col p-space-base bg-surface-container-lowest rounded-xl shadow-[0_1px_3px_rgba(30,32,42,0.05)] justify-between">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-title-sm text-on-surface">Memory &amp; CPU Peak</span>
+<span class="material-symbols-outlined text-secondary text-[16px]">memory</span>
+</div>
+<div class="flex items-center justify-around py-space-xs">
+<!-- SVG Circular Gauge -->
+<div class="relative w-20 h-20 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="74, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-label-mono text-title-sm font-headline-md text-on-surface">74%</span>
+<span class="font-caption text-caption text-secondary">Peak</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-2xs font-label-mono text-caption">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded bg-primary"></span>
+<span class="text-secondary">Sys: 4.8 GB</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded bg-surface-container-high"></span>
+<span class="text-secondary">Free: 3.2 GB</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded bg-error"></span>
+<span class="text-error font-body-medium">Trapped: 1</span>
+</div>
+</div>
+</div>
+<div class="text-caption font-caption text-secondary flex items-center justify-between pt-space-xs bg-surface-container-low p-space-xs rounded-lg">
+<span>Thermal Throttling</span>
+<span class="font-body-medium text-on-surface">None (46°C)</span>
+</div>
+</div>
+</div>
+<!-- Chronological Timeline & Recent Events -->
+<div class="flex flex-col p-space-base bg-surface-container-lowest rounded-xl shadow-[0_1px_3px_rgba(30,32,42,0.05)] gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">history</span>
+<span class="font-headline-md text-title-sm text-on-surface">Session Timeline &amp; Events Trapped</span>
+</div>
+<span class="font-caption text-caption text-secondary">Showing 5 chronological markers</span>
+</div>
+<!-- Vertical Timeline List -->
+<div class="flex flex-col relative pl-6 gap-space-md before:content-[''] before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-surface-container-high">
+<!-- Event 1 -->
+<div class="relative flex flex-col gap-space-2xs">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-surface-container-lowest"></span>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">10:35:48</span>
+<span class="font-headline-md text-body-dense text-on-surface">Tests re-run standby</span>
+</div>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">Daemon</span>
+</div>
+<p class="font-body-default text-caption text-secondary">Awaiting code hot-reload event on socket :9021. Target debugger attached.</p>
+</div>
+<!-- Event 2 -->
+<div class="relative flex flex-col gap-space-2xs">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-surface-container-highest ring-4 ring-surface-container-lowest"></span>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">10:34:12</span>
+<span class="font-headline-md text-body-dense text-on-surface">Source files modified</span>
+<span class="font-label-mono text-caption text-primary bg-primary-fixed px-1 rounded">auth_middleware.rs</span>
+</div>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">Git Hook</span>
+</div>
+<p class="font-body-default text-caption text-secondary">2 insertions(+), 1 deletion(-) committed to workspace sandbox buffer.</p>
+</div>
+<!-- Event 3 -->
+<div class="relative flex flex-col gap-space-2xs">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-primary-container ring-4 ring-surface-container-lowest"></span>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">10:33:21</span>
+<span class="font-headline-md text-body-dense text-on-surface">Coding Agent dispatched to diagnose panic</span>
+</div>
+<span class="px-space-xs py-space-2xs rounded bg-primary-fixed text-primary font-label-mono text-caption">PEGASUS AI</span>
+</div>
+<p class="font-body-default text-caption text-secondary">RAG context retrieved 4 relevant stack trace similarities from memory index.</p>
+</div>
+<!-- Event 4: The panic -->
+<div class="relative flex flex-col gap-space-2xs bg-error-container/40 p-space-sm rounded-lg -ml-2">
+<span class="absolute -left-4 top-3 w-3 h-3 rounded-full bg-error ring-4 ring-surface-container-lowest"></span>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-error font-headline-md">10:32:51</span>
+<span class="font-headline-md text-body-dense text-error">Build failed: assertion panic at line 142:9</span>
+</div>
+<span class="px-space-xs py-space-2xs rounded bg-error text-on-error font-label-mono text-caption">Fatal Panic</span>
+</div>
+<div class="font-label-mono text-caption text-on-surface-variant bg-surface-container-lowest p-space-xs rounded">
+              thread 'main' panicked at 'assertion failed: `(left == right)`: expected TokenStatus::Expired, found TokenStatus::Malformed'
+            </div>
+</div>
+<!-- Event 5 -->
+<div class="relative flex flex-col gap-space-2xs">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-surface-container-highest ring-4 ring-surface-container-lowest"></span>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">10:31:02</span>
+<span class="font-headline-md text-body-dense text-on-surface">Case session started with kernel debug hooks</span>
+</div>
+<span class="px-space-xs py-space-2xs rounded bg-surface-container text-secondary font-label-mono text-caption">System</span>
+</div>
+<p class="font-body-default text-caption text-secondary">Profiler enabled on node PEGASUS Phone (ARM64 via USB 3.2).</p>
+</div>
+</div>
+</div>
+<!-- Code Diff & AI Root Cause Preview Block -->
+<div class="flex flex-col p-space-base bg-surface-container-lowest rounded-xl shadow-[0_1px_3px_rgba(30,32,42,0.05)] gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">difference</span>
+<span class="font-headline-md text-title-sm text-on-surface">Suggested AI Fix &amp; Code Diff Preview</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-caption text-secondary">src/auth_middleware.rs</span>
+<button class="px-space-sm h-6 rounded bg-primary text-on-primary font-label-default text-caption hover:bg-primary-container transition-colors">Apply Patch</button>
+</div>
+</div>
+<!-- Diff code card -->
+<div class="bg-surface-container-low rounded-lg p-space-sm font-label-mono text-caption overflow-x-auto flex flex-col gap-space-2xs shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
+<div class="text-secondary opacity-70">@@ -140,5 +140,6 @@ pub fn validate_token(header: &amp;HeaderMap) -&gt; Result&lt;Claims, AuthError&gt; {</div>
+<div class="text-secondary pl-4">     let raw_token = extract_bearer(header)?;</div>
+<div class="bg-error-container/60 text-error px-2 py-0.5 rounded flex items-center">
+<span class="w-4 select-none">-</span>
+<span>    let status = decode_claims_strict(&amp;raw_token).map_err(|_| AuthError::Malformed)?;</span>
+</div>
+<div class="bg-surface-container-highest/60 text-primary px-2 py-0.5 rounded flex items-center">
+<span class="w-4 select-none">+</span>
+<span>    let status = decode_claims_lenient(&amp;raw_token).map_err(|e| e.into_status())?;</span>
+</div>
+<div class="bg-surface-container-highest/60 text-primary px-2 py-0.5 rounded flex items-center">
+<span class="w-4 select-none">+</span>
+<span>    assert_eq!(status, TokenStatus::Expired, "Mismatch in token expiration semantics");</span>
+</div>
+<div class="text-secondary pl-4">     Ok(Claims::default())</div>
+<div class="text-secondary pl-4"> }</div>
+</div>
+<!-- AI Explanatory note -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low text-body-dense text-secondary">
+<span class="material-symbols-outlined text-primary text-[18px] flex-shrink-0 mt-0.5">psychology</span>
+<div>
+<strong class="text-on-surface font-headline-md">PEGASUS AI Diagnosis:</strong>
+            The strict decoding method rejected expired timestamps before passing into the status comparator, causing an early bail with generic <code class="font-label-mono text-caption text-primary bg-surface-container px-1 py-0.5 rounded">AuthError::Malformed</code>. Using lenient decode verifies expiration independently and satisfies the test assertion.
+          </div>
+</div>
+</div>
+</section>
+</div>
+</div></main></div><footer class="fixed bottom-0 left-0 right-0 h-10 bg-surface-container-lowest z-50 flex items-center justify-between px-space-base shadow-[0_-1px_4px_rgba(0,0,0,0.03)]"><div class="flex items-center gap-space-md"><button class="w-6 h-6 rounded bg-primary flex items-center justify-center text-on-primary hover:bg-primary-container transition-colors"><span class="font-headline-md text-label-default">P</span></button><div class="h-4 w-px bg-outline-variant"></div><nav class="flex items-center gap-space-xs" data-active-classes="bg-surface-container text-on-surface font-body-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)]"><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="dashboard" href="#">Dashboard</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="files" href="#">Files</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="console" href="#">Console</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="screen" href="#">Screen</a><a aria-current="page" class="px-space-sm h-6 rounded flex items-center bg-surface-container text-on-surface font-body-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)]" data-path="cases" href="#">Cases</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="ai" href="#">AI Hub</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="settings" href="#">Settings</a><a class="px-space-sm h-6 rounded flex items-center font-label-default text-caption text-on-surface-variant hover:bg-surface-container-high" data-path="help" href="#">Help</a></nav></div><div class="flex items-center gap-space-base"><div class="flex items-center gap-space-xs"><span class="font-label-mono text-caption text-outline">WS:</span><div class="flex items-center gap-space-2xs"><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption bg-primary-container text-on-primary-container">1</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">2</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">3</span><span class="w-5 h-5 rounded flex items-center justify-center font-label-mono text-caption text-on-surface-variant hover:bg-surface-container-high">4</span></div></div><div class="h-3 w-px bg-outline-variant"></div><div class="flex items-center gap-space-xs font-caption text-caption text-secondary"><span class="material-symbols-outlined text-primary text-[14px]">sync</span><span>Synced 12s ago</span></div></div><div class="flex items-center gap-space-md font-label-mono text-caption text-secondary"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">memory</span><span>CPU 20%</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">storage</span><span>RAM 3.5/8GB</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-outline">speed</span><span>24ms</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">wifi</span><span>Connected</span></div><div class="h-3 w-px bg-outline-variant"></div><div class="font-body-default text-caption text-on-surface">14:32:08 UTC</div></div></footer></body></html>
