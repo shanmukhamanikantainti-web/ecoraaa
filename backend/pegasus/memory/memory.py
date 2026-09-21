@@ -158,3 +158,87 @@ class MemoryManager:
             categories.setdefault(cat, 0)
             categories[cat] += 1
         return f"Memory: {len(self.memory)} entries across {len(categories)} categories"
+
+    def enable(self):
+        self._enabled = True
+
+    def disable(self):
+        self._enabled = False
+
+    def clear_memory(self):
+        self.memory.clear()
+
+    def set_user(self, info: str):
+        for entry in self.memory.values():
+            if entry.category == MemoryCategory.PERSONAL and entry.title == "User Role":
+                entry.content = info
+                entry.updated_at = time.time()
+                return
+        self.store(MemoryEntry(
+            id=str(uuid.uuid4())[:8],
+            category=MemoryCategory.PERSONAL,
+            title="User Role",
+            content=info,
+            metadata={"type": "user_info"},
+            access_level=MemoryAccessLevel.PUBLIC
+        ))
+
+    def add_project(self, project: str):
+        self.store(MemoryEntry(
+            id=str(uuid.uuid4())[:8],
+            category=MemoryCategory.PROJECT,
+            title=f"Project: {project}",
+            content=project,
+            metadata={"type": "project"},
+            access_level=MemoryAccessLevel.PUBLIC
+        ))
+
+    def remove_project(self, project: str):
+        to_del = [k for k, v in self.memory.items() if v.category == MemoryCategory.PROJECT and (v.content == project or v.title == project or project in v.title)]
+        for k in to_del:
+            del self.memory[k]
+
+    def add_preference(self, pref: str):
+        self.store(MemoryEntry(
+            id=str(uuid.uuid4())[:8],
+            category=MemoryCategory.PERSONAL,
+            title="Preference",
+            content=pref,
+            metadata={"type": "preference"},
+            access_level=MemoryAccessLevel.PUBLIC
+        ))
+
+    def remove_preference(self, pref: str):
+        to_del = [k for k, v in self.memory.items() if v.category == MemoryCategory.PERSONAL and v.content == pref]
+        for k in to_del:
+            del self.memory[k]
+
+    def add_goal(self, goal: str):
+        self.store(MemoryEntry(
+            id=str(uuid.uuid4())[:8],
+            category=MemoryCategory.PROJECT,
+            title="Goal",
+            content=goal,
+            metadata={"type": "goal"},
+            access_level=MemoryAccessLevel.PUBLIC
+        ))
+
+    def remove_goal(self, goal: str):
+        to_del = [k for k, v in self.memory.items() if v.content == goal or v.title == goal]
+        for k in to_del:
+            del self.memory[k]
+
+    def get_full_memory(self) -> dict[str, Any]:
+        user_info = next((e.content for e in self.memory.values() if e.category == MemoryCategory.PERSONAL and e.title == "User Role"), "")
+        projects = [e.content for e in self.memory.values() if e.category == MemoryCategory.PROJECT and e.metadata.get("type") == "project"]
+        preferences = [e.content for e in self.memory.values() if e.category == MemoryCategory.PERSONAL and e.metadata.get("type") == "preference"]
+        goals = [e.content for e in self.memory.values() if e.metadata.get("type") == "goal"]
+        return {
+            "enabled": getattr(self, "_enabled", True),
+            "user": user_info,
+            "projects": projects,
+            "preferences": preferences,
+            "goals": goals,
+            "entries": self.get_all(),
+            "summary": self.get_summary()
+        }
