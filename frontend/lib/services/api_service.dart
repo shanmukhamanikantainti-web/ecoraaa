@@ -73,15 +73,6 @@ class ApiService {
     return _handleResponse(response);
   }
 
-  Future<Map<String, dynamic>> pairDevice(String code) async {
-    final response = await _client.post(
-      _uri('/api/pair'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'code': code}),
-    );
-    return _handleResponse(response);
-  }
-
   Future<Map<String, dynamic>> getUsbStatus() async {
     final response = await _client.get(_uri('/api/usb-status'));
     return _handleResponse(response);
@@ -90,6 +81,34 @@ class ApiService {
   Future<List<dynamic>> getCases() async {
     final response = await _client.get(_uri('/api/cases'));
     return _handleResponse(response) as List<dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getWorkspace() async {
+    final response = await _client.get(_uri('/api/workspace'));
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> setWorkspace(String path) async {
+    final response = await _client.post(
+      _uri('/api/workspace'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'path': path}),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> getPairingStatus() async {
+    final response = await _client.get(_uri('/api/pair/status'));
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> pairDevice(String code) async {
+    final response = await _client.post(
+      _uri('/api/pair'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'code': code}),
+    );
+    return _handleResponse(response);
   }
 
   Map<String, dynamic> _handleResponse(http.Response response) {

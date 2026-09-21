@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/app_spacing.dart';
+import '../../services/api_service.dart';
 
 class WorkspacesScreen extends StatefulWidget {
   const WorkspacesScreen({super.key});
@@ -11,51 +13,68 @@ class WorkspacesScreen extends StatefulWidget {
 }
 
 class _WorkspacesScreenState extends State<WorkspacesScreen> {
-  int _activeWorkspaceIndex = 0;
+  late Future<Map<String, dynamic>> _workspaceFuture;
+  final TextEditingController _pathController = TextEditingController();
+  bool _isUpdating = false;
 
-  final List<Map<String, dynamic>> _workspaces = [
-    {
-      'id': 'ws-1',
-      'name': 'Workspace 1 — Core OS',
-      'path': 'C:/Users/shanm/OneDrive/Desktop/pro.vscode/pegasus',
-      'activeFiles': 12,
-      'status': 'Active',
-      'lastSync': '2 mins ago',
-      'agents': ['Orchestrator', 'Coding Agent'],
-    },
-    {
-      'id': 'ws-2',
-      'name': 'Workspace 2 — Flutter ECORAA',
-      'path': 'C:/Users/shanm/OneDrive/Desktop/pro.vscode/pegasus/frontend',
-      'activeFiles': 24,
-      'status': 'Ready',
-      'lastSync': '15 mins ago',
-      'agents': ['UI Architect'],
-    },
-    {
-      'id': 'ws-3',
-      'name': 'Workspace 3 — Python Services',
-      'path': 'C:/Users/shanm/OneDrive/Desktop/pro.vscode/pegasus/backend',
-      'activeFiles': 8,
-      'status': 'Idle',
-      'lastSync': '1 hour ago',
-      'agents': [],
-    },
-    {
-      'id': 'ws-4',
-      'name': 'Workspace 4 — Research Notes',
-      'path': 'C:/Users/shanm/OneDrive/Desktop/pro.vscode/pegasus/docs',
-      'activeFiles': 5,
-      'status': 'Idle',
-      'lastSync': '3 hours ago',
-      'agents': [],
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _refreshWorkspace();
+  }
+
+  void _refreshWorkspace() {
+    setState(() {
+      _workspaceFuture = context.read<ApiService>().getWorkspace();
+    });
+  }
+
+  Future<void> _updateWorkspace(String path) async {
+    if (path.isEmpty) return;
+
+    setState(() {
+      _isUpdating = true;
+    });
+
+    try {
+      final result = await context.read<ApiService>().setWorkspace(path);
+      if (result['status'] == 'success') {
+        _refreshWorkspace();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Workspace updated successfully')),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${result['message']}')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating workspace: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdating = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pathController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final activeWs = _workspaces[_activeWorkspaceIndex];
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -79,170 +98,229 @@ class _WorkspacesScreenState extends State<WorkspacesScreen> {
                       ),
                     ],
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.add, size: 16),
-                    label: const Text('New Workspace'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: AppSpacing.radiusSm),
-                    ),
+                  IconButton(
+                    onPressed: _refreshWorkspace,
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Refresh',
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
 
-              // Workspaces Grid & Active Workspace Detail
               Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Workspaces List Cards
-                    Expanded(
-                      flex: 2,
-                      child: ListView.builder(
-                        itemCount: _workspaces.length,
-                        itemBuilder: (context, index) {
-                          final ws = _workspaces[index];
-                          final isSelected = index == _activeWorkspaceIndex;
-                          return GestureDetector(
-                            onTap: () => setState(() => _activeWorkspaceIndex = index),
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                              padding: const EdgeInsets.all(AppSpacing.lg),
-                              decoration: BoxDecoration(
-                                color: isSelected ? AppColors.primary.withValues(alpha: 0.06) : AppColors.surface,
-                                borderRadius: AppSpacing.radiusLg,
-                                border: Border.all(
-                                  color: isSelected ? AppColors.primary : AppColors.border,
-                                  width: isSelected ? 1.5 : 1.0,
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        ws['name'],
-                                        style: AppTypography.sectionTitle.copyWith(
-                                          color: isSelected ? AppColors.primary : AppColors.textPrimary,
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: ws['status'] == 'Active' ? AppColors.success.withValues(alpha: 0.1) : AppColors.background,
-                                          borderRadius: AppSpacing.radiusXs,
-                                          border: Border.all(
-                                            color: ws['status'] == 'Active' ? AppColors.success : AppColors.border,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          ws['status'],
-                                          style: AppTypography.metadata.copyWith(
-                                            fontSize: 10,
-                                            color: ws['status'] == 'Active' ? AppColors.success : AppColors.textSecondary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    ws['path'],
-                                    style: AppTypography.metadata.copyWith(fontSize: 11),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.insert_drive_file_outlined, size: 14, color: AppColors.textSecondary),
-                                      const SizedBox(width: 4),
-                                      Text('${ws['activeFiles']} active files', style: AppTypography.metadata),
-                                      const SizedBox(width: 16),
-                                      Icon(Icons.sync, size: 14, color: AppColors.textSecondary),
-                                      const SizedBox(width: 4),
-                                      Text('Synced ${ws['lastSync']}', style: AppTypography.metadata),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.lg),
+                child: FutureBuilder<Map<String, dynamic>>(
+                  future: _workspaceFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                    // Active Workspace Inspector Panel
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
-                        ),
+                    if (snapshot.hasError) {
+                      return Center(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Workspace Context', style: AppTypography.sectionTitle),
-                            const SizedBox(height: AppSpacing.md),
-                            Text(
-                              activeWs['name'],
-                              style: AppTypography.body.copyWith(fontWeight: FontWeight.w700),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              activeWs['path'],
-                              style: AppTypography.metadata.copyWith(fontSize: 10),
-                            ),
+                            const Icon(Icons.error_outline, size: 48, color: AppColors.error),
                             const SizedBox(height: 16),
-                            const Divider(),
-                            const SizedBox(height: 16),
-                            Text('Assigned AI Agents', style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600)),
+                            Text('Failed to load workspace', style: AppTypography.sectionTitle),
                             const SizedBox(height: 8),
-                            if ((activeWs['agents'] as List).isEmpty)
-                              Text('No agents assigned', style: AppTypography.metadata)
-                            else
-                              ...(activeWs['agents'] as List).map((agent) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 6),
-                                    child: Row(
-                                      children: [
-                                        const Icon(Icons.memory_outlined, size: 14, color: AppColors.primary),
-                                        const SizedBox(width: 6),
-                                        Text(agent, style: AppTypography.bodySmall),
-                                      ],
-                                    ),
-                                  )),
-                            const Spacer(),
-                            OutlinedButton.icon(
-                              onPressed: () {},
-                              icon: const Icon(Icons.swap_horiz, size: 16),
-                              label: const Text('Switch Context'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.primary,
-                                side: const BorderSide(color: AppColors.primary),
-                                minimumSize: const Size.fromHeight(40),
-                                shape: RoundedRectangleBorder(borderRadius: AppSpacing.radiusSm),
-                              ),
+                            Text(snapshot.error.toString(), style: AppTypography.metadata),
+                            const SizedBox(height: 24),
+                            ElevatedButton(
+                              onPressed: _refreshWorkspace,
+                              child: const Text('Retry'),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                  ],
+                      );
+                    }
+
+                    final workspace = snapshot.data!;
+                    final String path = workspace['path'] ?? 'No workspace selected';
+                    final String name = workspace['name'] ?? 'Unknown';
+                    final bool isValid = workspace['valid'] ?? false;
+
+                    if (_pathController.text.isEmpty && path != 'No workspace selected') {
+                      _pathController.text = path;
+                    }
+
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Main Workspace Panel
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            padding: const EdgeInsets.all(AppSpacing.lg),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: AppSpacing.radiusLg,
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Active Workspace', style: AppTypography.sectionTitle),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: isValid ? AppColors.success.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
+                                        borderRadius: AppSpacing.radiusXs,
+                                        border: Border.all(
+                                          color: isValid ? AppColors.success : AppColors.error,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        isValid ? 'Valid' : 'Invalid',
+                                        style: AppTypography.metadata.copyWith(
+                                          fontSize: 10,
+                                          color: isValid ? AppColors.success : AppColors.error,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.xl),
+                                Text(
+                                  'Current Path:',
+                                  style: AppTypography.metadata.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.all(AppSpacing.md),
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.background,
+                                    borderRadius: AppSpacing.radiusSm,
+                                    border: Border.all(color: AppColors.border),
+                                  ),
+                                  child: Text(
+                                    path,
+                                    style: AppTypography.body.copyWith(fontFamily: 'monospace'),
+                                  ),
+                                ),
+                                const SizedBox(height: AppSpacing.xl),
+                                Text(
+                                  'Change Workspace Path:',
+                                  style: AppTypography.metadata.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: _pathController,
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter absolute path...',
+                                          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                                          border: OutlineInputBorder(
+                                            borderRadius: AppSpacing.radiusSm,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    ElevatedButton(
+                                      onPressed: _isUpdating ? null : () => _updateWorkspace(_pathController.text),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primary,
+                                        foregroundColor: Colors.white,
+                                        minimumSize: const Size(100, 48),
+                                        shape: RoundedRectangleBorder(borderRadius: AppSpacing.radiusSm),
+                                      ),
+                                      child: _isUpdating
+                                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                                        : const Text('Update'),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                                Text(
+                                  'All agent operations, including file access and terminal commands, will be restricted to this directory for safety.',
+                                  style: AppTypography.metadata.copyWith(fontStyle: FontStyle.italic),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.lg),
+
+                        // Info Panel
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            padding: const EdgeInsets.all(AppSpacing.lg),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: AppSpacing.radiusLg,
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Workspace Details', style: AppTypography.sectionTitle),
+                                const SizedBox(height: AppSpacing.lg),
+                                _InfoRow(label: 'Name', value: name),
+                                const Divider(height: 32),
+                                _InfoRow(label: 'Status', value: isValid ? 'Active' : 'Missing'),
+                                const Divider(height: 32),
+                                _InfoRow(label: 'Platform', value: 'Windows'),
+                                const Spacer(),
+                                Container(
+                                  padding: const EdgeInsets.all(AppSpacing.md),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.05),
+                                    borderRadius: AppSpacing.radiusMd,
+                                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const Icon(Icons.info_outline, color: AppColors.primary),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Changing the workspace will interrupt any running tasks and clear the current context.',
+                                        style: AppTypography.metadata.copyWith(color: AppColors.textPrimary),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _InfoRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: AppTypography.metadata),
+        const SizedBox(height: 4),
+        Text(value, style: AppTypography.body.copyWith(fontWeight: FontWeight.w600)),
+      ],
     );
   }
 }

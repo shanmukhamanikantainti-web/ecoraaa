@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/app_spacing.dart';
 import '../../services/api_service.dart';
-import '../../models/agent.dart';
-import '../../widgets/glass_container.dart';
+import '../../services/websocket_service.dart';
+import '../../features/connection/connection_bloc.dart';
+import '../../features/connection/connection_state.dart' as conn_state;
 
 class AssistantScreen extends StatefulWidget {
   const AssistantScreen({super.key});
@@ -17,59 +19,161 @@ class AssistantScreen extends StatefulWidget {
 class _AssistantScreenState extends State<AssistantScreen> {
   final TextEditingController _promptController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
-  final List<Map<String, dynamic>> _messages = [
-    {
-      'sender': 'assistant',
-      'text': 'Hello! I am ECORAA, your personal AI assistant. How can I assist your workflow today?',
-      'time': '10:00 AM',
-      'steps': ['Initialized context', 'Checked connected services'],
-    }
-  ];
-  
-  bool _isSending = false;
 
-  void _sendMessage() async {
+  final List<AssistantMessage> _messages = [];
+  bool _isSending = false;
+  late StreamSubscription _wsSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _messages.add(AssistantMessage(
+      sender: 'assistant',
+      text: 'Hello! I am ECORAA, your personal AI assistant. How can I assist your workflow today?',
+      time: DateTime.now(),
+      steps: ['Initialized context', 'Checked connected services'],
+    ));
+    _connectWebSocket();
+  }
+
+  void _connectWebSocket() {
+    final wsService = context.read<WebSocketService>();
+    wsService.connect();
+    _wsSubscription = wsService.messageStream.listen((message) {
+      _handleWebSocketMessage(message);
+    });
+  }
+
+  void _handleWebSocketMessage(WebSocketMessage message) {
+    if (!mounted) return;
+
+    setState(() {
+      switch (message.type) {
+        case 'TASK_STARTED':
+          _messages.add(AssistantMessage(
+            sender: 'system',
+            text: 'Task started: ${message.data['goal']}',
+            time: DateTime.now(),
+            steps: ['Goal parsed', 'Workflow dispatched'],
+            missionId: message.data['task_id'],
+          ));
+          break;
+        case 'PLANNING_STARTED':
+          _addStepToLastMission('Planning started');
+          break;
+        case 'PLANNING_COMPLETED':
+          final steps = message.data['steps'] as List? ?? [];
+          _addStepToLastMission('Planned ${steps.length} steps');
+          break;
+        case 'AGENT_STARTED':
+          _addStepToLastMission('Agent ${message.data['agent']} started: ${message.data['step_name']}');
+          break;
+        case 'TOOL_STARTED':
+          _addStepToLastMission('Tool ${message.data['tool']} started');
+          break;
+        case 'TOOL_COMPLETED':
+          _addStepToLastMission('Tool ${message.data['tool']} completed');
+          break;
+        case 'AGENT_PROGRESS':
+          _addStepToLastMission('${message.data['agent']}: ${message.data['step_name']} - ${message.data['status']}');
+          break;
+        case 'AGENT_FAILED':
+          _addStepToLastMission('⚠ ${message.data['agent']} failed: ${message.data['error']}');
+          break;
+        case 'TASK_COMPLETED':
+          final result = message.data['result'] ?? 'Task completed';
+          _updateLastMissionResult(result);
+          break;
+        case 'TASK_FAILED':
+          _updateLastMissionResult('Task failed: ${message.data['error']}');
+          break;
+        case 'mission_update':
+          _updateMissionFromUpdate(message.data);
+          break;
+        default:
+          break;
+      }
+    });
+    _scrollToBottom();
+  }
+
+  void _addStepToLastMission(String step) {
+    if (_messages.isNotEmpty && _messages.last.sender != 'user') {
+      final lastMsg = _messages.last;
+      lastMsg.steps.add(step);
+    }
+  }
+
+  void _updateLastMissionResult(String result) {
+    if (_messages.isNotEmpty && _messages.last.sender != 'user') {
+      _messages.last.result = result;
+      _messages.last.steps.add('Completed');
+    }
+  }
+
+  void _updateMissionFromUpdate(Map<String, dynamic> data) {
+    // Find matching mission by ID and update
+    for (var i = _messages.length - 1; i >= 0; i--) {
+      if (_messages[i].missionId == data['id']) {
+        _messages[i].result = data['result'];
+        if (data['steps'] != null) {
+          _messages[i].steps.clear();
+          for (var step in data['steps']) {
+            _messages[i].steps.add('${step['name']}: ${step['status']}');
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  Future<void> _sendMessage() async {
     final text = _promptController.text.trim();
     if (text.isEmpty || _isSending) return;
 
+    final message = AssistantMessage(
+      sender: 'user',
+      text: text,
+      time: DateTime.now(),
+    );
+
     setState(() {
-      _messages.add({
-        'sender': 'user',
-        'text': text,
-        'time': 'Just now',
-      });
-      _promptController.clear();
+      _messages.add(message);
       _isSending = true;
     });
 
+    _promptController.clear();
     _scrollToBottom();
 
     try {
-      final apiService = RepositoryProvider.of<ApiService>(context);
+      final apiService = context.read<ApiService>();
       final res = await apiService.executeGoal(text);
-      
-      setState(() {
-        _messages.add({
-          'sender': 'assistant',
-          'text': res['result'] ?? 'Goal execution initiated successfully.',
-          'time': 'Just now',
-          'steps': ['Goal parsed', 'Workflow dispatched'],
-        });
-        _isSending = false;
-      });
-    } catch (e) {
-      setState(() {
-        _messages.add({
-          'sender': 'assistant',
-          'text': 'Executed: "$text". Task dispatched to active agent pipeline.',
-          'time': 'Just now',
-          'steps': ['Dispatched offline payload'],
-        });
-        _isSending = false;
-      });
-    }
 
+      if (mounted) {
+        setState(() {
+          _messages.add(AssistantMessage(
+            sender: 'assistant',
+            text: res['result'] ?? 'Goal execution initiated successfully.',
+            time: DateTime.now(),
+            missionId: res['mission_id'],
+            steps: ['Goal parsed', 'Workflow dispatched'],
+          ));
+          _isSending = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _messages.add(AssistantMessage(
+            sender: 'assistant',
+            text: 'Executed: "$text". Task dispatched to active agent pipeline.',
+            time: DateTime.now(),
+            steps: ['Dispatched offline payload'],
+          ));
+          _isSending = false;
+        });
+      }
+    }
     _scrollToBottom();
   }
 
@@ -89,6 +193,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
   void dispose() {
     _promptController.dispose();
     _scrollController.dispose();
+    _wsSubscription.cancel();
     super.dispose();
   }
 
@@ -117,28 +222,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
                       ),
                     ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: AppSpacing.radiusSm,
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppColors.success,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text('Agents Active', style: AppTypography.metadata),
-                      ],
-                    ),
-                  ),
+                  const _ConnectionIndicator(),
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -167,12 +251,15 @@ class _AssistantScreenState extends State<AssistantScreen> {
                                 itemCount: _messages.length,
                                 itemBuilder: (context, index) {
                                   final msg = _messages[index];
-                                  final isUser = msg['sender'] == 'user';
+                                  final isUser = msg.sender == 'user';
+                                  final isSystem = msg.sender == 'system';
                                   return _ChatBubble(
                                     isUser: isUser,
-                                    text: msg['text'],
-                                    time: msg['time'],
-                                    steps: msg['steps'] != null ? List<String>.from(msg['steps']) : null,
+                                    isSystem: isSystem,
+                                    text: msg.text,
+                                    time: msg.time,
+                                    steps: msg.steps,
+                                    result: msg.result,
                                   );
                                 },
                               ),
@@ -188,11 +275,11 @@ class _AssistantScreenState extends State<AssistantScreen> {
                                       child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(AppColors.primary)),
                                     ),
                                     const SizedBox(width: 8),
-                                    Text('ECORAA is analyzing task...', style: AppTypography.metadata),
+                                    Text('ECORAA is processing...', style: AppTypography.metadata),
                                   ],
                                 ),
                               ),
-                            
+
                             // Input Box
                             Container(
                               padding: const EdgeInsets.all(AppSpacing.md),
@@ -239,41 +326,7 @@ class _AssistantScreenState extends State<AssistantScreen> {
                     // Active Agent Panel
                     Expanded(
                       flex: 1,
-                      child: Container(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Active Agents', style: AppTypography.sectionTitle),
-                            const SizedBox(height: AppSpacing.md),
-                            _AgentStatusCard(
-                              name: 'Orchestrator',
-                              role: 'Workflow Manager',
-                              status: 'Active',
-                              isActive: true,
-                            ),
-                            const SizedBox(height: AppSpacing.sm),
-                            _AgentStatusCard(
-                              name: 'Coding Agent',
-                              role: 'Code Synthesis',
-                              status: 'Working (82%)',
-                              isActive: true,
-                            ),
-                            const SizedBox(height: AppSpacing.sm),
-                            _AgentStatusCard(
-                              name: 'Research Agent',
-                              role: 'Knowledge Indexer',
-                              status: 'Idle',
-                              isActive: false,
-                            ),
-                          ],
-                        ),
-                      ),
+                      child: _AgentStatusPanel(),
                     ),
                   ],
                 ),
@@ -286,17 +339,39 @@ class _AssistantScreenState extends State<AssistantScreen> {
   }
 }
 
+class AssistantMessage {
+  final String sender; // 'user', 'assistant', 'system'
+  final String text;
+  final DateTime time;
+  final List<String> steps;
+  final String? missionId;
+  String? result;
+
+  AssistantMessage({
+    required this.sender,
+    required this.text,
+    required this.time,
+    this.missionId,
+    List<String>? steps,
+    this.result,
+  }) : steps = steps ?? [];
+}
+
 class _ChatBubble extends StatelessWidget {
   final bool isUser;
+  final bool isSystem;
   final String text;
-  final String time;
-  final List<String>? steps;
+  final DateTime time;
+  final List<String> steps;
+  final String? result;
 
   const _ChatBubble({
     required this.isUser,
+    required this.isSystem,
     required this.text,
     required this.time,
-    this.steps,
+    this.steps = const [],
+    this.result,
   });
 
   @override
@@ -308,7 +383,7 @@ class _ChatBubble extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 520),
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: isUser ? AppColors.primary : AppColors.background,
+          color: isUser ? AppColors.primary : (isSystem ? AppColors.primary.withValues(alpha: 0.08) : AppColors.background),
           borderRadius: BorderRadius.circular(12),
           border: isUser ? null : Border.all(color: AppColors.border),
         ),
@@ -321,22 +396,49 @@ class _ChatBubble extends StatelessWidget {
                 color: isUser ? Colors.white : AppColors.textPrimary,
               ),
             ),
-            if (steps != null && steps!.isNotEmpty) ...[
+            if (steps.isNotEmpty) ...[
               const SizedBox(height: 8),
-              ...steps!.map((s) => Padding(
+              ...steps.map((s) => Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle_outline, size: 12, color: isUser ? Colors.white70 : AppColors.success),
+                    Icon(
+                      s.startsWith('⚠') ? Icons.warning_amber_outlined : Icons.check_circle_outline,
+                      size: 12,
+                      color: s.startsWith('⚠') ? AppColors.warning : (isUser ? Colors.white70 : AppColors.success),
+                    ),
                     const SizedBox(width: 4),
-                    Text(s, style: AppTypography.metadata.copyWith(fontSize: 10, color: isUser ? Colors.white70 : AppColors.textSecondary)),
+                    Text(
+                      s.replaceFirst('⚠ ', ''),
+                      style: AppTypography.metadata.copyWith(
+                        fontSize: 10,
+                        color: isUser ? Colors.white70 : (s.startsWith('⚠') ? AppColors.warning : AppColors.textSecondary),
+                      ),
+                    ),
                   ],
                 ),
               )),
             ],
+            if (result != null) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: isUser ? Colors.white.withValues(alpha: 0.1) : AppColors.background,
+                  borderRadius: AppSpacing.radiusSm,
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Text(
+                  result!,
+                  style: AppTypography.bodySmall.copyWith(
+                    color: isUser ? Colors.white70 : AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 4),
             Text(
-              time,
+              _formatTime(time),
               style: AppTypography.metadata.copyWith(
                 fontSize: 9,
                 color: isUser ? Colors.white70 : AppColors.textSecondary,
@@ -345,6 +447,114 @@ class _ChatBubble extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  String _formatTime(DateTime time) {
+    final now = DateTime.now();
+    final diff = now.difference(time);
+    if (diff.inMinutes < 1) return 'Just now';
+    if (diff.inHours < 1) return '${diff.inMinutes}m ago';
+    return '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+class _AgentStatusPanel extends StatelessWidget {
+  const _AgentStatusPanel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Active Agents', style: AppTypography.sectionTitle),
+          const SizedBox(height: AppSpacing.md),
+          FutureBuilder<List<dynamic>>(
+            future: context.read<ApiService>().getAgents(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                // Will show data below
+              } else if (snapshot.connectionState.index == 0) { // waiting
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return _buildStaticAgents();
+              }
+
+              if (snapshot.hasError || !snapshot.hasData) {
+                return _buildStaticAgents();
+              }
+
+              final agents = snapshot.data!;
+              return Column(
+                children: agents.map((agent) {
+                  final isActive = agent['state'] == 'RUNNING' || agent['state'] == 'PLANNING';
+                  return _AgentStatusCard(
+                    name: agent['name'] ?? 'Unknown',
+                    role: agent['type'] ?? 'Agent',
+                    status: agent['state'] ?? 'IDLE',
+                    isActive: isActive,
+                  );
+                }).toList(),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStaticAgents() {
+    return Column(
+      children: [
+        _AgentStatusCard(
+          name: 'Orchestrator',
+          role: 'Workflow Manager',
+          status: 'IDLE',
+          isActive: false,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _AgentStatusCard(
+          name: 'Coding Agent',
+          role: 'Code Synthesis',
+          status: 'IDLE',
+          isActive: false,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _AgentStatusCard(
+          name: 'Testing Agent',
+          role: 'Test Execution',
+          status: 'IDLE',
+          isActive: false,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _AgentStatusCard(
+          name: 'Review Agent',
+          role: 'Code Review',
+          status: 'IDLE',
+          isActive: false,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _AgentStatusCard(
+          name: 'Marketing Agent',
+          role: 'Documentation',
+          status: 'IDLE',
+          isActive: false,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _AgentStatusCard(
+          name: 'Research Agent',
+          role: 'Knowledge Indexer',
+          status: 'IDLE',
+          isActive: false,
+        ),
+      ],
     );
   }
 }
@@ -364,6 +574,22 @@ class _AgentStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color statusColor;
+    switch (status.toUpperCase()) {
+      case 'RUNNING':
+      case 'PLANNING':
+        statusColor = AppColors.primary;
+        break;
+      case 'COMPLETED':
+        statusColor = AppColors.success;
+        break;
+      case 'FAILED':
+        statusColor = AppColors.error;
+        break;
+      default:
+        statusColor = AppColors.textSecondary;
+    }
+
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -373,7 +599,14 @@ class _AgentStatusCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.memory_outlined, size: 16, color: isActive ? AppColors.primary : AppColors.textSecondary),
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: statusColor,
+              shape: BoxShape.circle,
+            ),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -388,12 +621,56 @@ class _AgentStatusCard extends StatelessWidget {
             status,
             style: AppTypography.metadata.copyWith(
               fontSize: 10,
-              color: isActive ? AppColors.primary : AppColors.textSecondary,
+              color: statusColor,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ConnectionIndicator extends StatelessWidget {
+  const _ConnectionIndicator({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ConnectionBloc, conn_state.ConnectionState>(
+      builder: (context, state) {
+        Color color;
+        bool pulsing = false;
+
+        if (state is conn_state.ConnectionConnected) {
+          color = AppColors.success;
+        } else if (state is conn_state.ConnectionConnecting) {
+          color = AppColors.warning;
+          pulsing = true;
+        } else if (state is conn_state.ConnectionFailed) {
+          color = AppColors.error;
+        } else {
+          color = AppColors.textSecondary;
+        }
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+            boxShadow: pulsing
+                ? [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.6),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                : null,
+          ),
+        );
+      },
     );
   }
 }
