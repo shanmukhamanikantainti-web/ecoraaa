@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/app_spacing.dart';
+import '../../widgets/glass_container.dart';
 
 class HelpScreen extends StatefulWidget {
   const HelpScreen({super.key});
@@ -31,7 +32,7 @@ class _HelpScreenState extends State<HelpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.pagePadding),
@@ -53,14 +54,10 @@ class _HelpScreenState extends State<HelpScreen> {
               const SizedBox(height: AppSpacing.lg),
 
               // Search Banner
-              Container(
+              EcoraaGlassContainer(
                 width: double.infinity,
                 padding: const EdgeInsets.all(AppSpacing.xl),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.08),
-                  borderRadius: AppSpacing.radiusLg,
-                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
-                ),
+                borderRadius: AppSpacing.radiusLg,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -86,10 +83,14 @@ class _HelpScreenState extends State<HelpScreen> {
                         hintStyle: AppTypography.body.copyWith(color: AppColors.textSecondary),
                         prefixIcon: const Icon(Icons.search, color: AppColors.primary),
                         filled: true,
-                        fillColor: AppColors.surface,
+                        fillColor: AppColors.glassBackground,
                         border: OutlineInputBorder(
                           borderRadius: AppSpacing.radiusSm,
-                          borderSide: BorderSide(color: AppColors.border),
+                          borderSide: BorderSide(color: AppColors.glassBorder),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: AppSpacing.radiusSm,
+                          borderSide: BorderSide(color: AppColors.glassBorder),
                         ),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       ),
@@ -115,13 +116,9 @@ class _HelpScreenState extends State<HelpScreen> {
                 itemCount: _topics.length,
                 itemBuilder: (context, index) {
                   final topic = _topics[index];
-                  return Container(
+                  return EcoraaGlassContainer(
                     padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: AppSpacing.radiusLg,
-                      border: Border.all(color: AppColors.border),
-                    ),
+                    borderRadius: AppSpacing.radiusLg,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -146,13 +143,9 @@ class _HelpScreenState extends State<HelpScreen> {
               const SizedBox(height: AppSpacing.xl),
 
               // System Info & Support Contact Panel
-              Container(
+              EcoraaGlassContainer(
                 padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: AppSpacing.radiusLg,
-                  border: Border.all(color: AppColors.border),
-                ),
+                borderRadius: AppSpacing.radiusLg,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

@@ -10,9 +10,8 @@ import '../../features/connection/connection_state.dart';
 import '../../features/command_center/command_center_bloc.dart';
 import '../../features/command_center/command_center_event.dart';
 import '../../features/command_center/command_center_state.dart';
-import '../../models/mission.dart';
-import '../../widgets/glass_container.dart';
 import '../../widgets/ecoraa_symbol.dart';
+import '../../widgets/glass_container.dart';
 
 class CommandCenterScreen extends StatelessWidget {
   const CommandCenterScreen({super.key});
@@ -20,7 +19,7 @@ class CommandCenterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: MultiBlocListener(
           listeners: [
@@ -290,25 +289,13 @@ class _CommandInputFieldState extends State<_CommandInputField> {
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: AppSpacing.radiusLg,
-          border: Border.all(
+      child: EcoraaGlassContainer(
+        borderRadius: AppSpacing.radiusLg,
+        border: Border.all(
             color: _isFocused
                 ? AppColors.primary
                 : (_isHovered ? AppColors.primary.withValues(alpha: 0.5) : AppColors.border),
             width: _isFocused ? 2 : 1.5,
-          ),
-          color: AppColors.background,
-          boxShadow: _isFocused
-              ? [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : null,
         ),
         child: Row(
           children: [
@@ -341,12 +328,7 @@ class _CommandInputFieldState extends State<_CommandInputField> {
             Container(
               height: 56,
               decoration: BoxDecoration(
-                color: AppColors.surface,
-                border: Border(left: BorderSide(color: AppColors.border)),
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
+                border: Border(left: BorderSide(color: AppColors.glassBorder)),
               ),
               child: Material(
                 color: Colors.transparent,
@@ -407,17 +389,12 @@ class _StatusBar extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
+        return EcoraaGlassContainer(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
             vertical: AppSpacing.md,
           ),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: AppSpacing.radiusMd,
-            border: Border.all(color: AppColors.border),
-          ),
+          borderRadius: AppSpacing.radiusMd,
           child: Row(
             children: [
               if (state.isProcessing)
@@ -553,13 +530,9 @@ class _ActiveWorkContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
+          EcoraaGlassContainer(
             padding: const EdgeInsets.all(AppSpacing.xl),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: AppSpacing.radiusXl,
-              border: Border.all(color: AppColors.border),
-            ),
+            borderRadius: AppSpacing.radiusXl,
             child: const EcoraaSymbol(size: 48, color: AppColors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.lg),

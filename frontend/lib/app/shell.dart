@@ -6,6 +6,8 @@ import 'theme/app_typography.dart';
 import 'theme/app_spacing.dart';
 import '../widgets/ecoraa_symbol.dart';
 import '../widgets/command_palette.dart';
+import '../widgets/ambient_glass_background.dart';
+import '../widgets/glass_container.dart';
 
 class MainShell extends StatefulWidget {
   final Widget child;
@@ -33,34 +35,48 @@ class _MainShellState extends State<MainShell> {
       },
       child: Focus(
         autofocus: true,
-        child: Stack(
-          children: [
-            LayoutBuilder(
-              builder: (context, constraints) {
-                if (constraints.maxWidth >= 800) {
-                  // Desktop Layout
-                  return Scaffold(
-                    body: Row(
-                      children: [
-                        _DesktopSidebar(onOpenCommandPalette: _toggleCommandPalette),
-                        Expanded(child: widget.child),
-                      ],
-                    ),
-                  );
-                } else {
-                  // Mobile Layout
-                  return Scaffold(
-                    body: widget.child,
-                    bottomNavigationBar: _MobileBottomNav(),
-                  );
-                }
-              },
-            ),
-            if (_isCommandPaletteOpen)
-              CommandPaletteOverlay(
-                onClose: _toggleCommandPalette,
+        child: AmbientGlassBackground(
+          child: Stack(
+            children: [
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final currentPath = GoRouterState.of(context).uri.path;
+                  final isAssistantRoute = currentPath == '/assistant' || currentPath == '/';
+
+                  if (isAssistantRoute) {
+                    return Scaffold(
+                      backgroundColor: Colors.transparent,
+                      body: widget.child,
+                    );
+                  }
+
+                  if (constraints.maxWidth >= 800) {
+                    // Desktop Layout
+                    return Scaffold(
+                      backgroundColor: Colors.transparent,
+                      body: Row(
+                        children: [
+                          _DesktopSidebar(onOpenCommandPalette: _toggleCommandPalette),
+                          Expanded(child: widget.child),
+                        ],
+                      ),
+                    );
+                  } else {
+                    // Mobile Layout
+                    return Scaffold(
+                      backgroundColor: Colors.transparent,
+                      body: widget.child,
+                      bottomNavigationBar: _MobileBottomNav(),
+                    );
+                  }
+                },
               ),
-          ],
+              if (_isCommandPaletteOpen)
+                CommandPaletteOverlay(
+                  onClose: _toggleCommandPalette,
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -76,12 +92,10 @@ class _DesktopSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentRoute = GoRouterState.of(context).uri.path;
 
-    return Container(
+    return EcoraaGlassContainer(
       width: 240,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(right: BorderSide(color: AppColors.border, width: 1)),
-      ),
+      borderRadius: BorderRadius.zero,
+      border: Border(right: BorderSide(color: AppColors.glassBorder, width: 1.2)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -119,9 +133,9 @@ class _DesktopSidebar extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: Colors.white.withValues(alpha: 0.5),
                   borderRadius: AppSpacing.radiusSm,
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: AppColors.glassBorder),
                 ),
                 child: Row(
                   children: [
@@ -136,9 +150,9 @@ class _DesktopSidebar extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: Colors.white.withValues(alpha: 0.6),
                         borderRadius: AppSpacing.radiusXs,
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: AppColors.glassBorder),
                       ),
                       child: Text(
                         'Ctrl+Space',
@@ -228,7 +242,7 @@ class _DesktopSidebar extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: AppColors.border)),
+              border: Border(top: BorderSide(color: AppColors.glassBorder)),
             ),
             child: Row(
               children: [
@@ -280,9 +294,9 @@ class _NavItem extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: active ? AppColors.primary.withValues(alpha: 0.08) : Colors.transparent,
+              color: active ? AppColors.primary.withValues(alpha: 0.15) : Colors.transparent,
               borderRadius: AppSpacing.radiusSm,
-              border: active ? Border.all(color: AppColors.primary.withValues(alpha: 0.2)) : null,
+              border: active ? Border.all(color: AppColors.primary.withValues(alpha: 0.3)) : null,
             ),
             child: Row(
               children: [
@@ -336,7 +350,8 @@ class _MobileBottomNav extends StatelessWidget {
         }
       },
       type: BottomNavigationBarType.fixed,
-      backgroundColor: AppColors.surface,
+      backgroundColor: Colors.white.withValues(alpha: 0.7),
+      elevation: 0,
       selectedItemColor: AppColors.primary,
       unselectedItemColor: AppColors.textSecondary,
       items: const [

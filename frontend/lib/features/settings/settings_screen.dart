@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/app_spacing.dart';
+import '../../widgets/glass_container.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -31,7 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.pagePadding),
@@ -60,13 +61,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     // Category Sidebar
                     Expanded(
                       flex: 1,
-                      child: Container(
+                      child: EcoraaGlassContainer(
                         padding: const EdgeInsets.all(AppSpacing.md),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
-                        ),
+                        borderRadius: AppSpacing.radiusLg,
                         child: Column(
                           children: _categories.asMap().entries.map((entry) {
                             final idx = entry.key;
@@ -100,13 +97,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     // Main Form Content
                     Expanded(
                       flex: 3,
-                      child: Container(
+                      child: EcoraaGlassContainer(
                         padding: const EdgeInsets.all(AppSpacing.xl),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
-                        ),
+                        borderRadius: AppSpacing.radiusLg,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -125,28 +118,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               title: Text('Start ECORAA at system login', style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600)),
                               subtitle: Text('Automatically launch app when you log in.', style: AppTypography.metadata),
                               value: _startAtLogin,
-                              activeColor: AppColors.primary,
+                              activeThumbColor: AppColors.primary,
                               onChanged: (val) => setState(() => _startAtLogin = val),
                             ),
                             SwitchListTile(
                               title: Text('Check for updates automatically', style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600)),
                               subtitle: Text('Get notified when a new version is available.', style: AppTypography.metadata),
                               value: _autoCheckUpdates,
-                              activeColor: AppColors.primary,
+                              activeThumbColor: AppColors.primary,
                               onChanged: (val) => setState(() => _autoCheckUpdates = val),
                             ),
                             SwitchListTile(
                               title: Text('Enable desktop notifications', style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600)),
                               subtitle: Text('Receive notifications for completed AI tasks.', style: AppTypography.metadata),
                               value: _enableNotifications,
-                              activeColor: AppColors.primary,
+                              activeThumbColor: AppColors.primary,
                               onChanged: (val) => setState(() => _enableNotifications = val),
                             ),
                             SwitchListTile(
                               title: Text('Developer mode', style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600)),
                               subtitle: Text('Enable extended diagnostic logs and API options.', style: AppTypography.metadata),
                               value: _enableDevMode,
-                              activeColor: AppColors.primary,
+                              activeThumbColor: AppColors.primary,
                               onChanged: (val) => setState(() => _enableDevMode = val),
                             ),
                           ],

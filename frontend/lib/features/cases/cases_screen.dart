@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/app_spacing.dart';
+import '../../widgets/glass_container.dart';
 
 class CasesScreen extends StatefulWidget {
   const CasesScreen({super.key});
@@ -49,7 +50,7 @@ class _CasesScreenState extends State<CasesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.pagePadding),
@@ -88,14 +89,10 @@ class _CasesScreenState extends State<CasesScreen> {
 
               // Cases Table Panel
               Expanded(
-                child: Container(
+                child: EcoraaGlassContainer(
                   width: double.infinity,
                   padding: const EdgeInsets.all(AppSpacing.lg),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: AppSpacing.radiusLg,
-                    border: Border.all(color: AppColors.border),
-                  ),
+                  borderRadius: AppSpacing.radiusLg,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

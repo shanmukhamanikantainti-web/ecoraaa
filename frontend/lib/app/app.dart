@@ -9,30 +9,49 @@ import '../features/connection/connection_event.dart';
 import '../features/connection/connection_state.dart';
 import '../features/command_center/command_center_bloc.dart';
 
-class EcoraaApp extends StatelessWidget {
+class EcoraaApp extends StatefulWidget {
   const EcoraaApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final apiService = ApiService();
-    final wsService = WebSocketService();
+  State<EcoraaApp> createState() => _EcoraaAppState();
+}
 
+class _EcoraaAppState extends State<EcoraaApp> {
+  late final ApiService _apiService;
+  late final WebSocketService _wsService;
+
+  @override
+  void initState() {
+    super.initState();
+    _apiService = ApiService();
+    _wsService = WebSocketService();
+  }
+
+  @override
+  void dispose() {
+    _apiService.dispose();
+    _wsService.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider.value(value: apiService),
-        RepositoryProvider.value(value: wsService),
+        RepositoryProvider.value(value: _apiService),
+        RepositoryProvider.value(value: _wsService),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
             create: (context) => ConnectionBloc(
-              apiService: apiService,
-              wsService: wsService,
+              apiService: _apiService,
+              wsService: _wsService,
             )..add(ConnectionConnect()),
           ),
           BlocProvider(
             create: (context) => CommandCenterBloc(
-              apiService: apiService,
+              apiService: _apiService,
             ),
           ),
         ],

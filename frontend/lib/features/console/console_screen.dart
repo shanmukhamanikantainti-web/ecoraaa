@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/app_spacing.dart';
+import '../../widgets/glass_container.dart';
 
 class ConsoleScreen extends StatefulWidget {
   const ConsoleScreen({super.key});
@@ -79,7 +80,7 @@ class _ConsoleScreenState extends State<ConsoleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.pagePadding),
@@ -118,14 +119,10 @@ class _ConsoleScreenState extends State<ConsoleScreen> {
               // Interactive Terminal Display Box
               Expanded(
                 flex: 3,
-                child: Container(
+                child: EcoraaGlassContainer(
                   width: double.infinity,
                   padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0F172A),
-                    borderRadius: AppSpacing.radiusLg,
-                    border: Border.all(color: AppColors.border),
-                  ),
+                  borderRadius: AppSpacing.radiusLg,
                   child: ListView.builder(
                     controller: _scrollController,
                     itemCount: _consoleLogs.length,
@@ -157,10 +154,14 @@ class _ConsoleScreenState extends State<ConsoleScreen> {
                         hintText: 'Type command... (e.g. adb devices, pegasus status)',
                         hintStyle: AppTypography.terminal.copyWith(color: AppColors.textSecondary, fontSize: 13),
                         filled: true,
-                        fillColor: AppColors.surface,
+                        fillColor: AppColors.glassBackground,
                         border: OutlineInputBorder(
                           borderRadius: AppSpacing.radiusSm,
-                          borderSide: BorderSide(color: AppColors.border),
+                          borderSide: BorderSide(color: AppColors.glassBorder),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: AppSpacing.radiusSm,
+                          borderSide: BorderSide(color: AppColors.glassBorder),
                         ),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       ),
@@ -186,14 +187,10 @@ class _ConsoleScreenState extends State<ConsoleScreen> {
               // System Logs Section
               Expanded(
                 flex: 2,
-                child: Container(
+                child: EcoraaGlassContainer(
                   width: double.infinity,
                   padding: const EdgeInsets.all(AppSpacing.lg),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: AppSpacing.radiusLg,
-                    border: Border.all(color: AppColors.border),
-                  ),
+                  borderRadius: AppSpacing.radiusLg,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -218,9 +215,7 @@ class _ConsoleScreenState extends State<ConsoleScreen> {
                               margin: const EdgeInsets.only(bottom: 6),
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
-                                color: AppColors.background,
-                                borderRadius: AppSpacing.radiusSm,
-                                border: Border.all(color: AppColors.border),
+                                border: Border(bottom: BorderSide(color: AppColors.glassBorder)),
                               ),
                               child: Row(
                                 children: [

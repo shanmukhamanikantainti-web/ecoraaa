@@ -13,7 +13,7 @@ import '../features/settings/settings_screen.dart';
 import '../features/help/help_screen.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/command',
+  initialLocation: '/assistant',
   routes: [
     ShellRoute(
       builder: (context, state, child) => MainShell(child: child),

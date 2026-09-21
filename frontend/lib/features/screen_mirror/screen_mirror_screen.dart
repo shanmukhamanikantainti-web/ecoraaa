@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/app_spacing.dart';
+import '../../widgets/glass_container.dart';
 
 class ScreenMirrorScreen extends StatefulWidget {
   const ScreenMirrorScreen({super.key});
@@ -17,7 +18,7 @@ class _ScreenMirrorScreenState extends State<ScreenMirrorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.pagePadding),
@@ -80,12 +81,8 @@ class _ScreenMirrorScreenState extends State<ScreenMirrorScreen> {
                     // Smartphone Frame Container
                     Expanded(
                       flex: 3,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0F172A),
-                          borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
-                        ),
+                      child: EcoraaGlassContainer(
+                        borderRadius: AppSpacing.radiusLg,
                         child: Center(
                           child: Container(
                             width: _isLandscape ? 580 : 300,
@@ -164,13 +161,9 @@ class _ScreenMirrorScreenState extends State<ScreenMirrorScreen> {
                     // Controls Panel
                     Expanded(
                       flex: 1,
-                      child: Container(
+                      child: EcoraaGlassContainer(
                         padding: const EdgeInsets.all(AppSpacing.lg),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
-                        ),
+                        borderRadius: AppSpacing.radiusLg,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

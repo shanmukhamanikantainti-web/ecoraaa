@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/app_spacing.dart';
+import '../../widgets/glass_container.dart';
 
 class MemoryScreen extends StatefulWidget {
   const MemoryScreen({super.key});
@@ -57,7 +58,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.pagePadding),
@@ -103,10 +104,14 @@ class _MemoryScreenState extends State<MemoryScreen> {
                   hintStyle: AppTypography.body.copyWith(color: AppColors.textSecondary),
                   prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary, size: 18),
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: AppColors.glassBackground,
                   border: OutlineInputBorder(
                     borderRadius: AppSpacing.radiusSm,
-                    borderSide: BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.glassBorder),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: AppSpacing.radiusSm,
+                    borderSide: BorderSide(color: AppColors.glassBorder),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 ),
@@ -119,14 +124,11 @@ class _MemoryScreenState extends State<MemoryScreen> {
                   itemCount: _memoryVectors.length,
                   itemBuilder: (context, index) {
                     final item = _memoryVectors[index];
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: EcoraaGlassContainer(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
                         borderRadius: AppSpacing.radiusLg,
-                        border: Border.all(color: AppColors.border),
-                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -172,8 +174,9 @@ class _MemoryScreenState extends State<MemoryScreen> {
                           ),
                         ],
                       ),
-                    );
-                  },
+                    ),
+                  );
+                },
                 ),
               ),
             ],

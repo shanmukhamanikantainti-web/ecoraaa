@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_typography.dart';
 import '../../app/theme/app_spacing.dart';
+import '../../widgets/glass_container.dart';
 
 class FilesScreen extends StatefulWidget {
   const FilesScreen({super.key});
@@ -11,7 +12,7 @@ class FilesScreen extends StatefulWidget {
 }
 
 class _FilesScreenState extends State<FilesScreen> {
-  String _currentDirectory = '/sdcard/Projects/PEGASUS';
+  final String _currentDirectory = '/sdcard/Projects/PEGASUS';
   int? _selectedFileIndex = 2; // Default selected 'src'
 
   final List<Map<String, dynamic>> _fileItems = [
@@ -30,7 +31,7 @@ class _FilesScreenState extends State<FilesScreen> {
     final selectedItem = _selectedFileIndex != null ? _fileItems[_selectedFileIndex!] : null;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.pagePadding),
@@ -90,13 +91,9 @@ class _FilesScreenState extends State<FilesScreen> {
                     // Directory Tree Navigator
                     Expanded(
                       flex: 1,
-                      child: Container(
+                      child: EcoraaGlassContainer(
                         padding: const EdgeInsets.all(AppSpacing.md),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
-                        ),
+                        borderRadius: AppSpacing.radiusLg,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -117,12 +114,8 @@ class _FilesScreenState extends State<FilesScreen> {
                     // File Table View
                     Expanded(
                       flex: 3,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
-                        ),
+                      child: EcoraaGlassContainer(
+                        borderRadius: AppSpacing.radiusLg,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -130,12 +123,7 @@ class _FilesScreenState extends State<FilesScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 10),
                               decoration: BoxDecoration(
-                                color: AppColors.background,
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  topRight: Radius.circular(12),
-                                ),
-                                border: Border(bottom: BorderSide(color: AppColors.border)),
+                                border: Border(bottom: BorderSide(color: AppColors.glassBorder)),
                               ),
                               child: Row(
                                 children: [
@@ -204,13 +192,9 @@ class _FilesScreenState extends State<FilesScreen> {
                     // File Details Inspector Panel
                     Expanded(
                       flex: 1,
-                      child: Container(
+                      child: EcoraaGlassContainer(
                         padding: const EdgeInsets.all(AppSpacing.lg),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: AppSpacing.radiusLg,
-                          border: Border.all(color: AppColors.border),
-                        ),
+                        borderRadius: AppSpacing.radiusLg,
                         child: selectedItem != null
                             ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

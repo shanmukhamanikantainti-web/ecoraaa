@@ -106,9 +106,17 @@ class WebSocketMessage {
   });
 
   factory WebSocketMessage.fromJson(Map<String, dynamic> json) {
+    final type = json['type']?.toString() ?? '';
+    final rawData = json['data'];
+    Map<String, dynamic> dataMap = {};
+    if (rawData is Map) {
+      dataMap = Map<String, dynamic>.from(rawData);
+    } else {
+      dataMap = Map<String, dynamic>.from(json)..remove('type');
+    }
     return WebSocketMessage(
-      type: json['type'] ?? '',
-      data: Map<String, dynamic>.from(json['data'] ?? {}),
+      type: type,
+      data: dataMap,
     );
   }
 
