@@ -2,61 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'shell.dart';
 import '../features/command_center/command_center_screen.dart';
-import '../features/assistant/assistant_screen.dart';
-import '../features/workspaces/workspaces_screen.dart';
-import '../features/files/files_screen.dart';
-import '../features/console/console_screen.dart';
-import '../features/screen_mirror/screen_mirror_screen.dart';
-import '../features/cases/cases_screen.dart';
-import '../features/memory/memory_screen.dart';
-import '../features/settings/settings_screen.dart';
-import '../features/help/help_screen.dart';
+import '../features/tasks/tasks_screen.dart';
+import '../features/profile/profile_screen.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/assistant',
+  initialLocation: '/main',
   routes: [
     ShellRoute(
       builder: (context, state, child) => MainShell(child: child),
       routes: [
         GoRoute(
-          path: '/command',
+          path: '/main',
           builder: (context, state) => const CommandCenterScreen(),
         ),
         GoRoute(
+          path: '/tasks',
+          builder: (context, state) => const TasksScreen(),
+        ),
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) => const ProfileScreen(),
+        ),
+        // Fallback redirects to maintain backwards compatibility if navigated by URL
+        GoRoute(
+          path: '/command',
+          redirect: (context, state) => '/main',
+        ),
+        GoRoute(
           path: '/assistant',
-          builder: (context, state) => const AssistantScreen(),
+          redirect: (context, state) => '/main',
         ),
         GoRoute(
           path: '/workspaces',
-          builder: (context, state) => const WorkspacesScreen(),
-        ),
-        GoRoute(
-          path: '/files',
-          builder: (context, state) => const FilesScreen(),
-        ),
-        GoRoute(
-          path: '/console',
-          builder: (context, state) => const ConsoleScreen(),
-        ),
-        GoRoute(
-          path: '/screen',
-          builder: (context, state) => const ScreenMirrorScreen(),
-        ),
-        GoRoute(
-          path: '/cases',
-          builder: (context, state) => const CasesScreen(),
-        ),
-        GoRoute(
-          path: '/memory',
-          builder: (context, state) => const MemoryScreen(),
+          redirect: (context, state) => '/main',
         ),
         GoRoute(
           path: '/settings',
-          builder: (context, state) => const SettingsScreen(),
-        ),
-        GoRoute(
-          path: '/help',
-          builder: (context, state) => const HelpScreen(),
+          redirect: (context, state) => '/profile',
         ),
       ],
     ),

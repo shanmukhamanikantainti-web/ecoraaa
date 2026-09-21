@@ -29,7 +29,23 @@
         android:largeHeap="true"
         tools:targetApi="34">
 
-        <!-- Main System Shell Activity (acts as launcher) -->
+        <!-- ECORAA Android Companion Activity (Primary Launcher) -->
+        <activity
+            android:name=".ui.EcoraaCompanionActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.PegasusOS">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- PEGASUS OS Desktop Shell Activity (non-default, can be launched explicitly) -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
@@ -40,13 +56,6 @@
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:windowSoftInputMode="adjustPan"
             android:theme="@style/Theme.PegasusOS">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <!-- Boot Receiver -->
