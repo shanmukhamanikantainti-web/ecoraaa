@@ -336,6 +336,44 @@ def create_app() -> FastAPI:
 
         return memory.get_full_memory()
 
+    # ── ECORAA Android Companion Endpoints ──
+
+    class GoalRequest(BaseModel):
+        goal: str
+
+    class TerminalRequest(BaseModel):
+        command: str
+
+    @app.post("/api/goals")
+    async def submit_goal(req: GoalRequest):
+        """ECORAA Android companion — submit a goal to the agent pipeline."""
+        if not req.goal:
+            return {"error": "No goal provided"}
+        await broadcast_update("task_event", {"event": "TASK_STARTED", "goal": req.goal})
+        mission = await orchestrator.execute_goal(req.goal)
+        await broadcast_update("mission_update", mission.to_dict())
+        return {
+            "mission_id": mission.id,
+            "status": mission.status.value if hasattr(mission.status, "value") else str(mission.status),
+            "result": mission.result,
+            "message": mission.result or "Task completed."
+        }
+
+    @app.post("/api/terminal")
+    async def run_terminal_command(req: TerminalRequest):
+        """ECORAA Android IDE — execute a terminal command."""
+        if not req.command:
+            return {"output": "", "exit_code": 1}
+        try:
+            terminal_tool = orchestrator.tools.get("terminal")
+            if terminal_tool:
+                output = await terminal_tool.execute(req.command)
+                return {"output": str(output), "exit_code": 0}
+            return {"output": "[Terminal tool not registered in orchestrator]", "exit_code": 1}
+        except Exception as e:
+            return {"output": f"[Error] {str(e)}", "exit_code": 1}
+
+
     # ── WebSocket ──
 
     @app.websocket("/ws")

@@ -44,3 +44,28 @@ val AgentRunning = PegasusAccent
 val AgentIdle = TertiaryText
 val AgentFailed = ErrorColor
 val AgentCompleted = SuccessColor
+
+// ── ECORAA Companion App Colors ──────────────────────────────────────────────
+// Dark theme translation of the ECORAA design system:
+//   Near White     #FAFAFA  →  #0F1117  (near-black background)
+//   Springtime Rain #EDEFF3 →  #161B22  (secondary surface)
+//   Soothing Sapphire #2F7EDA → used as accent (unchanged hue, slightly brightened)
+//   Blackwater      #555663 →  #C9D1D9  (primary text on dark)
+//   Wild Thistle    #9FA0B5 →  #6E7681  (secondary text on dark)
+
+val EcoraaBackground   = Color(0xFF0F1117)
+val EcoraaEditorBg     = Color(0xFF0D1117)
+val EcoraaToolbarBg    = Color(0xFF161B22)
+val EcoraaFileTreeBg   = Color(0xFF13181F)
+val EcoraaTerminalBg   = Color(0xFF0A0D12)
+val EcoraaToolbarBorder= Color(0xFF21262D)
+
+val EcoraaAccent       = Color(0xFF3B89DA)   // Soothing Sapphire, darkened for dark bg
+val EcoraaAccentSubtle = Color(0xFF1A3A5C)   // Sapphire background tint
+
+val EcoraaTextPrimary  = Color(0xFFC9D1D9)
+val EcoraaTextSecondary= Color(0xFF8B949E)
+
+val EcoraaSuccess      = Color(0xFF3FB950)
+val EcoraaWarning      = Color(0xFFD29922)
+val EcoraaError        = Color(0xFFF85149)

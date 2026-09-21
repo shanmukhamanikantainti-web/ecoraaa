@@ -530,7 +530,7 @@ class _ActiveWorkSection extends StatelessWidget {
           children: [
             Text('Active Work', style: AppTypography.sectionTitle),
             TextButton(
-              onPressed: () => context.go('/assistant'),
+              onPressed: () => context.go('/tasks'),
               child: Text('View all', style: AppTypography.buttonSecondary),
             ),
           ],
@@ -547,8 +547,6 @@ class _ActiveWorkSection extends StatelessWidget {
 class _ActiveWorkContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // This would be populated from missions/agent state
-    // For now showing empty state with proper direction
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -593,7 +591,7 @@ class _NavigationHint extends StatelessWidget {
             Icon(Icons.keyboard_arrow_right, size: 16, color: AppColors.textSecondary),
             const SizedBox(width: AppSpacing.sm),
             Text(
-              'Assistant • Workspaces • Files • Console • Screen • Cases • Memory • Settings • Help',
+              'Main • Tasks • Profile',
               style: AppTypography.metadata,
               textAlign: TextAlign.center,
             ),

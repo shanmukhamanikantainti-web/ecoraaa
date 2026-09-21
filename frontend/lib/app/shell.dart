@@ -157,68 +157,22 @@ class _DesktopSidebar extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               children: [
                 _NavItem(
-                  icon: Icons.adjust,
-                  label: 'Command Center',
-                  route: '/command',
-                  active: currentRoute == '/command',
-                ),
-                _NavItem(
                   icon: Icons.chat_bubble_outline,
-                  label: 'Assistant',
-                  route: '/assistant',
-                  active: currentRoute == '/assistant',
-                ),
-                _NavItem(
-                  icon: Icons.dashboard_outlined,
-                  label: 'Workspaces',
-                  route: '/workspaces',
-                  active: currentRoute == '/workspaces',
-                ),
-                _NavItem(
-                  icon: Icons.folder_outlined,
-                  label: 'Files',
-                  route: '/files',
-                  active: currentRoute == '/files',
-                ),
-                _NavItem(
-                  icon: Icons.terminal_outlined,
-                  label: 'Console',
-                  route: '/console',
-                  active: currentRoute == '/console',
-                ),
-                _NavItem(
-                  icon: Icons.smartphone_outlined,
-                  label: 'Screen Mirror',
-                  route: '/screen',
-                  active: currentRoute == '/screen',
+                  label: 'Main',
+                  route: '/main',
+                  active: currentRoute == '/main',
                 ),
                 _NavItem(
                   icon: Icons.assignment_outlined,
-                  label: 'Cases',
-                  route: '/cases',
-                  active: currentRoute == '/cases',
+                  label: 'Tasks',
+                  route: '/tasks',
+                  active: currentRoute == '/tasks',
                 ),
                 _NavItem(
-                  icon: Icons.psychology_outlined,
-                  label: 'Memory',
-                  route: '/memory',
-                  active: currentRoute == '/memory',
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Divider(),
-                ),
-                _NavItem(
-                  icon: Icons.settings_outlined,
-                  label: 'Settings',
-                  route: '/settings',
-                  active: currentRoute == '/settings',
-                ),
-                _NavItem(
-                  icon: Icons.help_outline,
-                  label: 'Help',
-                  route: '/help',
-                  active: currentRoute == '/help',
+                  icon: Icons.person_outline,
+                  label: 'Profile',
+                  route: '/profile',
+                  active: currentRoute == '/profile',
                 ),
               ],
             ),
@@ -315,11 +269,9 @@ class _MobileBottomNav extends StatelessWidget {
 
     int getCurrentIndex() {
       switch (currentRoute) {
-        case '/command': return 0;
-        case '/assistant': return 1;
-        case '/workspaces': return 2;
-        case '/files': return 3;
-        case '/settings': return 4;
+        case '/main': return 0;
+        case '/tasks': return 1;
+        case '/profile': return 2;
         default: return 0;
       }
     }
@@ -328,11 +280,9 @@ class _MobileBottomNav extends StatelessWidget {
       currentIndex: getCurrentIndex(),
       onTap: (index) {
         switch (index) {
-          case 0: context.go('/command'); break;
-          case 1: context.go('/assistant'); break;
-          case 2: context.go('/workspaces'); break;
-          case 3: context.go('/files'); break;
-          case 4: context.go('/settings'); break;
+          case 0: context.go('/main'); break;
+          case 1: context.go('/tasks'); break;
+          case 2: context.go('/profile'); break;
         }
       },
       type: BottomNavigationBarType.fixed,
@@ -341,24 +291,16 @@ class _MobileBottomNav extends StatelessWidget {
       unselectedItemColor: AppColors.textSecondary,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.adjust),
-          label: 'Command',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.chat_bubble_outline),
-          label: 'Assistant',
+          label: 'Main',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.dashboard_outlined),
-          label: 'Workspaces',
+          icon: Icon(Icons.assignment_outlined),
+          label: 'Tasks',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.folder_outlined),
-          label: 'Files',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings_outlined),
-          label: 'Settings',
+          icon: Icon(Icons.person_outline),
+          label: 'Profile',
         ),
       ],
     );

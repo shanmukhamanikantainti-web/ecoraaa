@@ -395,3 +395,56 @@ sealed class PegasusResponse {
     data class Success(val data: JSONObject) : PegasusResponse()
     data class Error(val message: String) : PegasusResponse()
 }
+
+// ── ECORAA Companion Helpers ─────────────────────────────────────────────────
+
+/**
+ * Submit a natural-language goal to the ECORAA backend.
+ * Used by EcoraaAiScreen to trigger the multi-agent pipeline.
+ *
+ * @return Extracted result string from the backend response, or null.
+ */
+suspend fun submitGoal(goal: String): String? {
+    return withContext(kotlinx.coroutines.Dispatchers.IO) {
+        try {
+            val body = JSONObject().apply { put("goal", goal) }
+            val request = Request.Builder()
+                .url("$baseUrl/api/goals")
+                .post(body.toString().toRequestBody("application/json".toMediaType()))
+                .build()
+            val response = httpClient.newCall(request).execute()
+            val responseText = response.body?.string() ?: "{}"
+            val json = JSONObject(responseText)
+            json.optString("result").ifEmpty { json.optString("message", "Task submitted.") }
+        } catch (e: Exception) {
+            Log.e(TAG, "submitGoal failed", e)
+            null
+        }
+    }
+}
+
+/**
+ * Execute a shell/terminal command via the ECORAA backend.
+ * Used by IdeScreen terminal panel.
+ *
+ * @return Output string from the backend, or null on error.
+ */
+suspend fun executeCommand(command: String): String? {
+    return withContext(kotlinx.coroutines.Dispatchers.IO) {
+        try {
+            val body = JSONObject().apply { put("command", command) }
+            val request = Request.Builder()
+                .url("$baseUrl/api/terminal")
+                .post(body.toString().toRequestBody("application/json".toMediaType()))
+                .build()
+            val response = httpClient.newCall(request).execute()
+            val responseText = response.body?.string() ?: "{}"
+            val json = JSONObject(responseText)
+            json.optString("output").ifEmpty { "[Command sent]" }
+        } catch (e: Exception) {
+            Log.e(TAG, "executeCommand failed: $command", e)
+            "[Error] Could not reach ECORAA backend: ${e.message}"
+        }
+    }
+}
+
