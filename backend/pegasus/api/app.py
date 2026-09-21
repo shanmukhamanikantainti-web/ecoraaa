@@ -116,6 +116,15 @@ def create_app() -> FastAPI:
         goal: str
         workspace: str = ""
 
+    class CommandRequest(BaseModel):
+        command: str
+        params: dict[str, Any] = {}
+
+    class MemoryUpdateRequest(BaseModel):
+        action: str
+        value: str = ""
+        category: str = ""
+
     active_workspace: dict[str, Any] = {
         "path": os.path.abspath(os.path.expanduser("~/pegasus_workspace")),
         "valid": True,
@@ -432,20 +441,7 @@ def create_app() -> FastAPI:
                 **mem
             }))
 
-    # ── Security & Pairing Endpoints ──
-
-    @app.post("/api/pair")
-    async def pair_device(code: str):
-        """Validate pairing code from PEGASUS Desktop Companion."""
-        # Simulated AES-256 handshake validation
-        if len(code) >= 6:
-            return {
-                "status": "authenticated",
-                "device_id": "PEGASUS-DESKTOP-01",
-                "session_token": "pg_token_sec_998124x",
-                "usb_path": "E:\\pegasus"
-            }
-        return {"status": "error", "message": "Invalid pairing code"}
+    # ── Security & Storage Endpoints ──
 
     @app.get("/api/usb-status")
     async def get_usb_status():
