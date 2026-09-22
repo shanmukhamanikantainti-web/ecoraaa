@@ -95,6 +95,9 @@ const wrapDiff = (diff: number, n: number) => {
   return (((diff % n) + n * 1.5) % n) - n / 2;
 };
 
+// Round floating points to 2 decimal places to prevent SSR hydration mismatches
+const r = (val: number): number => Math.round(val * 100) / 100;
+
 export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
   activeAgentId = "coding",
   onSelectAgent,
@@ -319,12 +322,13 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
   const activeDiffDeg = activeDiffSlots * ANGLE_STEP;
   const cardAngleDeg = 180 + activeDiffDeg;
   const cardRad = (cardAngleDeg * Math.PI) / 180;
-  const cardY = CENTER_Y + WHEEL_RADIUS * Math.sin(cardRad);
-  const cardX = Math.max(0, CENTER_X + WHEEL_RADIUS * Math.cos(cardRad) - 105);
+  const cardY = r(CENTER_Y + WHEEL_RADIUS * Math.sin(cardRad));
+  const cardX = r(Math.max(0, CENTER_X + WHEEL_RADIUS * Math.cos(cardRad) - 105));
 
   return (
     <div
       ref={containerRef}
+      suppressHydrationWarning
       onPointerDown={handlePointerDown}
       onDragStart={(e) => e.preventDefault()}
       style={{ touchAction: "none" }}
@@ -376,6 +380,7 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
       {/* The concentric track physically rotates as you drag the wheel! */}
       <div className="absolute inset-0 pointer-events-none overflow-visible">
         <svg
+          suppressHydrationWarning
           viewBox="0 0 280 430"
           className="w-full h-full"
           fill="none"
@@ -406,11 +411,12 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
 
           {/* 1. Ambient Glow Ribbon behind track */}
           <path
-            d={`M ${CENTER_X + WHEEL_RADIUS * Math.cos((-72 * Math.PI) / 180)},${
+            suppressHydrationWarning
+            d={`M ${r(CENTER_X + WHEEL_RADIUS * Math.cos((-72 * Math.PI) / 180))},${r(
               CENTER_Y + WHEEL_RADIUS * Math.sin((-72 * Math.PI) / 180)
-            } A ${WHEEL_RADIUS} ${WHEEL_RADIUS} 0 0 0 ${
+            )} A ${WHEEL_RADIUS} ${WHEEL_RADIUS} 0 0 0 ${r(
               CENTER_X + WHEEL_RADIUS * Math.cos((72 * Math.PI) / 180)
-            },${CENTER_Y + WHEEL_RADIUS * Math.sin((72 * Math.PI) / 180)}`}
+            )},${r(CENTER_Y + WHEEL_RADIUS * Math.sin((72 * Math.PI) / 180))}`}
             stroke="url(#cOuterRail)"
             strokeWidth="22"
             strokeLinecap="round"
@@ -420,11 +426,12 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
 
           {/* 2. Outer Concentric Arc */}
           <path
-            d={`M ${CENTER_X + WHEEL_OUTER_RADIUS * Math.cos((-74 * Math.PI) / 180)},${
+            suppressHydrationWarning
+            d={`M ${r(CENTER_X + WHEEL_OUTER_RADIUS * Math.cos((-74 * Math.PI) / 180))},${r(
               CENTER_Y + WHEEL_OUTER_RADIUS * Math.sin((-74 * Math.PI) / 180)
-            } A ${WHEEL_OUTER_RADIUS} ${WHEEL_OUTER_RADIUS} 0 0 0 ${
+            )} A ${WHEEL_OUTER_RADIUS} ${WHEEL_OUTER_RADIUS} 0 0 0 ${r(
               CENTER_X + WHEEL_OUTER_RADIUS * Math.cos((74 * Math.PI) / 180)
-            },${CENTER_Y + WHEEL_OUTER_RADIUS * Math.sin((74 * Math.PI) / 180)}`}
+            )},${r(CENTER_Y + WHEEL_OUTER_RADIUS * Math.sin((74 * Math.PI) / 180))}`}
             stroke="url(#cOuterRail)"
             strokeWidth="2.5"
             strokeLinecap="round"
@@ -432,11 +439,12 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
 
           {/* 3. Inner Concentric Arc */}
           <path
-            d={`M ${CENTER_X + WHEEL_INNER_RADIUS * Math.cos((-74 * Math.PI) / 180)},${
+            suppressHydrationWarning
+            d={`M ${r(CENTER_X + WHEEL_INNER_RADIUS * Math.cos((-74 * Math.PI) / 180))},${r(
               CENTER_Y + WHEEL_INNER_RADIUS * Math.sin((-74 * Math.PI) / 180)
-            } A ${WHEEL_INNER_RADIUS} ${WHEEL_INNER_RADIUS} 0 0 0 ${
+            )} A ${WHEEL_INNER_RADIUS} ${WHEEL_INNER_RADIUS} 0 0 0 ${r(
               CENTER_X + WHEEL_INNER_RADIUS * Math.cos((74 * Math.PI) / 180)
-            },${CENTER_Y + WHEEL_INNER_RADIUS * Math.sin((74 * Math.PI) / 180)}`}
+            )},${r(CENTER_Y + WHEEL_INNER_RADIUS * Math.sin((74 * Math.PI) / 180))}`}
             stroke="url(#cInnerRail)"
             strokeWidth="2"
             strokeLinecap="round"
@@ -444,6 +452,7 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
 
           {/* 4. Ticks along the Wheel Rim - rotates in real time with drag! */}
           <g
+            suppressHydrationWarning
             style={{
               transformOrigin: `${CENTER_X}px ${CENTER_Y}px`,
               transform: `rotate(${-wheelAngle}deg)`,
@@ -454,16 +463,17 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
           >
             {tickAngles.map((angleDeg, i) => {
               const rad = ((180 + angleDeg) * Math.PI) / 180;
-              const x1 = CENTER_X + (WHEEL_INNER_RADIUS + 2) * Math.cos(rad);
-              const y1 = CENTER_Y + (WHEEL_INNER_RADIUS + 2) * Math.sin(rad);
-              const x2 = CENTER_X + (WHEEL_OUTER_RADIUS - 2) * Math.cos(rad);
-              const y2 = CENTER_Y + (WHEEL_OUTER_RADIUS - 2) * Math.sin(rad);
+              const x1 = r(CENTER_X + (WHEEL_INNER_RADIUS + 2) * Math.cos(rad));
+              const y1 = r(CENTER_Y + (WHEEL_INNER_RADIUS + 2) * Math.sin(rad));
+              const x2 = r(CENTER_X + (WHEEL_OUTER_RADIUS - 2) * Math.cos(rad));
+              const y2 = r(CENTER_Y + (WHEEL_OUTER_RADIUS - 2) * Math.sin(rad));
 
               const isApex = Math.abs(angleDeg) < 4;
 
               return (
                 <line
                   key={i}
+                  suppressHydrationWarning
                   x1={x1}
                   y1={y1}
                   x2={x2}
@@ -480,7 +490,7 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
 
       {/* ── Orbiting Agent Nodes on the Arc Track ── */}
       {/* Each node glides smoothly along the arc continuously from wheelAngle */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none" suppressHydrationWarning>
         {AGENTS.map((agent, index) => {
           // Calculate angular position on the circle relative to current wheelAngle using cyclic wrap
           const diffSlots = wrapDiff(index - wheelAngle / ANGLE_STEP, AGENTS.length);
@@ -495,8 +505,8 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
           const angleDeg = 180 + diffDeg;
           const rad = (angleDeg * Math.PI) / 180;
 
-          const x = CENTER_X + WHEEL_RADIUS * Math.cos(rad);
-          const y = CENTER_Y + WHEEL_RADIUS * Math.sin(rad);
+          const x = r(CENTER_X + WHEEL_RADIUS * Math.cos(rad));
+          const y = r(CENTER_Y + WHEEL_RADIUS * Math.sin(rad));
 
           const NodeIcon = agent.icon;
 

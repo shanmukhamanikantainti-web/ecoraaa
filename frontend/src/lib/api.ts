@@ -60,7 +60,7 @@ export const api = {
     ),
 
   // Goal & Mission Execution
-  executeGoal: (goal: string, agent_mode: string = "GENERAL", workspace?: string) =>
+  executeGoal: (goal: string, agent_mode: string = "GENERAL", workspace?: string, signal?: AbortSignal) =>
     fetchJson<{
       mission_id: string;
       status: string;
@@ -70,6 +70,12 @@ export const api = {
     }>("/api/execute", {
       method: "POST",
       body: JSON.stringify({ goal, agent_mode, workspace: workspace || "" }),
+      signal,
+    }),
+
+  stopAll: () =>
+    fetchJson<{ status: string; stopped_tasks?: string[] }>("/api/stop", {
+      method: "POST",
     }),
 
   getTasks: () =>

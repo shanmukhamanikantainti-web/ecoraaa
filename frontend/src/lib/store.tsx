@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from "react";
 import { SystemStatus, Mission, MemoryData, PairingState, ChatMessage, Project } from "./types";
 import { api } from "./api";
 import { wsManager } from "./websocket";
@@ -43,6 +43,8 @@ interface AppContextType {
   addChatMessage: (msg: ChatMessage) => void;
   updateLastAssistantMessage: (updater: (prev: ChatMessage) => ChatMessage) => void;
   executeGoal: (goal: string, agentMode?: string) => Promise<void>;
+  isExecuting: boolean;
+  stopExecution: () => Promise<void>;
   refreshState: () => Promise<void>;
 }
 
@@ -77,6 +79,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProject, setActiveProjectState] = useState<Project | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isExecuting, setIsExecuting] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const currentAssistantMsgIdRef = useRef<string | null>(null);
 
   const setUserName = useCallback((name: string) => {
     const trimmed = name.trim();
@@ -409,6 +414,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const stopExecution = useCallback(async () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    try {
+      await api.stopAll();
+    } catch (e) {
+      console.warn("Error calling stopAll:", e);
+    }
+    const currentAssistantMsgId = currentAssistantMsgIdRef.current;
+    if (currentAssistantMsgId) {
+      const stoppedMsg: ChatMessage = {
+        id: currentAssistantMsgId,
+        role: "assistant",
+        content: "Response stopped by user.",
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        status: "completed",
+        projectId: activeProject?.id,
+        userId: userId,
+      };
+      setChatMessages((prev) =>
+        prev.map((msg) => (msg.id === currentAssistantMsgId ? stoppedMsg : msg))
+      );
+      await supabaseService.saveMessage(stoppedMsg);
+    }
+    setIsExecuting(false);
+    refreshState();
+  }, [activeProject, userId, refreshState]);
+
   const executeGoal = useCallback(
     async (goal: string, agentMode: string = "GENERAL") => {
       if (!goal.trim()) return;
@@ -441,12 +476,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         userId: currentUserId,
       };
 
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      currentAssistantMsgIdRef.current = assistantMsgId;
+      setIsExecuting(true);
+
       setChatMessages((prev) => [...prev, userMsg, assistantMsg]);
       await supabaseService.saveMessage(userMsg);
       await supabaseService.saveMessage(assistantMsg);
 
       try {
-        const res = await api.executeGoal(goal, agentMode);
+        const res = await api.executeGoal(goal, agentMode, undefined, controller.signal);
         const finalMsg: ChatMessage = {
           id: assistantMsgId,
           role: "assistant",
@@ -465,19 +505,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await supabaseService.saveMessage(finalMsg);
         refreshState();
       } catch (err: any) {
-        const errorMsg: ChatMessage = {
-          id: assistantMsgId,
-          role: "assistant",
-          content: `Mission execution error: ${err?.message || "Failed to reach Core"}`,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          status: "error",
-          projectId: currentProjectId,
-          userId: currentUserId,
-        };
-        setChatMessages((prev) =>
-          prev.map((msg) => (msg.id === assistantMsgId ? errorMsg : msg))
-        );
-        await supabaseService.saveMessage(errorMsg);
+        if (err?.name === "AbortError" || controller.signal.aborted) {
+          const stoppedMsg: ChatMessage = {
+            id: assistantMsgId,
+            role: "assistant",
+            content: "Response stopped by user.",
+            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            status: "completed",
+            projectId: currentProjectId,
+            userId: currentUserId,
+          };
+          setChatMessages((prev) =>
+            prev.map((msg) => (msg.id === assistantMsgId ? stoppedMsg : msg))
+          );
+          await supabaseService.saveMessage(stoppedMsg);
+        } else {
+          const errorMsg: ChatMessage = {
+            id: assistantMsgId,
+            role: "assistant",
+            content: `Mission execution error: ${err?.message || "Failed to reach Core"}`,
+            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            status: "error",
+            projectId: currentProjectId,
+            userId: currentUserId,
+          };
+          setChatMessages((prev) =>
+            prev.map((msg) => (msg.id === assistantMsgId ? errorMsg : msg))
+          );
+          await supabaseService.saveMessage(errorMsg);
+        }
+      } finally {
+        setIsExecuting(false);
+        abortControllerRef.current = null;
+        currentAssistantMsgIdRef.current = null;
       }
     },
     [activeProject, userId, refreshState]
@@ -502,7 +562,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
         return [...prev, mission];
       });
-      supabaseService.saveMission(mission);
+      supabaseService.saveMission(mission, activeProject?.id, userId);
       refreshState();
     });
 
@@ -584,6 +644,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addChatMessage,
         updateLastAssistantMessage,
         executeGoal,
+        isExecuting,
+        stopExecution,
         refreshState,
       }}
     >

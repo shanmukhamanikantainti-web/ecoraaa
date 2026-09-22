@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useApp } from "@/lib/store";
-import { Paperclip, UploadCloud, Mic, Send, Sparkles } from "lucide-react";
+import { Paperclip, UploadCloud, Mic, Send, Square } from "lucide-react";
 
 interface GoalInputProps {
   onExecute?: (goal: string, agentMode?: string) => void;
@@ -12,11 +12,11 @@ interface GoalInputProps {
 
 export const GoalInput: React.FC<GoalInputProps> = ({ onExecute, agentMode = "GENERAL", disabled = false }) => {
   const [goal, setGoal] = useState("");
-  const { executeGoal } = useApp();
+  const { executeGoal, isExecuting, stopExecution } = useApp();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!goal.trim() || disabled) return;
+    if (!goal.trim() || disabled || isExecuting) return;
     if (onExecute) {
       onExecute(goal, agentMode);
     } else {
@@ -44,7 +44,7 @@ export const GoalInput: React.FC<GoalInputProps> = ({ onExecute, agentMode = "GE
         type="text"
         value={goal}
         onChange={(e) => setGoal(e.target.value)}
-        placeholder="Type your message..."
+        placeholder={isExecuting ? "ECORAA is generating... (click stop to cancel)" : "Type your message..."}
         disabled={disabled}
         className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground text-sm font-medium px-2"
       />
@@ -69,19 +69,31 @@ export const GoalInput: React.FC<GoalInputProps> = ({ onExecute, agentMode = "GE
           <Mic className="w-4 h-4" />
         </button>
 
-        {/* Circular Vibrant Blue Send Button */}
-        <button
-          type="submit"
-          disabled={!goal.trim() || disabled}
-          title="Send message"
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${
-            goal.trim()
-              ? "bg-gradient-to-tr from-blue-700 to-blue-500 text-white shadow-lg shadow-blue-500/40 hover:scale-105 active:scale-95"
-              : "bg-blue-500/30 text-white/50 cursor-not-allowed"
-          }`}
-        >
-          <Send className="w-4 h-4 -rotate-45 -translate-y-0.5 translate-x-0.5 fill-current" />
-        </button>
+        {/* Send / Stop Action Button */}
+        {isExecuting ? (
+          <button
+            type="button"
+            onClick={stopExecution}
+            title="Stop response"
+            aria-label="Stop response"
+            className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-tr from-red-600 via-rose-500 to-red-500 text-white shadow-lg shadow-red-500/40 hover:scale-105 active:scale-95 transition-all duration-200 shrink-0 cursor-pointer animate-pulse"
+          >
+            <Square className="w-3.5 h-3.5 fill-current" />
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={!goal.trim() || disabled}
+            title="Send message"
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shrink-0 cursor-pointer ${
+              goal.trim()
+                ? "bg-gradient-to-tr from-blue-700 to-blue-500 text-white shadow-lg shadow-blue-500/40 hover:scale-105 active:scale-95"
+                : "bg-blue-500/30 text-white/50 cursor-not-allowed"
+            }`}
+          >
+            <Send className="w-4 h-4 -rotate-45 -translate-y-0.5 translate-x-0.5 fill-current" />
+          </button>
+        )}
       </div>
     </form>
   );

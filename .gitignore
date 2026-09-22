@@ -39,3 +39,5 @@ desktop.ini
 pegasus_memory.json
 pegasus_activity.log
 *.log
+
+.env

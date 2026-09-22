@@ -149,8 +149,13 @@ export const supabaseService = {
     }
   },
 
-  async addMemoryItem(category: "user" | "projects" | "preferences" | "goals", value: string) {
+  async addMemoryItem(category: "user" | "projects" | "preferences" | "goals", value: string, userId?: string) {
     try {
+      const uid =
+        userId ||
+        (typeof window !== "undefined" ? localStorage.getItem("ecoraa_user_id") : null) ||
+        "2a322f60-33a0-49fe-9d74-ac9899031752";
+
       if (category === "user") {
         // Remove existing user profile and insert new one
         await supabase.from("memory_items").delete().eq("category", "user");
@@ -158,6 +163,7 @@ export const supabaseService = {
       const { error } = await supabase.from("memory_items").insert({
         category,
         value,
+        user_id: uid,
       });
       if (error) throw error;
     } catch (err) {
@@ -179,8 +185,17 @@ export const supabaseService = {
   },
 
   // ── Missions ──
-  async saveMission(mission: Mission): Promise<void> {
+  async saveMission(mission: Mission, projectId?: string, userId?: string): Promise<void> {
     try {
+      const uid =
+        userId ||
+        (typeof window !== "undefined" ? localStorage.getItem("ecoraa_user_id") : null) ||
+        "2a322f60-33a0-49fe-9d74-ac9899031752";
+      const pid =
+        projectId ||
+        (typeof window !== "undefined" ? localStorage.getItem("ecoraa_active_project_id") : null) ||
+        "proj-default-sai";
+
       const { error } = await supabase.from("missions").upsert({
         id: mission.id,
         goal: mission.goal,
@@ -190,6 +205,8 @@ export const supabaseService = {
         workspace: mission.workspace || null,
         created_at: mission.created_at || new Date().toISOString(),
         completed_at: mission.completed_at || null,
+        user_id: uid,
+        project_id: pid,
       });
       if (error) throw error;
     } catch (err) {

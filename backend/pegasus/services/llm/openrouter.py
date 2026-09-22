@@ -17,12 +17,22 @@ class OpenRouterLLMService:
     """
 
     def __init__(self):
-        self.api_key = settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY", "")
+        self._api_key = settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY", "")
         self.model = settings.openrouter_model or os.getenv("OPENROUTER_MODEL", "google/gemma-4-26b-a4b-it:free")
         self.base_url = settings.openrouter_base_url or os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
         self.max_retries = settings.openrouter_max_retries
         self.retry_base = settings.openrouter_retry_base_seconds
         self.fallback_models = [m.strip() for m in settings.openrouter_fallback_models.split(",") if m.strip()]
+
+    @property
+    def api_key(self) -> str:
+        return (
+            os.getenv("OPENROUTER_API_KEY")
+            or os.getenv("PEGASUS_OPENROUTER_API_KEY")
+            or settings.openrouter_api_key
+            or self._api_key
+            or ""
+        )
 
     def _get_headers(self) -> Dict[str, str]:
         headers = {

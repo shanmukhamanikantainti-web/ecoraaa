@@ -3,8 +3,19 @@ PEGASUS OS — Configuration Settings
 """
 
 import os
+from pathlib import Path
 from pydantic_settings import BaseSettings
 from typing import Optional
+from dotenv import load_dotenv
+
+# Search and load .env from current dir, backend dir, and repo root
+for env_path in [
+    Path.cwd() / ".env",
+    Path(__file__).resolve().parent.parent.parent / ".env",
+    Path(__file__).resolve().parent.parent.parent.parent / ".env",
+]:
+    if env_path.exists():
+        load_dotenv(env_path, override=True)
 
 
 class PegasusSettings(BaseSettings):
@@ -15,7 +26,7 @@ class PegasusSettings(BaseSettings):
     port: int = 8420
 
     # OpenRouter AI Model
-    openrouter_api_key: Optional[str] = os.getenv("OPENROUTER_API_KEY")
+    openrouter_api_key: Optional[str] = os.getenv("OPENROUTER_API_KEY") or os.getenv("PEGASUS_OPENROUTER_API_KEY")
     openrouter_model: str = os.getenv("OPENROUTER_MODEL", "google/gemma-4-26b-a4b-it:free")
     openrouter_base_url: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
     openrouter_max_retries: int = int(os.getenv("OPENROUTER_MAX_RETRIES", "3"))

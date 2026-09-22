@@ -117,7 +117,7 @@ export default function AssistantPage() {
       </div>
 
       {/* ── Right Curved Arc AI Agents Panel ── */}
-      <div className="hidden lg:flex shrink-0">
+      <div className="hidden lg:flex shrink-0" suppressHydrationWarning>
         <AgentArcPanel
           activeAgentId={activeAgent}
           onSelectAgent={(agentId) => setActiveAgent(agentId)}

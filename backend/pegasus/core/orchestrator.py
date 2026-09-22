@@ -28,6 +28,7 @@ class MissionStatus(str, Enum):
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
     PAUSED = "PAUSED"
+    CANCELLED = "CANCELLED"
 
 
 class StepStatus(str, Enum):
@@ -164,19 +165,25 @@ class PegasusOrchestrator:
             await self._execute_steps(mission)
 
             # Step 3: Check completion status
-            failed_steps = [s for s in mission.steps if s.status == StepStatus.FAILED]
-            if failed_steps:
-                mission.status = MissionStatus.FAILED
+            if mission.status in (MissionStatus.CANCELLED, "CANCELLED"):
                 mission.completed_at = time.time()
-                mission.result = self._compile_results(mission)
-                logger.error(f"Mission {mission_id}: Failed ({len(failed_steps)} step(s) failed)")
-                await self._emit_event("TASK_FAILED", {"task_id": mission_id, "error": failed_steps[0].error or "Step failed", "mission": mission.to_dict()})
+                mission.result = "Mission stopped by user."
+                logger.info(f"Mission {mission_id}: Stopped by user")
+                await self._emit_event("TASK_CANCELLED", {"task_id": mission_id, "mission": mission.to_dict()})
             else:
-                mission.status = MissionStatus.COMPLETED
-                mission.completed_at = time.time()
-                mission.result = self._compile_results(mission)
-                logger.info(f"Mission {mission_id}: Completed")
-                await self._emit_event("TASK_COMPLETED", {"task_id": mission_id, "result": mission.result, "mission": mission.to_dict()})
+                failed_steps = [s for s in mission.steps if s.status == StepStatus.FAILED]
+                if failed_steps:
+                    mission.status = MissionStatus.FAILED
+                    mission.completed_at = time.time()
+                    mission.result = self._compile_results(mission)
+                    logger.error(f"Mission {mission_id}: Failed ({len(failed_steps)} step(s) failed)")
+                    await self._emit_event("TASK_FAILED", {"task_id": mission_id, "error": failed_steps[0].error or "Step failed", "mission": mission.to_dict()})
+                else:
+                    mission.status = MissionStatus.COMPLETED
+                    mission.completed_at = time.time()
+                    mission.result = self._compile_results(mission)
+                    logger.info(f"Mission {mission_id}: Completed")
+                    await self._emit_event("TASK_COMPLETED", {"task_id": mission_id, "result": mission.result, "mission": mission.to_dict()})
 
         except Exception as e:
             mission.status = MissionStatus.FAILED
@@ -193,7 +200,7 @@ class PegasusOrchestrator:
     async def _execute_steps(self, mission: Mission):
         """Execute each step in the mission sequentially."""
         for step in mission.steps:
-            if mission.status == MissionStatus.PAUSED:
+            if mission.status in (MissionStatus.PAUSED, MissionStatus.CANCELLED, "CANCELLED"):
                 break
 
             step.status = StepStatus.RUNNING

@@ -148,7 +148,9 @@ def create_app() -> FastAPI:
     async def health_check():
         """Backend health check endpoint."""
         from ..config.settings import settings
-        llm_configured = bool(settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY"))
+        llm_configured = bool(
+            settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY") or os.getenv("PEGASUS_OPENROUTER_API_KEY")
+        )
         return {
             "status": "ok",
             "llm_configured": llm_configured,
@@ -159,7 +161,9 @@ def create_app() -> FastAPI:
     async def get_status():
         """Get PEGASUS system status."""
         from ..config.settings import settings
-        llm_configured = bool(settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY"))
+        llm_configured = bool(
+            settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY") or os.getenv("PEGASUS_OPENROUTER_API_KEY")
+        )
         return {
             "core_online": True,
             "llm_configured": llm_configured,
@@ -255,6 +259,16 @@ def create_app() -> FastAPI:
             await broadcast_update("task_event", {"event": "TASK_CANCELLED", "task_id": task_id})
             return {"status": "success", "task_id": task_id}
         return {"error": "Task not found"}
+
+    @app.post("/api/stop")
+    async def stop_all_tasks():
+        """Stop all running missions immediately."""
+        stopped = []
+        for m_id, mission in list(orchestrator.active_missions.items()):
+            mission.status = "CANCELLED"
+            stopped.append(m_id)
+            await broadcast_update("task_event", {"event": "TASK_CANCELLED", "task_id": m_id})
+        return {"status": "success", "stopped_tasks": stopped}
 
     @app.get("/api/pair/status")
     async def pair_status():
