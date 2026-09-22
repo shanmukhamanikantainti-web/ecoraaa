@@ -33,8 +33,9 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
   initialSignInMode = false,
 }) => {
   const router = useRouter();
-  const { setAuthStep, setShowWelcome, setUserName } = useApp();
+  const { setAuthStep, setShowWelcome, setUserName, setIsAuthenticated } = useApp();
   const [isSignInMode, setIsSignInMode] = useState(initialSignInMode);
+  const [rememberDevice, setRememberDevice] = useState(true);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,6 +47,7 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const handleAuthSuccess = () => {
+    setIsAuthenticated(true, rememberDevice);
     setShowWelcome(false);
     if (onSuccess) {
       onSuccess();
@@ -110,6 +112,11 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
             // ignore background sync errors
           }
 
+          const authUser = data?.user || data?.session?.user;
+          if (authUser?.id && typeof window !== "undefined") {
+            localStorage.setItem("ecoraa_user_id", authUser.id);
+          }
+
           if (data?.session) {
             setSuccessMsg("Account created and verified in Supabase! Redirecting to workspace...");
             setTimeout(() => {
@@ -137,6 +144,9 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
             try {
               const res = await supabaseService.signIn(email.trim(), password);
               const signedInUser = res?.user;
+              if (signedInUser?.id && typeof window !== "undefined") {
+                localStorage.setItem("ecoraa_user_id", signedInUser.id);
+              }
               const resolvedName =
                 fullName.trim() ||
                 signedInUser?.user_metadata?.full_name ||
@@ -165,6 +175,9 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
         // ── Sign In to existing Supabase account ──
         const res = await supabaseService.signIn(email.trim(), password);
         const signedInUser = res?.user;
+        if (signedInUser?.id && typeof window !== "undefined") {
+          localStorage.setItem("ecoraa_user_id", signedInUser.id);
+        }
         const resolvedName =
           signedInUser?.user_metadata?.full_name ||
           signedInUser?.user_metadata?.name ||
@@ -577,8 +590,23 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
                   </div>
                 )}
 
+                {/* Remember Device Toggle */}
+                <div className="flex items-center justify-between px-1 py-1">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      id="remember-device-checkbox"
+                      type="checkbox"
+                      checked={rememberDevice}
+                      onChange={(e) => setRememberDevice(e.target.checked)}
+                      className="w-4 h-4 rounded border-[#C6D1D7] text-[#2F7EDA] focus:ring-[#2F7EDA]/30 cursor-pointer accent-[#2F7EDA]"
+                    />
+                    <span className="text-xs text-[#555663] font-medium">Remember this device</span>
+                  </label>
+                  <span className="text-[10px] text-[#9FA0B5] font-mono">Auto-login enabled</span>
+                </div>
+
                 {/* Submit Action Button */}
-                <div className="pt-1.5">
+                <div className="pt-1">
                   <button
                     id="create-account-submit-btn"
                     type="button"

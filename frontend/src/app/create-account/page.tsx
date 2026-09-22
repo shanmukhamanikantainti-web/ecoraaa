@@ -1,13 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { CreateAccountScreen } from "@/components/auth/CreateAccountScreen";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/lib/store";
 
 export default function CreateAccountPage() {
   const router = useRouter();
-  const { setShowWelcome, setAuthStep } = useApp();
+  const { setShowWelcome, setAuthStep, isAuthenticated, mounted } = useApp();
+
+  useEffect(() => {
+    if (mounted && isAuthenticated) {
+      router.replace("/");
+    }
+  }, [mounted, isAuthenticated, router]);
 
   return (
     <CreateAccountScreen

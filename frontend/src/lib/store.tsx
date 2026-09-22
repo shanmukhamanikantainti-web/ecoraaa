@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
-import { SystemStatus, Mission, MemoryData, PairingState, ChatMessage } from "./types";
+import { SystemStatus, Mission, MemoryData, PairingState, ChatMessage, Project } from "./types";
 import { api } from "./api";
 import { wsManager } from "./websocket";
 import { supabaseService } from "./supabase";
@@ -15,6 +15,9 @@ interface AppContextType {
   memory: MemoryData | null;
   pairing: PairingState | null;
   chatMessages: ChatMessage[];
+  projects: Project[];
+  activeProject: Project | null;
+  userId: string;
   theme: "light" | "dark";
   showWelcome: boolean;
   authStep: "welcome" | "create-account";
@@ -22,6 +25,9 @@ interface AppContextType {
   isCommandPaletteOpen: boolean;
   userName: string;
   userRole: string;
+  isAuthenticated: boolean;
+  setIsAuthenticated: (auth: boolean, rememberDevice?: boolean) => void;
+  logout: () => Promise<void>;
   setUserName: (name: string) => void;
   setUserRole: (role: string) => void;
   setShowWelcome: (show: boolean) => void;
@@ -30,6 +36,10 @@ interface AppContextType {
   toggleCommandPalette: () => void;
   openCommandPalette: () => void;
   closeCommandPalette: () => void;
+  setActiveProject: (project: Project | null) => void;
+  createProject: (name: string, description?: string) => Promise<Project | null>;
+  deleteProject: (projectId: string) => Promise<void>;
+  refreshProjects: (targetUserId?: string) => Promise<void>;
   addChatMessage: (msg: ChatMessage) => void;
   updateLastAssistantMessage: (updater: (prev: ChatMessage) => ChatMessage) => void;
   executeGoal: (goal: string, agentMode?: string) => Promise<void>;
@@ -59,10 +69,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [showWelcome, setShowWelcomeState] = useState<boolean>(true);
   const [authStep, setAuthStep] = useState<"welcome" | "create-account">("welcome");
+  const [isAuthenticated, setIsAuthenticatedState] = useState<boolean>(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [userName, setUserNameState] = useState<string>("");
   const [userRole, setUserRoleState] = useState<string>("Lead Systems Architect & AI Specialist");
-
+  const [userId, setUserId] = useState<string>("2a322f60-33a0-49fe-9d74-ac9899031752");
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [activeProject, setActiveProjectState] = useState<Project | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   const setUserName = useCallback((name: string) => {
@@ -85,22 +98,202 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const setActiveProject = useCallback((project: Project | null) => {
+    setActiveProjectState(project);
+    if (typeof window !== "undefined") {
+      if (project?.id) {
+        localStorage.setItem("ecoraa_active_project_id", project.id);
+      } else {
+        localStorage.removeItem("ecoraa_active_project_id");
+      }
+    }
+    if (project?.id) {
+      supabaseService.getMessages(project.id).then((msgs) => {
+        setChatMessages(msgs);
+      }).catch((err) => {
+        console.warn("[Store] Failed to load messages for project:", err);
+      });
+    } else {
+      setChatMessages([]);
+    }
+  }, []);
+
+  const refreshProjects = useCallback(async (targetUserId?: string) => {
+    const uid =
+      targetUserId ||
+      (typeof window !== "undefined" ? localStorage.getItem("ecoraa_user_id") : null) ||
+      userId ||
+      "2a322f60-33a0-49fe-9d74-ac9899031752";
+
+    try {
+      const userProjects = await supabaseService.getProjects(uid);
+      setProjects(userProjects);
+
+      const savedProjectId = typeof window !== "undefined" ? localStorage.getItem("ecoraa_active_project_id") : null;
+      let matched = userProjects.find((p) => p.id === savedProjectId);
+      if (!matched && userProjects.length > 0) {
+        matched = userProjects[0];
+      }
+
+      if (matched) {
+        setActiveProjectState(matched);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("ecoraa_active_project_id", matched.id);
+        }
+        const msgs = await supabaseService.getMessages(matched.id);
+        setChatMessages(msgs);
+      } else if (userProjects.length === 0) {
+        // Automatically scaffold an initial workspace project for this user
+        const defaultProj = await supabaseService.createProject({
+          name: "General AI Workspace",
+          description: "Default workspace project",
+          user_id: uid,
+        });
+        if (defaultProj) {
+          setProjects([defaultProj]);
+          setActiveProjectState(defaultProj);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("ecoraa_active_project_id", defaultProj.id);
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("[Store] Failed to refresh projects:", err);
+    }
+  }, [userId]);
+
+  const createProject = useCallback(async (name: string, description?: string): Promise<Project | null> => {
+    const uid =
+      (typeof window !== "undefined" ? localStorage.getItem("ecoraa_user_id") : null) ||
+      userId ||
+      "2a322f60-33a0-49fe-9d74-ac9899031752";
+
+    try {
+      const newProj = await supabaseService.createProject({
+        name: name.trim(),
+        description: description?.trim() || undefined,
+        user_id: uid,
+      });
+
+      if (newProj) {
+        setProjects((prev) => [newProj, ...prev]);
+        setActiveProject(newProj);
+        setChatMessages([]);
+        return newProj;
+      }
+      return null;
+    } catch (err) {
+      console.error("[Store] Create project error:", err);
+      throw err;
+    }
+  }, [userId, setActiveProject]);
+
+  const deleteProject = useCallback(async (projectId: string) => {
+    try {
+      await supabaseService.deleteProject(projectId);
+      setProjects((prev) => {
+        const updated = prev.filter((p) => p.id !== projectId);
+        if (activeProject?.id === projectId) {
+          const nextActive = updated[0] || null;
+          setActiveProject(nextActive);
+        }
+        return updated;
+      });
+    } catch (err) {
+      console.error("[Store] Delete project error:", err);
+      throw err;
+    }
+  }, [activeProject, setActiveProject]);
+
   useEffect(() => {
     setMounted(true);
     // Ensure document element has light class by default
     if (typeof window !== "undefined") {
       document.documentElement.classList.remove("dark");
+
+      const isDeviceSaved =
+        localStorage.getItem("ecoraa_device_saved") === "true" ||
+        localStorage.getItem("ecoraa_authenticated") === "true";
       const storedName = localStorage.getItem("ecoraa_user_name");
+      const storedRole = localStorage.getItem("ecoraa_user_role");
+      const storedUserId = localStorage.getItem("ecoraa_user_id");
+
       if (storedName) {
         setUserNameState(storedName);
       }
-      const storedRole = localStorage.getItem("ecoraa_user_role");
       if (storedRole) {
         setUserRoleState(storedRole);
       }
+      if (storedUserId) {
+        setUserId(storedUserId);
+      }
+
+      // If user was previously authenticated on this device, restore immediately!
+      if (isDeviceSaved || storedName) {
+        setIsAuthenticatedState(true);
+        setShowWelcomeState(false);
+      }
+
+      // Check active Supabase auth session
+      supabaseService.getSession().then((session) => {
+        if (session?.user) {
+          setIsAuthenticatedState(true);
+          setShowWelcomeState(false);
+          localStorage.setItem("ecoraa_authenticated", "true");
+          localStorage.setItem("ecoraa_device_saved", "true");
+          setUserId(session.user.id);
+          localStorage.setItem("ecoraa_user_id", session.user.id);
+          const authUser = session.user;
+          const metaName = authUser.user_metadata?.full_name || authUser.user_metadata?.name;
+          if (metaName) {
+            setUserNameState(metaName);
+            localStorage.setItem("ecoraa_user_name", metaName);
+          }
+          refreshProjects(session.user.id);
+        } else {
+          refreshProjects(storedUserId || "2a322f60-33a0-49fe-9d74-ac9899031752");
+        }
+      }).catch(() => {
+        refreshProjects(storedUserId || "2a322f60-33a0-49fe-9d74-ac9899031752");
+      });
+    }
+  }, [refreshProjects]);
+
+  const setIsAuthenticated = useCallback((auth: boolean, rememberDevice: boolean = true) => {
+    setIsAuthenticatedState(auth);
+    if (auth) {
+      setShowWelcomeState(false);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("ecoraa_authenticated", "true");
+        if (rememberDevice) {
+          localStorage.setItem("ecoraa_device_saved", "true");
+        }
+        localStorage.setItem("ecoraa_visited", "true");
+      }
+      refreshProjects();
+    } else {
+      setShowWelcomeState(true);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("ecoraa_authenticated");
+        localStorage.removeItem("ecoraa_device_saved");
+      }
+    }
+  }, [refreshProjects]);
+
+  const logout = useCallback(async () => {
+    setIsAuthenticatedState(false);
+    setShowWelcomeState(true);
+    setAuthStep("welcome");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("ecoraa_authenticated");
+      localStorage.removeItem("ecoraa_device_saved");
+    }
+    try {
+      await supabaseService.signOut();
+    } catch {
+      // ignore
     }
   }, []);
-
 
   const setShowWelcome = useCallback((show: boolean) => {
     setShowWelcomeState(show);
@@ -138,9 +331,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addChatMessage = useCallback((msg: ChatMessage) => {
-    setChatMessages((prev) => [...prev, msg]);
-    supabaseService.saveMessage(msg);
-  }, []);
+    const enrichedMsg: ChatMessage = {
+      ...msg,
+      projectId: msg.projectId || activeProject?.id,
+      userId: msg.userId || userId,
+    };
+    setChatMessages((prev) => [...prev, enrichedMsg]);
+    supabaseService.saveMessage(enrichedMsg);
+  }, [activeProject, userId]);
 
   const updateLastAssistantMessage = useCallback((updater: (prev: ChatMessage) => ChatMessage) => {
     setChatMessages((prev) => {
@@ -155,13 +353,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refreshState = useCallback(async () => {
     try {
-      const [status, tasks, mem, pair, supaMem, supaMsgs] = await Promise.allSettled([
+      const [status, tasks, mem, pair, supaMem] = await Promise.allSettled([
         api.getStatus(),
         api.getTasks(),
         api.getMemory(),
         api.getPairStatus(),
         supabaseService.getMemory(),
-        supabaseService.getMessages(),
       ]);
 
       if (status.status === "fulfilled") setSystemStatus(status.value);
@@ -191,9 +388,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
       if (pair.status === "fulfilled") setPairing(pair.value);
-      if (supaMsgs.status === "fulfilled" && supaMsgs.value.length > 0) {
-        setChatMessages(supaMsgs.value);
-      }
 
       // Check active Supabase Auth user
       supabaseService.getUser().then((authUser) => {
@@ -219,11 +413,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     async (goal: string, agentMode: string = "GENERAL") => {
       if (!goal.trim()) return;
 
+      const currentProjectId = activeProject?.id;
+      const currentUserId =
+        (typeof window !== "undefined" ? localStorage.getItem("ecoraa_user_id") : null) ||
+        userId ||
+        "2a322f60-33a0-49fe-9d74-ac9899031752";
+
       const userMsg: ChatMessage = {
         id: `user-${Date.now()}`,
         role: "user",
         content: goal,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        projectId: currentProjectId,
+        userId: currentUserId,
       };
 
       const assistantMsgId = `asst-${Date.now()}`;
@@ -235,6 +437,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         status: "streaming",
         steps: [],
         toolsUsed: [],
+        projectId: currentProjectId,
+        userId: currentUserId,
       };
 
       setChatMessages((prev) => [...prev, userMsg, assistantMsg]);
@@ -251,6 +455,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
           status: "completed",
           missionId: res.mission_id,
           steps: res.steps || [],
+          projectId: currentProjectId,
+          userId: currentUserId,
         };
 
         setChatMessages((prev) =>
@@ -265,6 +471,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
           content: `Mission execution error: ${err?.message || "Failed to reach Core"}`,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           status: "error",
+          projectId: currentProjectId,
+          userId: currentUserId,
         };
         setChatMessages((prev) =>
           prev.map((msg) => (msg.id === assistantMsgId ? errorMsg : msg))
@@ -272,7 +480,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await supabaseService.saveMessage(errorMsg);
       }
     },
-    [refreshState]
+    [activeProject, userId, refreshState]
   );
 
   useEffect(() => {
@@ -348,6 +556,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         memory,
         pairing,
         chatMessages,
+        projects,
+        activeProject,
+        userId,
         theme,
         showWelcome,
         authStep,
@@ -355,6 +566,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         isCommandPaletteOpen,
         userName,
         userRole,
+        isAuthenticated,
+        setIsAuthenticated,
+        logout,
         setUserName,
         setUserRole,
         setShowWelcome,
@@ -363,6 +577,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleCommandPalette,
         openCommandPalette,
         closeCommandPalette,
+        setActiveProject,
+        createProject,
+        deleteProject,
+        refreshProjects,
         addChatMessage,
         updateLastAssistantMessage,
         executeGoal,

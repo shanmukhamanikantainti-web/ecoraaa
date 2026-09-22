@@ -6,6 +6,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
 import {
   User,
   Smartphone,
@@ -16,9 +17,11 @@ import {
   Palette,
   Info,
   RefreshCw,
+  LogOut,
 } from "lucide-react";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const {
     theme,
     toggleTheme,
@@ -30,6 +33,8 @@ export default function ProfilePage() {
     userRole,
     setUserRole,
     memory,
+    isAuthenticated,
+    logout,
   } = useApp();
   const [pairingCode, setPairingCode] = useState("");
   const [pairStatus, setPairStatus] = useState<string | null>(null);
@@ -228,6 +233,27 @@ export default function ProfilePage() {
             <span>OpenRouter API Key Storage</span>
             <span className="font-mono text-emerald-600 font-semibold">BACKEND ONLY (.env)</span>
           </div>
+          <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface/40 border border-border/40">
+            <span>This Device Authentication</span>
+            <span className="font-mono text-emerald-600 font-semibold">
+              {isAuthenticated ? "REMEMBERED & ACTIVE" : "TEMPORARY SESSION"}
+            </span>
+          </div>
+        </div>
+
+        <div className="pt-2 border-t border-border/40 flex justify-end">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={async () => {
+              await logout();
+              router.push("/login");
+            }}
+            className="text-red-500 hover:text-red-600 hover:bg-red-500/10 gap-1.5 text-xs"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Sign Out & Forget Device</span>
+          </Button>
         </div>
       </GlassCard>
     </div>

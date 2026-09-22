@@ -11,91 +11,132 @@ export type Database = {
     Tables: {
       chat_messages: {
         Row: {
-          id: string;
-          role: "user" | "assistant" | "system";
           content: string;
-          timestamp: string;
-          mission_id: string | null;
-          steps: Json | null;
-          tools_used: string[] | null;
-          status: string | null;
           created_at: string | null;
+          id: string;
+          mission_id: string | null;
+          project_id: string | null;
+          role: string;
+          status: string | null;
+          steps: Json | null;
+          timestamp: string;
+          tools_used: string[] | null;
+          user_id: string | null;
         };
         Insert: {
-          id: string;
-          role: "user" | "assistant" | "system";
           content: string;
-          timestamp: string;
-          mission_id?: string | null;
-          steps?: Json | null;
-          tools_used?: string[] | null;
-          status?: string | null;
           created_at?: string | null;
+          id: string;
+          mission_id?: string | null;
+          project_id?: string | null;
+          role: string;
+          status?: string | null;
+          steps?: Json | null;
+          timestamp: string;
+          tools_used?: string[] | null;
+          user_id?: string | null;
         };
         Update: {
-          id?: string;
-          role?: "user" | "assistant" | "system";
           content?: string;
-          timestamp?: string;
-          mission_id?: string | null;
-          steps?: Json | null;
-          tools_used?: string[] | null;
-          status?: string | null;
           created_at?: string | null;
+          id?: string;
+          mission_id?: string | null;
+          project_id?: string | null;
+          role?: string;
+          status?: string | null;
+          steps?: Json | null;
+          timestamp?: string;
+          tools_used?: string[] | null;
+          user_id?: string | null;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       memory_items: {
         Row: {
-          id: string;
-          category: "user" | "projects" | "preferences" | "goals";
-          value: string;
+          category: string;
           created_at: string | null;
+          id: string;
+          value: string;
         };
         Insert: {
-          id?: string;
-          category: "user" | "projects" | "preferences" | "goals";
-          value: string;
+          category: string;
           created_at?: string | null;
+          id?: string;
+          value: string;
         };
         Update: {
-          id?: string;
-          category?: "user" | "projects" | "preferences" | "goals";
-          value?: string;
+          category?: string;
           created_at?: string | null;
+          id?: string;
+          value?: string;
         };
         Relationships: [];
       };
       missions: {
         Row: {
-          id: string;
+          completed_at: string | null;
+          created_at: string | null;
           goal: string;
+          id: string;
+          result: string | null;
           status: string;
           steps: Json | null;
-          result: string | null;
           workspace: string | null;
-          created_at: string | null;
-          completed_at: string | null;
         };
         Insert: {
-          id: string;
+          completed_at?: string | null;
+          created_at?: string | null;
           goal: string;
+          id: string;
+          result?: string | null;
           status: string;
           steps?: Json | null;
-          result?: string | null;
           workspace?: string | null;
-          created_at?: string | null;
-          completed_at?: string | null;
         };
         Update: {
-          id?: string;
+          completed_at?: string | null;
+          created_at?: string | null;
           goal?: string;
+          id?: string;
+          result?: string | null;
           status?: string;
           steps?: Json | null;
-          result?: string | null;
           workspace?: string | null;
+        };
+        Relationships: [];
+      };
+      projects: {
+        Row: {
+          created_at: string | null;
+          description: string | null;
+          id: string;
+          name: string;
+          updated_at: string | null;
+          user_id: string;
+        };
+        Insert: {
           created_at?: string | null;
-          completed_at?: string | null;
+          description?: string | null;
+          id: string;
+          name: string;
+          updated_at?: string | null;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string | null;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          updated_at?: string | null;
+          user_id?: string;
         };
         Relationships: [];
       };

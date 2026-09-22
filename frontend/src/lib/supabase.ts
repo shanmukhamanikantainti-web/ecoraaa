@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "./database.types";
-import { ChatMessage, Mission, MemoryData } from "./types";
+import { ChatMessage, Mission, MemoryData, Project } from "./types";
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL || "https://dcnxsnsisbpxzwreyskw.supabase.co";
@@ -11,13 +11,74 @@ const supabaseAnonKey =
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 export const supabaseService = {
-  // ── Chat Messages ──
-  async getMessages(): Promise<ChatMessage[]> {
+  // ── Projects ──
+  async getProjects(userId: string): Promise<Project[]> {
     try {
+      if (!userId) return [];
       const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return (data || []) as Project[];
+    } catch (err) {
+      console.warn("[Supabase] Failed to fetch projects:", err);
+      return [];
+    }
+  },
+
+  async createProject(project: {
+    id?: string;
+    name: string;
+    description?: string;
+    user_id: string;
+  }): Promise<Project | null> {
+    try {
+      const projId = project.id || `proj-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const { data, error } = await supabase
+        .from("projects")
+        .insert({
+          id: projId,
+          name: project.name,
+          description: project.description || null,
+          user_id: project.user_id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Project;
+    } catch (err) {
+      console.error("[Supabase] Failed to create project:", err);
+      throw err;
+    }
+  },
+
+  async deleteProject(projectId: string): Promise<void> {
+    try {
+      const { error } = await supabase.from("projects").delete().eq("id", projectId);
+      if (error) throw error;
+    } catch (err) {
+      console.error("[Supabase] Failed to delete project:", err);
+      throw err;
+    }
+  },
+
+  // ── Chat Messages ──
+  async getMessages(projectId?: string): Promise<ChatMessage[]> {
+    try {
+      let query = supabase
         .from("chat_messages")
         .select("*")
         .order("created_at", { ascending: true });
+
+      if (projectId) {
+        query = query.eq("project_id", projectId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       if (!data) return [];
@@ -27,6 +88,8 @@ export const supabaseService = {
         role: row.role as "user" | "assistant" | "system",
         content: row.content,
         timestamp: row.timestamp,
+        projectId: row.project_id || undefined,
+        userId: row.user_id || undefined,
         missionId: row.mission_id || undefined,
         steps: row.steps ? (row.steps as any) : undefined,
         toolsUsed: row.tools_used || undefined,
@@ -45,6 +108,8 @@ export const supabaseService = {
         role: msg.role,
         content: msg.content,
         timestamp: msg.timestamp,
+        project_id: msg.projectId || null,
+        user_id: msg.userId || null,
         mission_id: msg.missionId || null,
         steps: msg.steps ? (msg.steps as any) : null,
         tools_used: msg.toolsUsed || null,

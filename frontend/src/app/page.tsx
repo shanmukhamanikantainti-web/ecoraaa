@@ -8,6 +8,7 @@ import { SapphireStar } from "@/components/ui/SapphireStar";
 import { GoalInput } from "@/components/assistant/GoalInput";
 import { AgentArcPanel } from "@/components/assistant/AgentArcPanel";
 import { ChatStream } from "@/components/assistant/ChatStream";
+import { FolderKanban } from "lucide-react";
 
 export default function AssistantPage() {
   const {
@@ -17,6 +18,9 @@ export default function AssistantPage() {
     authStep,
     setAuthStep,
     executeGoal,
+    isAuthenticated,
+    mounted,
+    activeProject,
   } = useApp();
   const [activeAgent, setActiveAgent] = useState("GENERAL");
   const [pendingGoal, setPendingGoal] = useState<string | null>(null);
@@ -49,7 +53,8 @@ export default function AssistantPage() {
     }
   };
 
-  if (showWelcome) {
+  // Only prompt login / welcome if NOT authenticated on this saved device
+  if (mounted && !isAuthenticated && showWelcome) {
     if (authStep === "create-account") {
       return (
         <CreateAccountScreen
@@ -66,6 +71,19 @@ export default function AssistantPage() {
     <div className="relative flex flex-col lg:flex-row items-center justify-between gap-6 min-h-[calc(100vh-6.5rem)] px-2">
       {/* ── Main Center Conversational Canvas ── */}
       <div className="flex-1 flex flex-col items-center justify-between w-full h-full min-h-[580px] max-w-4xl mx-auto py-4">
+        {/* Active Project Tag */}
+        {activeProject && (
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full liquid-glass-card border border-blue-400/30 text-xs font-medium text-slate-700 dark:text-slate-200 mb-2 shadow-2xs animate-in fade-in">
+            <FolderKanban className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span className="font-semibold text-foreground">{activeProject.name}</span>
+            {activeProject.description && (
+              <span className="text-[11px] text-muted-foreground hidden sm:inline truncate max-w-xs">
+                — {activeProject.description}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* If no user messages yet, show the central hero design with HEY ! HOW ARE YOU */}
         {!hasUserMessages ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in-95 duration-500 my-auto">

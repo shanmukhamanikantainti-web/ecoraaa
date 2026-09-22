@@ -8,13 +8,14 @@ import { useApp } from "@/lib/store";
 import { usePathname } from "next/navigation";
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { showWelcome, mounted } = useApp();
+  const { showWelcome, mounted, isAuthenticated } = useApp();
   const pathname = usePathname();
 
   const isAuthOrWelcome =
-    pathname === "/create-account" ||
-    pathname === "/login" ||
-    (mounted ? (showWelcome && pathname === "/") : (pathname === "/"));
+    !isAuthenticated &&
+    (pathname === "/create-account" ||
+      pathname === "/login" ||
+      (mounted ? (showWelcome && pathname === "/") : (pathname === "/")));
 
   if (isAuthOrWelcome) {
     return (
