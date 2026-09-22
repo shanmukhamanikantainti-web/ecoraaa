@@ -159,14 +159,24 @@ class PegasusOrchestrator:
 
             # Step 2: Execute
             mission.status = MissionStatus.RUNNING
+            self.context.active_task_id = mission_id
+            self.context.event_callback = self._emit_event
             await self._execute_steps(mission)
 
-            # Step 3: Complete
-            mission.status = MissionStatus.COMPLETED
-            mission.completed_at = time.time()
-            mission.result = self._compile_results(mission)
-            logger.info(f"Mission {mission_id}: Completed")
-            await self._emit_event("TASK_COMPLETED", {"task_id": mission_id, "result": mission.result, "mission": mission.to_dict()})
+            # Step 3: Check completion status
+            failed_steps = [s for s in mission.steps if s.status == StepStatus.FAILED]
+            if failed_steps:
+                mission.status = MissionStatus.FAILED
+                mission.completed_at = time.time()
+                mission.result = self._compile_results(mission)
+                logger.error(f"Mission {mission_id}: Failed ({len(failed_steps)} step(s) failed)")
+                await self._emit_event("TASK_FAILED", {"task_id": mission_id, "error": failed_steps[0].error or "Step failed", "mission": mission.to_dict()})
+            else:
+                mission.status = MissionStatus.COMPLETED
+                mission.completed_at = time.time()
+                mission.result = self._compile_results(mission)
+                logger.info(f"Mission {mission_id}: Completed")
+                await self._emit_event("TASK_COMPLETED", {"task_id": mission_id, "result": mission.result, "mission": mission.to_dict()})
 
         except Exception as e:
             mission.status = MissionStatus.FAILED

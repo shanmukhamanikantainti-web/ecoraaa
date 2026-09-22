@@ -62,6 +62,8 @@ class BaseAgent(ABC):
         self.state = AgentState.PLANNING
         self.current_task = step.name
         self._start_time = time.time()
+        self.context = context # Store context
+        self.tools = tools # Store tools
 
         try:
             self.state = AgentState.RUNNING
@@ -83,6 +85,8 @@ class BaseAgent(ABC):
 
         finally:
             self.current_task = None
+            self.context = None
+            self.tools = None
 
     def pause(self):
         """Pause the agent."""
@@ -113,18 +117,26 @@ class BaseAgent(ABC):
 
     async def _llm_call(self, system_prompt: str, user_prompt: str) -> str:
         """Make an LLM API call using OpenRouter primary service."""
+        # Extract event callback and task ID from context if available
+        on_event = getattr(self.context, 'event_callback', None) if hasattr(self, 'context') else None
+        task_id = getattr(self.context, 'active_task_id', None) if hasattr(self, 'context') else None
+
         try:
             from ..services.llm import llm_service
             response = await llm_service.chat_completion(
                 messages=[{"role": "user", "content": user_prompt}],
                 system_prompt=system_prompt,
                 temperature=0.3,
-                max_tokens=2000
+                max_tokens=2000,
+                on_event=on_event,
+                task_id=task_id
             )
+            if "[Error:" in response or "[OpenRouter Error]" in response:
+                raise Exception(response)
             return response
         except Exception as e:
             logger.error(f"OpenRouter LLM call failed: {e}")
-            return f"LLM unavailable: {e}"
+            raise e # Ensure orchestrator catches it
 
     async def _execute_tool_call(self, tool_name: str, action: str, args: dict, tools: dict[str, Any]) -> str:
         """Execute a single tool action safely."""

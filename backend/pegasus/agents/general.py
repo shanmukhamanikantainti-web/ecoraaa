@@ -34,6 +34,15 @@ class GeneralAgent(BaseAgent):
         task = step.name
         logger.info(f"[General] Executing: {task}")
 
+        task_lower = task.lower().strip()
+        conversational_triggers = ["hi", "hello", "hey", "how are you", "greetings", "good morning", "good afternoon", "good evening", "thanks", "thank you", "sup"]
+        is_conversational = any(trigger in task_lower for trigger in conversational_triggers) or len(task_lower) < 25
+
+        if is_conversational:
+            system_prompt = "You are ECORAA General Agent, a helpful, polite, and friendly AI operating system assistant. Respond warmly and conversationally to the user."
+            user_prompt = f"User message: {task}"
+            return await self._llm_call(system_prompt=system_prompt, user_prompt=user_prompt)
+
         filesystem = self._use_tool(tools, "filesystem")
         terminal = self._use_tool(tools, "terminal")
         browser = self._use_tool(tools, "browser")
