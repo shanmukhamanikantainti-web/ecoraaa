@@ -9,7 +9,7 @@ import { ChatStream } from "@/components/assistant/ChatStream";
 
 export default function DashboardPage() {
   const { chatMessages, setShowWelcome } = useApp();
-  const [activeAgent, setActiveAgent] = useState("general");
+  const [activeAgent, setActiveAgent] = useState("coding");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const hasUserMessages = chatMessages.some((m) => m.role === "user");
@@ -57,7 +57,7 @@ export default function DashboardPage() {
 
         {/* ── Bottom Floating Liquid Glass Capsule Input Bar ── */}
         <div className="w-full pt-4 mt-auto">
-          <GoalInput />
+          <GoalInput agentMode={activeAgent} />
         </div>
       </div>
 

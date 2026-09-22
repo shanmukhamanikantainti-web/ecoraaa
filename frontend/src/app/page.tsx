@@ -18,7 +18,7 @@ export default function AssistantPage() {
     setAuthStep,
     executeGoal,
   } = useApp();
-  const [activeAgent, setActiveAgent] = useState("general");
+  const [activeAgent, setActiveAgent] = useState("coding");
   const [pendingGoal, setPendingGoal] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 

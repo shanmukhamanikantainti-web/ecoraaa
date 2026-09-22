@@ -2,16 +2,15 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
-  Sparkles,
   Code2,
   Search,
-  Feather,
-  BarChart3,
-  Terminal,
+  TrendingUp,
+  ShieldCheck,
   ChevronUp,
   ChevronDown,
   RotateCw,
   CheckCircle2,
+  GripVertical,
 } from "lucide-react";
 
 export interface AgentOption {
@@ -25,52 +24,36 @@ export interface AgentOption {
 
 export const AGENTS: AgentOption[] = [
   {
-    id: "general",
-    name: "General Agent",
-    subtitle: "Chat & assistant",
-    badge: "General",
-    icon: Sparkles,
-    color: "from-blue-600 to-sky-400",
-  },
-  {
     id: "coding",
     name: "Coding Agent",
     subtitle: "Write, debug & build",
     badge: "Code",
     icon: Code2,
-    color: "from-indigo-600 to-blue-500",
+    color: "from-blue-600 to-indigo-500",
   },
   {
     id: "research",
     name: "Research Agent",
-    subtitle: "Search & summarize",
+    subtitle: "Search, analyze & deep dive",
     badge: "Research",
     icon: Search,
     color: "from-cyan-600 to-teal-400",
   },
   {
-    id: "creative",
-    name: "Creative Agent",
-    subtitle: "Design & brainstorm",
-    badge: "Studio",
-    icon: Feather,
-    color: "from-violet-600 to-purple-400",
+    id: "marketing",
+    name: "Marketing Agent",
+    subtitle: "Campaigns, SEO & growth",
+    badge: "Marketing",
+    icon: TrendingUp,
+    color: "from-amber-500 to-orange-500",
   },
   {
-    id: "analyst",
-    name: "Data Analyst",
-    subtitle: "Data & visual charts",
-    badge: "Data",
-    icon: BarChart3,
-    color: "from-amber-600 to-orange-400",
-  },
-  {
-    id: "system",
-    name: "System Agent",
-    subtitle: "Terminal & workflows",
-    badge: "DevOps",
-    icon: Terminal,
-    color: "from-emerald-600 to-teal-400",
+    id: "review",
+    name: "Review Agent",
+    subtitle: "Audit, QA & code review",
+    badge: "Review",
+    icon: ShieldCheck,
+    color: "from-emerald-600 to-teal-500",
   },
 ];
 
@@ -86,65 +69,97 @@ const WHEEL_OUTER_RADIUS = 150;
 const WHEEL_INNER_RADIUS = 120;
 const CENTER_X = 240;
 const CENTER_Y = 215;
-const ANGLE_STEP = 36; // Degrees between each agent along the circle
+const ANGLE_STEP = 44; // Degrees between each of the 4 agents along the wheel
+
+// Continuous cyclic angular difference wrapping helper
+const wrapDiff = (diff: number, n: number) => {
+  return (((diff % n) + n * 1.5) % n) - n / 2;
+};
 
 export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
-  activeAgentId = "general",
+  activeAgentId = "coding",
   onSelectAgent,
   className = "",
 }) => {
-  // Single reliable source of truth for the active agent index
-  const [internalAgentId, setInternalAgentId] = useState(activeAgentId);
-  const [visualRotation, setVisualRotation] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lastScrollTime = useRef(0);
-  const dragStartY = useRef(0);
-  const isDragging = useRef(false);
-
-  // Derive current active index directly from activeAgentId (or internal state)
-  const currentId = activeAgentId || internalAgentId;
-  const foundIndex = AGENTS.findIndex((a) => a.id === currentId);
-  const currentIndex = foundIndex >= 0 ? foundIndex : 0;
-
-  // Sync internal state if prop changes
-  useEffect(() => {
-    if (activeAgentId && activeAgentId !== internalAgentId) {
-      setInternalAgentId(activeAgentId);
-    }
-  }, [activeAgentId, internalAgentId]);
-
-  // Master step function that updates agent and spins the wheel
-  const goToIndex = useCallback(
-    (targetIndex: number) => {
-      const total = AGENTS.length;
-      const normalized = ((targetIndex % total) + total) % total;
-      const nextAgent = AGENTS[normalized];
-
-      // Step rotation by delta
-      const direction = targetIndex >= currentIndex ? 1 : -1;
-      setVisualRotation((prev) => prev + direction * ANGLE_STEP);
-
-      setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 300);
-
-      setInternalAgentId(nextAgent.id);
-      onSelectAgent?.(nextAgent.id);
-    },
-    [currentIndex, onSelectAgent]
+  const initialIndex = Math.max(
+    0,
+    AGENTS.findIndex((a) => a.id === activeAgentId)
   );
 
-  const handleNext = useCallback(() => {
-    goToIndex(currentIndex + 1);
-  }, [goToIndex, currentIndex]);
+  // Continuous wheelAngle in degrees for 60fps/120fps direct-manipulation dragging
+  const [wheelAngle, setWheelAngle] = useState(initialIndex * ANGLE_STEP);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragDeltaY, setDragDeltaY] = useState(0);
 
-  const handlePrev = useCallback(() => {
-    goToIndex(currentIndex - 1);
-  }, [goToIndex, currentIndex]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const wheelAngleRef = useRef(initialIndex * ANGLE_STEP);
+  const isDraggingRef = useRef(false);
+  const dragStartY = useRef(0);
+  const startWheelAngle = useRef(0);
+  const hasDraggedRef = useRef(false);
+  const lastScrollTime = useRef(0);
+  const prevPropAgentId = useRef(activeAgentId);
+
+  // Keep wheelAngleRef in sync with wheelAngle
+  wheelAngleRef.current = wheelAngle;
+
+  // Normalize current slot index to [0, AGENTS.length - 1]
+  const currentSlot = Math.round(wheelAngle / ANGLE_STEP);
+  const normalizedIndex =
+    ((currentSlot % AGENTS.length) + AGENTS.length) % AGENTS.length;
+
+  // Snap to target slot with smooth transition
+  const snapToSlot = useCallback(
+    (slot: number) => {
+      const targetAngle = slot * ANGLE_STEP;
+      const targetNormalized =
+        ((slot % AGENTS.length) + AGENTS.length) % AGENTS.length;
+      setWheelAngle(targetAngle);
+      wheelAngleRef.current = targetAngle;
+      const selectedId = AGENTS[targetNormalized].id;
+      prevPropAgentId.current = selectedId;
+      onSelectAgent?.(selectedId);
+    },
+    [onSelectAgent]
+  );
+
+  // Synchronize ONLY when external activeAgentId prop actually changes from parent
+  useEffect(() => {
+    if (!activeAgentId) return;
+    if (activeAgentId !== prevPropAgentId.current) {
+      prevPropAgentId.current = activeAgentId;
+      // Never interrupt an active user drag
+      if (isDraggingRef.current) return;
+
+      const targetIdx = AGENTS.findIndex((a) => a.id === activeAgentId);
+      if (targetIdx >= 0) {
+        // Find slot closest to current wheelAngle matching targetIdx
+        const curSlot = Math.round(wheelAngleRef.current / ANGLE_STEP);
+        const curNorm =
+          ((curSlot % AGENTS.length) + AGENTS.length) % AGENTS.length;
+        let diff = targetIdx - curNorm;
+        if (diff > AGENTS.length / 2) diff -= AGENTS.length;
+        if (diff < -AGENTS.length / 2) diff += AGENTS.length;
+
+        const targetSlot = curSlot + diff;
+        const targetAngle = targetSlot * ANGLE_STEP;
+        setWheelAngle(targetAngle);
+        wheelAngleRef.current = targetAngle;
+      }
+    }
+  }, [activeAgentId]);
+
+  const stepNext = useCallback(() => {
+    const curSlot = Math.round(wheelAngleRef.current / ANGLE_STEP);
+    snapToSlot(curSlot + 1);
+  }, [snapToSlot]);
+
+  const stepPrev = useCallback(() => {
+    const curSlot = Math.round(wheelAngleRef.current / ANGLE_STEP);
+    snapToSlot(curSlot - 1);
+  }, [snapToSlot]);
 
   // ── Native Non-Passive Wheel Event Listener ──
-  // Listens on the container with passive: false so e.preventDefault() reliably halts page scroll
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -154,18 +169,16 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
       e.stopPropagation();
 
       const now = Date.now();
-      if (now - lastScrollTime.current < 120) return;
+      if (now - lastScrollTime.current < 130) return;
       lastScrollTime.current = now;
 
       const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
       if (Math.abs(delta) < 2) return;
 
       if (delta > 0) {
-        // Scrolling down -> advance to next agent
-        handleNext();
+        stepNext();
       } else {
-        // Scrolling up -> advance to previous agent
-        handlePrev();
+        stepPrev();
       }
     };
 
@@ -173,35 +186,68 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
     return () => {
       el.removeEventListener("wheel", onWheelHandler);
     };
-  }, [handleNext, handlePrev]);
+  }, [stepNext, stepPrev]);
 
-  // ── Mouse / Touch Drag Support ──
-  // Does NOT call setPointerCapture so regular button clicks are never swallowed
+  // ── Mouse & Touch Direct Manipulation Dragging ──
   const handlePointerDown = (e: React.PointerEvent) => {
-    isDragging.current = true;
+    // Only respond to main left-click or touch/pen
+    if (e.button !== 0) return;
+    // Don't drag if user clicked directly on a button
+    if ((e.target as HTMLElement).closest("button")) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    isDraggingRef.current = true;
+    setIsDragging(true);
     dragStartY.current = e.clientY;
+    startWheelAngle.current = wheelAngleRef.current;
+    hasDraggedRef.current = false;
+    setDragDeltaY(0);
+
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      if (!isDraggingRef.current) return;
+      moveEvent.preventDefault();
+
+      const deltaY = moveEvent.clientY - dragStartY.current;
+      if (Math.abs(deltaY) > 3) {
+        hasDraggedRef.current = true;
+      }
+
+      // Dragging DOWN moves items above down into the apex
+      // Sensitivity: 1px drag = 0.45 degrees of wheel rotation
+      const sensitivity = 0.45;
+      const newAngle = startWheelAngle.current + deltaY * sensitivity;
+
+      wheelAngleRef.current = newAngle;
+      setWheelAngle(newAngle);
+      setDragDeltaY(deltaY);
+    };
+
+    const onPointerUp = () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
+
+      if (!isDraggingRef.current) return;
+      isDraggingRef.current = false;
+      setIsDragging(false);
+      setDragDeltaY(0);
+
+      if (hasDraggedRef.current) {
+        // Snap to nearest agent slot smoothly
+        const nearestSlot = Math.round(wheelAngleRef.current / ANGLE_STEP);
+        snapToSlot(nearestSlot);
+      }
+    };
+
+    window.addEventListener("pointermove", onPointerMove, { passive: false });
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging.current) return;
-    const deltaY = e.clientY - dragStartY.current;
-
-    // Trigger step when dragged past 22px
-    if (deltaY > 22) {
-      handleNext();
-      dragStartY.current = e.clientY;
-    } else if (deltaY < -22) {
-      handlePrev();
-      dragStartY.current = e.clientY;
-    }
-  };
-
-  const handlePointerUp = () => {
-    isDragging.current = false;
-  };
-
-  const currentAgent = AGENTS[currentIndex];
-  const CurrentIcon = currentAgent.icon;
+  const activeAgent = AGENTS[normalizedIndex];
+  const ActiveIcon = activeAgent.icon;
 
   // Concentric wheel perimeter tick marks
   const numTicks = 24;
@@ -210,26 +256,29 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
     (_, i) => -72 + i * (144 / (numTicks - 1))
   );
 
+  // Elastic drag displacement for active card
+  const cardElasticY = isDragging
+    ? Math.max(-24, Math.min(24, dragDeltaY * 0.2))
+    : 0;
+
   return (
     <div
       ref={containerRef}
       onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerUp}
+      onDragStart={(e) => e.preventDefault()}
       style={{ touchAction: "none" }}
-      className={`relative select-none flex flex-col justify-center items-end w-[265px] xl:w-[280px] h-[430px] overflow-visible cursor-ns-resize ${className}`}
-      title="Scroll mouse wheel, drag, or click to switch agents"
+      className={`relative select-none flex flex-col justify-center items-end w-[265px] xl:w-[280px] h-[430px] overflow-visible cursor-grab active:cursor-grabbing ${className}`}
+      title="Drag up or down, scroll mouse wheel, or click to rotate agents"
     >
-      {/* ── Header: Title, Counter & Rotary Steppers ── */}
-      <div className="absolute top-1 right-2 z-30 flex items-center justify-between w-[245px] px-2.5 py-1.5 rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-blue-500/25 shadow-sm">
+      {/* ── Header: Title, Counter & Steppers ── */}
+      <div className="absolute top-1 right-2 z-30 flex items-center justify-between w-[245px] px-2.5 py-1.5 rounded-xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-blue-500/25 shadow-sm select-none">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
           <span className="text-[11px] font-bold text-foreground tracking-tight">
             AI Agents
           </span>
           <span className="text-[9px] font-mono text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded font-bold">
-            0{currentIndex + 1}/0{AGENTS.length}
+            0{normalizedIndex + 1}/0{AGENTS.length}
           </span>
         </div>
 
@@ -240,7 +289,7 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              handlePrev();
+              stepPrev();
             }}
             className="p-1 rounded-md bg-blue-500/10 hover:bg-blue-500/25 text-blue-600 dark:text-blue-400 transition-all active:scale-90 cursor-pointer"
             title="Previous Agent (Rotate Up)"
@@ -252,7 +301,7 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              handleNext();
+              stepNext();
             }}
             className="p-1 rounded-md bg-blue-500/10 hover:bg-blue-500/25 text-blue-600 dark:text-blue-400 transition-all active:scale-90 cursor-pointer"
             title="Next Agent (Rotate Down)"
@@ -263,6 +312,7 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
       </div>
 
       {/* ── SVG Dual-Arc Half Wheel Track ── */}
+      {/* The concentric track physically rotates as you drag the wheel! */}
       <div className="absolute inset-0 pointer-events-none overflow-visible">
         <svg
           viewBox="0 0 280 430"
@@ -331,12 +381,14 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
             strokeLinecap="round"
           />
 
-          {/* 4. Physically Rotating Ticks along the Wheel Rim */}
+          {/* 4. Ticks along the Wheel Rim - rotates in real time with drag! */}
           <g
             style={{
               transformOrigin: `${CENTER_X}px ${CENTER_Y}px`,
-              transform: `rotate(${visualRotation}deg)`,
-              transition: "transform 320ms cubic-bezier(0.16, 1, 0.3, 1)",
+              transform: `rotate(${-wheelAngle}deg)`,
+              transition: isDragging
+                ? "none"
+                : "transform 320ms cubic-bezier(0.16, 1, 0.3, 1)",
             }}
           >
             {tickAngles.map((angleDeg, i) => {
@@ -365,26 +417,27 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
         </svg>
       </div>
 
-      {/* ── Orbiting Inactive Agent Nodes on the Rim ── */}
+      {/* ── Orbiting Agent Nodes on the Arc Track ── */}
+      {/* Each node glides smoothly along the arc continuously from wheelAngle */}
       <div className="absolute inset-0 pointer-events-none">
         {AGENTS.map((agent, index) => {
-          const stepDiff = index - currentIndex;
-          let delta = stepDiff;
-          if (delta > AGENTS.length / 2) delta -= AGENTS.length;
-          if (delta < -AGENTS.length / 2) delta += AGENTS.length;
+          // Calculate angular position on the circle relative to current wheelAngle using cyclic wrap
+          const diffSlots = wrapDiff(index - wheelAngle / ANGLE_STEP, AGENTS.length);
+          const diffDeg = diffSlots * ANGLE_STEP;
 
-          const angleDeg = 180 + delta * ANGLE_STEP;
+          // If close to apex, the active card displays this agent
+          if (Math.abs(diffDeg) < 16) return null;
+
+          // Only show nodes along the visible half-wheel arc
+          if (Math.abs(diffDeg) > 92) return null;
+
+          const angleDeg = 180 + diffDeg;
           const rad = (angleDeg * Math.PI) / 180;
 
           const x = CENTER_X + WHEEL_RADIUS * Math.cos(rad);
           const y = CENTER_Y + WHEEL_RADIUS * Math.sin(rad);
 
-          if (angleDeg < 95 || angleDeg > 265) return null;
-
-          const isActive = index === currentIndex;
           const NodeIcon = agent.icon;
-
-          if (isActive) return null;
 
           return (
             <div
@@ -392,14 +445,17 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                goToIndex(index);
+                snapToSlot(index);
               }}
               style={{
                 left: `${x}px`,
                 top: `${y}px`,
-                transform: `translate(-50%, -50%)`,
+                transform: "translate(-50%, -50%)",
+                transition: isDragging
+                  ? "none"
+                  : "all 300ms cubic-bezier(0.16, 1, 0.3, 1)",
               }}
-              className="absolute z-20 group/node cursor-pointer pointer-events-auto transition-transform duration-200 hover:scale-125 active:scale-95"
+              className="absolute z-20 group/node cursor-pointer pointer-events-auto hover:scale-120 active:scale-95"
             >
               <div className="relative flex items-center">
                 <div className="w-8 h-8 rounded-full liquid-glass bg-white/95 dark:bg-slate-900/95 border border-blue-400/50 shadow-sm flex items-center justify-center text-muted-foreground group-hover/node:text-blue-600 group-hover/node:border-blue-500 transition-colors">
@@ -417,57 +473,63 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
       </div>
 
       {/* ── Active Agent Card at the Apex (The Blue Box from Layout) ── */}
-      {/* Sized cleanly with full text visibility and click-to-cycle */}
       <div
         style={{
           top: `${CENTER_Y}px`,
-          transform: `translateY(-50%)`,
+          transform: `translateY(-50%) translateY(${cardElasticY}px)`,
+          transition: isDragging
+            ? "none"
+            : "all 300ms cubic-bezier(0.16, 1, 0.3, 1)",
         }}
-        className="absolute left-0 z-20 w-[204px] transition-all duration-300 pointer-events-auto"
+        className="absolute left-0 z-20 w-[204px] pointer-events-auto"
       >
         <div
           onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleNext();
+            // Advance to next agent on simple click without drag
+            if (!hasDraggedRef.current) {
+              e.preventDefault();
+              e.stopPropagation();
+              stepNext();
+            }
           }}
-          className={`relative liquid-glass rounded-xl p-2.5 cursor-pointer transition-all duration-300 active:scale-98 ${
-            isAnimating
-              ? "scale-[1.02] border-blue-400 shadow-[0_0_22px_rgba(59,130,246,0.5)]"
-              : "border-2 border-blue-500 dark:border-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.32)] ring-1 ring-blue-400/30"
-          }`}
-          title="Click to switch to next agent"
+          className="relative liquid-glass rounded-xl p-2.5 cursor-grab active:cursor-grabbing border-2 border-blue-500 dark:border-blue-400 shadow-[0_0_22px_rgba(37,99,235,0.35)] ring-1 ring-blue-400/30 active:scale-98 transition-transform select-none"
+          title="Drag up or down to roll the wheel, or click to advance"
         >
           {/* Active Left Pip */}
           <div className="absolute -left-1 top-2.5 bottom-2.5 w-1 rounded-full bg-gradient-to-b from-blue-500 to-sky-400 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
 
-          {/* Mini Header: Tag & Apex indicator */}
-          <div className="flex items-center justify-between mb-1.5 pl-0.5">
+          {/* Drag Handle Gripper Bar on far right */}
+          <div className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground/50 flex flex-col items-center">
+            <GripVertical className="w-3.5 h-3.5 text-blue-400/70" />
+          </div>
+
+          {/* Mini Header: Active Tag & Apex indicator */}
+          <div className="flex items-center justify-between mb-1.5 pl-0.5 pr-3">
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-blue-500 text-white shadow-xs">
               <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
               Active
             </span>
 
             <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400">
-              {currentAgent.badge}
+              {activeAgent.badge}
             </span>
           </div>
 
           {/* Agent Icon + Title */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 pr-2">
             <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-tr ${currentAgent.color} text-white shadow-sm shadow-blue-500/35 shrink-0`}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-tr ${activeAgent.color} text-white shadow-sm shadow-blue-500/35 shrink-0`}
             >
-              <CurrentIcon className="w-4 h-4" />
+              <ActiveIcon className="w-4 h-4" />
             </div>
 
             <div className="space-y-0.5 min-w-0 flex-1 overflow-visible">
               <h4 className="text-[12px] font-extrabold text-foreground tracking-tight whitespace-nowrap flex items-center gap-1">
-                <span>{currentAgent.name}</span>
+                <span>{activeAgent.name}</span>
                 <CheckCircle2 className="w-3 h-3 text-blue-500 shrink-0" />
               </h4>
               <p className="text-[9.5px] text-muted-foreground whitespace-nowrap leading-tight">
-                {currentAgent.subtitle}
+                {activeAgent.subtitle}
               </p>
             </div>
           </div>
@@ -485,13 +547,13 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          handleNext();
+          stepNext();
         }}
-        className="absolute bottom-1 right-2 z-30 flex items-center gap-1 text-[9.5px] text-muted-foreground/85 hover:text-blue-600 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-2.5 py-0.5 rounded-lg border border-border/50 hover:border-blue-400/40 transition-all cursor-pointer"
-        title="Click or scroll wheel to rotate"
+        className="absolute bottom-1 right-2 z-30 flex items-center gap-1 text-[9.5px] text-muted-foreground/85 hover:text-blue-600 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-2.5 py-0.5 rounded-lg border border-border/50 hover:border-blue-400/40 transition-all cursor-pointer select-none"
+        title="Click or drag to rotate wheel"
       >
         <RotateCw className="w-2.5 h-2.5 text-blue-500 animate-spin" style={{ animationDuration: "10s" }} />
-        <span>Scroll or click to rotate</span>
+        <span>Scroll or drag to rotate</span>
       </button>
     </div>
   );
