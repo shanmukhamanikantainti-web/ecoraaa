@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useApp } from "@/lib/store";
+import { EcoraaLogo } from "@/components/ui/EcoraaLogo";
+
 import {
   Sparkles,
   Plus,
@@ -82,7 +84,7 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="hidden lg:flex flex-col w-[275px] h-[calc(100vh-2rem)] my-4 ml-4 rounded-[28px] liquid-glass p-4 select-none z-30 shrink-0">
+    <aside className="hidden lg:flex flex-col w-[275px] h-[calc(100vh-2rem)] my-4 ml-4 rounded-[28px] liquid-glass shadow-floating p-4 select-none z-30 shrink-0" style={{background: '#FFFDF7'}}>
       {/* Brand Header */}
       <div className="flex items-center justify-between px-2 pt-1 pb-3">
         <div
@@ -93,13 +95,15 @@ export const Sidebar: React.FC = () => {
           className="flex items-center gap-2.5 cursor-pointer group"
           title="Return to Welcome Screen"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-blue-500/30 group-hover:scale-105 transition-transform">
-            <Sparkles className="w-4 h-4" />
+          <div className="w-11 h-11 rounded-full bg-white border border-amber-200/60 shadow-md flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 p-1.5">
+            <EcoraaLogo size={34} />
           </div>
-          <span className="text-lg font-bold tracking-tight text-blue-600 dark:text-blue-400">
-            AI Assist
+          <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            ECORAA
           </span>
         </div>
+
+
         <div className="flex items-center gap-1">
           <button
             onClick={toggleTheme}

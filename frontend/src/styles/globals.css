@@ -4,33 +4,33 @@
 
 
 :root {
-  /* ── ECORAA Palette (60/20/8/5/5/2 Balance) ── */
-  /* Near White (60% Main background) */
-  --background: #FAFAFA;
-  --bg-gradient: radial-gradient(circle at 50% 20%, #FFFFFF 0%, #F5F7FA 50%, #FAFAFA 100%);
+  /* ── ECORAA Warm Cream Palette ── */
+  /* Main background (#F7F1E3) */
+  --background: #F7F1E3;
+  --bg-gradient: radial-gradient(circle at 50% 20%, #FFFDF7 0%, #FAF5EB 50%, #F7F1E3 100%);
   
-  /* Blackwater (5% Primary text) */
-  --foreground: #555663;
-  --foreground-heading: #2E303D;
+  /* Primary text (#2D2A26) */
+  --foreground: #2D2A26;
+  --foreground-heading: #1A1816;
   
-  /* Soothing Sapphire (2% Accent & Active States) */
+  /* Soothing Sapphire Accent */
   --color-primary: #2F7EDA;
   --color-primary-hover: #2568B8;
   --color-primary-light: rgba(47, 126, 218, 0.12);
   
-  /* Springtime Rain (20% Secondary surfaces & cards) */
-  --color-surface: #EDEFF3;
-  --color-surface-elevated: #FFFFFF;
-  --color-surface-subtle: #F4F6F9;
+  /* Text containers & sidebars (#FFFDF7) */
+  --color-surface: #FFFDF7;
+  --color-surface-elevated: #FFFDF7;
+  --color-surface-subtle: #FAF5EB;
   
-  /* Wind Weaver (8% Borders, dividers, subtle structure) */
-  --color-border: #C6D1D7;
-  --color-border-subtle: rgba(198, 209, 215, 0.6);
-  --color-border-strong: #A8B8C2;
+  /* Borders (#E2DAC8) */
+  --color-border: #E2DAC8;
+  --color-border-subtle: rgba(226, 218, 200, 0.6);
+  --color-border-strong: #D6CCA8;
   
-  /* Wild Thistle (5% Muted text & secondary info) */
-  --color-muted: #EDEFF3;
-  --color-muted-foreground: #9FA0B5;
+  /* Muted text (#8C857B) */
+  --color-muted: #FAF5EB;
+  --color-muted-foreground: #8C857B;
   
   --color-accent: #2F7EDA;
   --color-accent-hover: #2568B8;
@@ -40,6 +40,7 @@
   --color-danger: #EF4444;
   --color-info: #2F7EDA;
 }
+
 
 .dark {
   --background: #090C10;
@@ -74,10 +75,18 @@ body {
   background: var(--bg-gradient);
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-monument), 'Syne', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+}
+
+/* ── Floating Shadow Utility (for cards, sidebars, containers) ── */
+.shadow-floating {
+  box-shadow:
+    0 8px 32px -4px rgba(180, 160, 110, 0.18),
+    0 2px 8px 0 rgba(180, 160, 110, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.7) inset;
 }
 
 /* ── ECORAA Premium Liquid Glassmorphism Styling (Light-First) ── */

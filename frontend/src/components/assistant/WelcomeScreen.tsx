@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SapphireStar } from "@/components/ui/SapphireStar";
 import { GlassOrb } from "@/components/ui/GlassOrb";
+import { EcoraaLogo } from "@/components/ui/EcoraaLogo";
 import { useApp } from "@/lib/store";
+
 import {
   Sun,
   Moon,
@@ -64,7 +66,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGetStarted }) =>
   ];
 
   return (
-    <div className="fixed inset-0 w-screen h-screen max-h-screen overflow-hidden bg-[#FAFAFA] flex flex-col justify-between select-none z-50">
+    <div className="fixed inset-0 w-screen h-screen max-h-screen overflow-hidden bg-[#F7F1E3] flex flex-col justify-between select-none z-50">
       
       {/* ── Ambient Background 3D Glass Bubbles (Matching Image 2) ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
@@ -102,26 +104,20 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGetStarted }) =>
 
       {/* ── Top Header Navigation Bar ── */}
       <header className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-14 pt-6 pb-2 flex items-center justify-between shrink-0">
-        {/* Brand Logo with 4-point Sparkle */}
+        {/* Brand Logo with ECORAA Emblem */}
         <div
           id="welcome-brand-logo"
           className="flex items-center gap-2.5 cursor-pointer group"
         >
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#2F7EDA] to-[#54A0FF] flex items-center justify-center text-white shadow-md shadow-blue-500/30 group-hover:scale-105 transition-transform shrink-0">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              style={{ width: 20, height: 20 }}
-            >
-              <path d="M12 0L14.4 8.6L23 11L14.4 13.4L12 22L9.6 13.4L1 11L9.6 8.6L12 0Z" />
-            </svg>
+          <div className="w-12 h-12 rounded-full bg-white border border-amber-200/60 shadow-md flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 p-1.5">
+            <EcoraaLogo size={38} />
           </div>
-          <span className="text-xl font-bold tracking-tight text-[#2F7EDA]">
-            AI Assist
+          <span className="text-2xl font-bold tracking-tight text-[#2D2A26]">
+            ECORAA
           </span>
         </div>
+
+
 
         {/* Light / Dark Mode Liquid Glass Pill */}
         <button
@@ -159,7 +155,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onGetStarted }) =>
         <div className="space-y-1.5 max-w-xl mx-auto px-4">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-[#2E303D] leading-[1.12]">
             Welcome to <br />
-            <span className="text-[#2F7EDA]">AI Assist</span>
+            <span className="text-[#2F7EDA]">ECORAA</span>
           </h1>
           <p className="text-xs md:text-sm text-[#9FA0B5] font-normal leading-relaxed max-w-md mx-auto pt-0.5">
             Your all-in-one AI companion. Ask, create, research, and build — all in one place.

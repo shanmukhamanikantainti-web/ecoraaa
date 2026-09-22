@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Syne, JetBrains_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import { AppProvider } from "@/lib/store";
 import { AppShell } from "@/components/layout/AppShell";
 
-const inter = Inter({
+// Syne — geometric display font with Monument Extended character
+const syne = Syne({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-monument",
   display: "swap",
 });
 
@@ -17,7 +19,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Assist — ECORAA Personal Intelligence OS",
+  title: "ECORAA — Personal Intelligence OS",
   description:
     "Autonomous AI operating environment coordinating agents, tasks, semantic memory, terminal execution, and hardware persistence.",
   icons: {
@@ -31,8 +33,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrains.variable}`}>
-      <body className="antialiased bg-[#FAFAFA] text-[#555663] font-sans">
+    <html lang="en" className={`${syne.variable} ${jetbrains.variable}`}>
+      <body className="antialiased bg-[#F7F1E3] text-[#2D2A26]">
         <AppProvider>
           <AppShell>{children}</AppShell>
         </AppProvider>

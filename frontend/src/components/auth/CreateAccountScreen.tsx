@@ -108,7 +108,7 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 w-screen h-screen overflow-y-auto bg-[#FAFAFA] flex flex-col justify-between select-none z-50">
+    <div className="fixed inset-0 w-screen h-screen overflow-y-auto bg-[#F7F1E3] flex flex-col justify-between select-none z-50">
       
       {/* ── Ambient Background 3D Glass Bubbles ── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
