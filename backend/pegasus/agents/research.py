@@ -39,21 +39,63 @@ class ResearchAgent(BaseAgent):
         ]
         return any(kw in task_description.lower() for kw in keywords)
 
+    def _extract_research_topic(self, task: str) -> str:
+        """Extract the actual research topic from the task description."""
+        # Remove common prefixes
+        prefixes = [
+            "execute task: ",
+            "execute task:",
+            "research: ",
+            "research:",
+            "search: ",
+            "search:",
+            "find: ",
+            "find:",
+            "look up: ",
+            "look up:",
+        ]
+        task_lower = task.lower().strip()
+        for prefix in prefixes:
+            if task_lower.startswith(prefix):
+                task = task[len(prefix):].strip()
+                break
+
+        # Remove "do a research on" or similar
+        research_phrases = [
+            "do a research on",
+            "research on",
+            "research about",
+            "investigate",
+            "analyze",
+        ]
+        task_lower = task.lower()
+        for phrase in research_phrases:
+            if phrase in task_lower:
+                idx = task_lower.index(phrase)
+                task = task[idx + len(phrase):].strip()
+                break
+
+        return task
+
     async def execute(self, step: Any, tools: dict[str, Any], context: Any) -> str:
         """Execute a research step."""
         task = step.name
         logger.info(f"[Research] Executing: {task}")
 
-        # Step 1: Search for sources
+        # Step 1: Extract the actual research topic
+        research_topic = self._extract_research_topic(task)
+        logger.info(f"[Research] Extracted topic: '{research_topic}'")
+
+        # Step 2: Search for sources using web search
         browser = self._use_tool(tools, "browser")
         sources = []
 
         if browser:
-            search_results = await browser.search(task)
+            search_results = await browser.search(research_topic)
             sources = search_results.get("results", [])
-            logger.info(f"[Research] Found {len(sources)} sources")
+            logger.info(f"[Research] Found {len(sources)} web sources")
 
-        # Step 2: Extract information from top sources
+        # Step 3: Extract information from top sources
         extracted_info = []
         if browser and sources:
             for source in sources[:5]:  # Limit to top 5 sources
@@ -65,18 +107,19 @@ class ResearchAgent(BaseAgent):
                             "url": source.get("url", ""),
                             "snippet": source.get("snippet", ""),
                             "content_length": len(content),
+                            "content": content[:5000],  # Keep first 5000 chars
                         })
                 except Exception as e:
                     logger.warning(f"[Research] Failed to extract: {e}")
 
-        # Step 3: Summarize and compare
-        summary = await self._summarize(task, extracted_info)
+        # Step 4: Summarize and compare
+        summary = await self._summarize(research_topic, extracted_info)
 
-        # Step 4: Save if filesystem is available
+        # Step 5: Save if filesystem is available
         filesystem = self._use_tool(tools, "filesystem")
         if filesystem:
             await filesystem.write_file(
-                f"research_{task[:30].replace(' ', '_')}.md",
+                f"research_{research_topic[:30].replace(' ', '_').replace('/', '_')}.md",
                 summary
             )
 
@@ -85,11 +128,11 @@ class ResearchAgent(BaseAgent):
     async def _summarize(self, topic: str, sources: list[dict]) -> str:
         """Generate a research summary from collected sources."""
         if not sources:
-            return f"No sources found for: {topic}"
+            return f"No web sources found for: {topic}. The research tool is available but no results were returned."
 
-        # Use LLM to generate summary
+        # Build source text for LLM
         source_text = "\n".join([
-            f"- {s.get('title', 'Untitled')}: {s.get('snippet', 'No snippet')}"
+            f"- {s.get('title', 'Untitled')} ({s.get('url', 'No URL')}): {s.get('snippet', 'No snippet')[:300]}"
             for s in sources
         ])
 
@@ -100,11 +143,12 @@ Sources found:
 
 Provide a concise, well-structured research summary.
 Include key findings, comparisons where applicable, and cite sources.
-If information is uncertain, explicitly state so."""
+If information is uncertain, explicitly state so.
+Format as a clear report with sections."""
 
         summary = await self._llm_call(
-            system_prompt="You are a research assistant. Provide accurate, concise research summaries with source citations.",
+            system_prompt="You are a research assistant. Provide accurate, concise research summaries with source citations. Do not fabricate information.",
             user_prompt=prompt
         )
 
-        return summary
+        return summary if summary else f"Could not generate summary for: {topic}"

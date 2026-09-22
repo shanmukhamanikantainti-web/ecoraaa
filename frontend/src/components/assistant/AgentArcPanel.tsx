@@ -11,6 +11,8 @@ import {
   RotateCw,
   CheckCircle2,
   GripVertical,
+  Brain,
+  BarChart3,
 } from "lucide-react";
 
 export interface AgentOption {
@@ -22,38 +24,55 @@ export interface AgentOption {
   color: string;
 }
 
+// Canonical agent IDs: GENERAL, CODING, RESEARCH, TESTING, REVIEW, MARKETING
 export const AGENTS: AgentOption[] = [
   {
-    id: "coding",
+    id: "GENERAL",
+    name: "General Agent",
+    subtitle: "Broad-purpose assistance, intent understanding",
+    badge: "General",
+    icon: Brain,
+    color: "from-purple-600 to-violet-500",
+  },
+  {
+    id: "CODING",
     name: "Coding Agent",
-    subtitle: "Write, debug & build",
+    subtitle: "Write, debug, build, refactor code",
     badge: "Code",
     icon: Code2,
     color: "from-blue-600 to-indigo-500",
   },
   {
-    id: "research",
+    id: "RESEARCH",
     name: "Research Agent",
-    subtitle: "Search, analyze & deep dive",
+    subtitle: "Web search, source collection, analysis",
     badge: "Research",
     icon: Search,
     color: "from-cyan-600 to-teal-400",
   },
   {
-    id: "marketing",
-    name: "Marketing Agent",
-    subtitle: "Campaigns, SEO & growth",
-    badge: "Marketing",
-    icon: TrendingUp,
-    color: "from-amber-500 to-orange-500",
+    id: "TESTING",
+    name: "Testing Agent",
+    subtitle: "Run tests, analyze failures, validate",
+    badge: "Testing",
+    icon: BarChart3,
+    color: "from-green-600 to-emerald-500",
   },
   {
-    id: "review",
+    id: "REVIEW",
     name: "Review Agent",
-    subtitle: "Audit, QA & code review",
+    subtitle: "Code review, security, quality audit",
     badge: "Review",
     icon: ShieldCheck,
     color: "from-emerald-600 to-teal-500",
+  },
+  {
+    id: "MARKETING",
+    name: "Marketing Agent",
+    subtitle: "Docs, release notes, project content",
+    badge: "Marketing",
+    icon: TrendingUp,
+    color: "from-amber-500 to-orange-500",
   },
 ];
 
@@ -69,7 +88,7 @@ const WHEEL_OUTER_RADIUS = 150;
 const WHEEL_INNER_RADIUS = 120;
 const CENTER_X = 240;
 const CENTER_Y = 215;
-const ANGLE_STEP = 44; // Degrees between each of the 4 agents along the wheel
+const ANGLE_STEP = 60; // Degrees between each of the 6 agents
 
 // Continuous cyclic angular difference wrapping helper
 const wrapDiff = (diff: number, n: number) => {
@@ -286,10 +305,10 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
   const ActiveIcon = activeAgent.icon;
 
   // Concentric wheel perimeter tick marks
-  const numTicks = 24;
+  const numTicks = AGENTS.length; // Now 6 agents
   const tickAngles = Array.from(
     { length: numTicks },
-    (_, i) => -72 + i * (144 / (numTicks - 1))
+    (_, i) => -60 + i * (120 / (numTicks - 1))
   );
 
   // Active card position: tracks wheel rotation continuously along the circular arc!

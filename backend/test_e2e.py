@@ -17,6 +17,8 @@ from pegasus.agents.coding import CodingAgent
 from pegasus.agents.testing import TestingAgent
 from pegasus.agents.review import ReviewAgent
 from pegasus.agents.market import MarketAnalysisAgent
+from pegasus.agents.research import ResearchAgent
+from pegasus.agents.general import GeneralAgent
 from pegasus.tools.filesystem import FilesystemTool
 from pegasus.tools.terminal import TerminalTool
 
@@ -31,10 +33,12 @@ async def test_agent_mode_routing():
 
     # Setup orchestrator
     orchestrator = PegasusOrchestrator()
-    orchestrator.register_agent("Coding Agent", CodingAgent())
-    orchestrator.register_agent("Testing Agent", TestingAgent())
-    orchestrator.register_agent("Review Agent", ReviewAgent())
-    orchestrator.register_agent("Marketing Agent", MarketAnalysisAgent())
+    orchestrator.register_agent("CODING", CodingAgent())
+    orchestrator.register_agent("TESTING", TestingAgent())
+    orchestrator.register_agent("REVIEW", ReviewAgent())
+    orchestrator.register_agent("MARKETING", MarketAnalysisAgent())
+    orchestrator.register_agent("RESEARCH", ResearchAgent())
+    orchestrator.register_agent("GENERAL", GeneralAgent())
 
     filesystem = FilesystemTool(base_dir=temp_dir)
     terminal = TerminalTool(working_dir=temp_dir)
@@ -42,10 +46,12 @@ async def test_agent_mode_routing():
     orchestrator.register_tool("terminal", terminal)
 
     modes = [
-        ("CODING", "Coding Agent", "Create a Python file named calc.py with add function"),
-        ("TESTING", "Testing Agent", "Run test suite on workspace"),
-        ("REVIEW", "Review Agent", "Inspect current workspace for security and bugs"),
-        ("MARKETING", "Marketing Agent", "Generate release notes for initial launch"),
+        ("GENERAL", "GENERAL", "Explain the project structure"),
+        ("CODING", "CODING", "Create a Python file named calc.py with add function"),
+        ("TESTING", "TESTING", "Run test suite on workspace"),
+        ("REVIEW", "REVIEW", "Inspect current workspace for security and bugs"),
+        ("MARKETING", "MARKETING", "Generate release notes for initial launch"),
+        ("RESEARCH", "RESEARCH", "Research plastic pollution"),
     ]
 
     results = {}
@@ -59,7 +65,7 @@ async def test_agent_mode_routing():
         print(f"Steps Executed: {executed_agents}")
         
         # Check against expected_agent name or type name
-        passed = any(any(token in a.lower() for token in ["coding", "testing", "review", "market"]) for a in executed_agents) and mission.status.value == "COMPLETED"
+        passed = any(s.agent == expected_agent for s in mission.steps if s.agent) and mission.status.value == "COMPLETED"
         results[mode_name] = "PASS" if passed else "FAIL"
         print(f"Mode {mode_name} Result: {results[mode_name]}")
 

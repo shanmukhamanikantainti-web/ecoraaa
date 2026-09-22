@@ -37,6 +37,8 @@ class ContextManager:
         self.current_workspace: str = "HOME"
         self.current_app: Optional[str] = None
         self.active_task: Optional[str] = None
+        self.active_task_id: Optional[str] = None
+        self.event_callback: Optional[Any] = None
         self.recent_actions: list[dict] = []
         self.project_context: Optional[str] = None
         self.user_info: dict[str, Any] = {}

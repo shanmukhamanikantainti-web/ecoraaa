@@ -60,7 +60,7 @@ export const api = {
     ),
 
   // Goal & Mission Execution
-  executeGoal: (goal: string, agent_mode: string = "general", workspace?: string) =>
+  executeGoal: (goal: string, agent_mode: string = "GENERAL", workspace?: string) =>
     fetchJson<{
       mission_id: string;
       status: string;
