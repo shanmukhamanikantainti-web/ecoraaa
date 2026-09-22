@@ -70,16 +70,16 @@ export default function AssistantPage() {
         {!hasUserMessages ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 animate-in fade-in zoom-in-95 duration-500 my-auto">
             {/* 3D Animated Sapphire Crystal Star Emblem */}
-            <div className="my-2">
-              <SapphireStar size={180} />
+            <div className="my-1">
+              <SapphireStar size={125} />
             </div>
 
             {/* Hero Greeting Text */}
-            <div className="space-y-3 max-w-xl">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100">
+            <div className="space-y-2 max-w-lg">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100">
                 HEY ! <span className="text-blue-600 dark:text-blue-400">HOW ARE YOU</span>
               </h1>
-              <p className="text-sm md:text-base text-muted-foreground leading-relaxed px-4">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed px-4">
                 Ask anything, get things done. I&apos;m here to help you code, research, build and create.
               </p>
             </div>
