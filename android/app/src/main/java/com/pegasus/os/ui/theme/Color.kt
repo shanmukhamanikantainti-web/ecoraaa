@@ -46,26 +46,27 @@ val AgentFailed = ErrorColor
 val AgentCompleted = SuccessColor
 
 // ── ECORAA Companion App Colors ──────────────────────────────────────────────
-// Dark theme translation of the ECORAA design system:
-//   Near White     #FAFAFA  →  #0F1117  (near-black background)
-//   Springtime Rain #EDEFF3 →  #161B22  (secondary surface)
-//   Soothing Sapphire #2F7EDA → used as accent (unchanged hue, slightly brightened)
-//   Blackwater      #555663 →  #C9D1D9  (primary text on dark)
-//   Wild Thistle    #9FA0B5 →  #6E7681  (secondary text on dark)
+// Warm Cream Palette:
+//   Background         #F7F1E3
+//   Surface/Containers #FFFDF7
+//   Accent (Sapphire)  #2F7EDA
+//   Text Primary       #2D2A26
+//   Text Secondary     #8C857B
 
-val EcoraaBackground   = Color(0xFF0F1117)
-val EcoraaEditorBg     = Color(0xFF0D1117)
-val EcoraaToolbarBg    = Color(0xFF161B22)
-val EcoraaFileTreeBg   = Color(0xFF13181F)
-val EcoraaTerminalBg   = Color(0xFF0A0D12)
-val EcoraaToolbarBorder= Color(0xFF21262D)
+val EcoraaBackground   = Color(0xFFF7F1E3)
+val EcoraaEditorBg     = Color(0xFFFFFDF7)
+val EcoraaToolbarBg    = Color(0xFFFFFDF7)
+val EcoraaFileTreeBg   = Color(0xFFF0EA9)
+val EcoraaTerminalBg   = Color(0xFF2D2A26)
+val EcoraaToolbarBorder= Color(0xFFE2DAC8)
 
-val EcoraaAccent       = Color(0xFF3B89DA)   // Soothing Sapphire, darkened for dark bg
-val EcoraaAccentSubtle = Color(0xFF1A3A5C)   // Sapphire background tint
+val EcoraaAccent       = Color(0xFF2F7EDA)
+val EcoraaAccentSubtle = Color(0xFFE6F0FA)
 
-val EcoraaTextPrimary  = Color(0xFFC9D1D9)
-val EcoraaTextSecondary= Color(0xFF8B949E)
+val EcoraaTextPrimary  = Color(0xFF2D2A26)
+val EcoraaTextSecondary= Color(0xFF8C857B)
 
-val EcoraaSuccess      = Color(0xFF3FB950)
-val EcoraaWarning      = Color(0xFFD29922)
-val EcoraaError        = Color(0xFFF85149)
+val EcoraaSuccess      = Color(0xFF28A745)
+val EcoraaWarning      = Color(0xFFFFC107)
+val EcoraaError        = Color(0xFFDC3545)
+
