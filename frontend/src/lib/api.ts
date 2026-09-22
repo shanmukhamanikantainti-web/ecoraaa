@@ -22,11 +22,15 @@ async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T>
     });
 
     if (!res.ok) {
-      throw new Error(`API error ${res.status}: ${res.statusText}`);
+      const errText = await res.text().catch(() => res.statusText);
+      throw new Error(`[HTTP_${res.status}] ${errText || res.statusText}`);
     }
 
     return await res.json();
-  } catch (err) {
+  } catch (err: any) {
+    if (err.name === "TypeError" && (err.message.includes("fetch") || err.message.includes("NetworkError"))) {
+      throw new Error(`[BACKEND_UNREACHABLE] Could not connect to ECORAA Backend at ${BACKEND_URL}. Ensure python main.py is running.`);
+    }
     console.warn(`[API] Failed to fetch ${url}:`, err);
     throw err;
   }

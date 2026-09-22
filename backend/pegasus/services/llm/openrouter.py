@@ -50,8 +50,8 @@ class OpenRouterLLMService:
         formatted_messages.extend(messages)
 
         if not self.api_key:
-            logger.warning("OPENROUTER_API_KEY is not configured in backend environment.")
-            return "[Backend Info] OPENROUTER_API_KEY not set. Operating in offline deterministic mode."
+            logger.error("OPENROUTER_API_KEY is not configured in backend environment.")
+            return "[Error: LLM_NOT_CONFIGURED] OPENROUTER_API_KEY is not set on the ECORAA backend server. Please configure OPENROUTER_API_KEY in backend/.env file."
 
         payload: Dict[str, Any] = {
             "model": self.model,

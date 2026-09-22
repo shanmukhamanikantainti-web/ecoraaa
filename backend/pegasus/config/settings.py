@@ -15,9 +15,9 @@ class PegasusSettings(BaseSettings):
     port: int = 8420
 
     # OpenRouter AI Model
-    openrouter_api_key: Optional[str] = None
-    openrouter_model: str = "google/gemma-4-26b-a4b-it:free"
-    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    openrouter_api_key: Optional[str] = os.getenv("OPENROUTER_API_KEY")
+    openrouter_model: str = os.getenv("OPENROUTER_MODEL", "google/gemma-4-26b-a4b-it:free")
+    openrouter_base_url: str = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 
     # Legacy AI Models
     openai_api_key: Optional[str] = None

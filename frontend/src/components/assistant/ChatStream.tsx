@@ -45,24 +45,24 @@ export const ChatStream: React.FC<ChatStreamProps> = ({ messages }) => {
             )}
 
             <div
-              className={`max-w-[85%] md:max-w-[75%] rounded-3xl p-4.5 shadow-sm ${
+              className={`max-w-[85%] md:max-w-[75%] rounded-3xl p-5 shadow-md transition-all ${
                 isAssistant
-                  ? "liquid-glass text-foreground"
-                  : "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/30"
+                  ? "bg-[#FFFDF7] dark:bg-slate-900 border border-amber-200/80 dark:border-slate-800 text-slate-800 dark:text-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)]"
+                  : "bg-blue-600 text-white shadow-lg shadow-blue-500/25"
               }`}
             >
               {/* Message Header */}
-              <div className="flex items-center justify-between gap-3 mb-2">
+              <div className="flex items-center justify-between gap-3 mb-2.5">
                 <span
-                  className={`text-xs font-bold ${
+                  className={`text-xs font-bold tracking-wide ${
                     isAssistant ? "text-blue-600 dark:text-blue-400" : "text-white/90"
                   }`}
                 >
-                  {isAssistant ? "AI Assist" : "You"}
+                  {isAssistant ? "ECORAA ASSIST" : "YOU"}
                 </span>
                 <span
-                  className={`text-[10px] font-mono ${
-                    isAssistant ? "text-muted-foreground" : "text-white/70"
+                  className={`text-[11px] font-mono ${
+                    isAssistant ? "text-slate-400 dark:text-slate-500" : "text-white/80"
                   }`}
                 >
                   {msg.timestamp}
@@ -71,8 +71,8 @@ export const ChatStream: React.FC<ChatStreamProps> = ({ messages }) => {
 
               {/* Content */}
               <div
-                className={`text-sm leading-relaxed whitespace-pre-wrap font-sans ${
-                  isAssistant ? "text-foreground" : "text-white"
+                className={`text-sm md:text-base leading-relaxed whitespace-pre-wrap font-medium ${
+                  isAssistant ? "text-slate-800 dark:text-slate-100" : "text-white"
                 }`}
               >
                 {msg.content}

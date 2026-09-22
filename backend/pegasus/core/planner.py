@@ -1,8 +1,12 @@
 """
 PEGASUS OS — Planner
 
-Decomposes high-level user goals into executable task steps.
-Uses LLM for intelligent goal decomposition.
+Decomposes high-level user goals into dynamic, context-driven executable steps.
+Does NOT enforce a fixed multi-step pipeline for all goals.
+
+The Planner now produces a SINGLE adaptive step that the agent executes.
+The agent itself decides what tools to use, in what order, and how many
+iterations are needed. The number of steps is NOT predetermined.
 """
 
 import logging
@@ -10,124 +14,75 @@ from typing import Any
 
 logger = logging.getLogger("pegasus.planner")
 
-# Fallback plan templates for common goals
-PLAN_TEMPLATES = {
-    "demo": [
-        {"name": "Inspect source code and identify bug in calculator", "agent": "Coding Agent", "tool": "filesystem"},
-        {"name": "Implement bug fix in calculator module", "agent": "Coding Agent", "tool": "filesystem"},
-        {"name": "Execute test suite to validate fix", "agent": "Testing Agent", "tool": "terminal"},
-        {"name": "Review code changes, security, and coverage", "agent": "Review Agent", "tool": "terminal"},
-    ],
-    "review": [
-        {"name": "Inspect git diff and code changes", "agent": "Review Agent", "tool": "terminal"},
-        {"name": "Perform security and quality audit", "agent": "Review Agent", "tool": "filesystem"},
-    ],
-    "marketing": [
-        {"name": "Inspect project changes and features", "agent": "Marketing Agent", "tool": "filesystem"},
-        {"name": "Generate README and release notes", "agent": "Marketing Agent", "tool": "filesystem"},
-    ],
-    "code": [
-        {"name": "Inspect project structure", "agent": "Coding Agent", "tool": "filesystem"},
-        {"name": "Implement requested code changes", "agent": "Coding Agent", "tool": "filesystem"},
-        {"name": "Validate execution", "agent": "Coding Agent", "tool": "terminal"},
-    ],
-    "test": [
-        {"name": "Inspect test suite structure", "agent": "Testing Agent", "tool": "filesystem"},
-        {"name": "Run unit and integration tests", "agent": "Testing Agent", "tool": "terminal"},
-        {"name": "Analyze failure report", "agent": "Testing Agent", "tool": "terminal"},
-    ],
-    "default": [
-        {"name": "Inspect project workspace", "agent": "Coding Agent", "tool": "filesystem"},
-        {"name": "Execute requested modifications", "agent": "Coding Agent", "tool": "filesystem"},
-        {"name": "Run tests and verify", "agent": "Testing Agent", "tool": "terminal"},
-        {"name": "Review changes", "agent": "Review Agent", "tool": "terminal"},
-    ],
-}
-
 
 class Planner:
     """
-    Decomposes user goals into executable steps.
-    Uses LLM-based planning when available, falls back to template plans.
+    Decomposes user goals into dynamic, context-driven executable steps.
+
+    The planner no longer hardcodes:
+      Coding Agent → Testing Agent → Review Agent
+
+    Instead it produces a single adaptive step per goal. The agent
+    dynamically decides what tools to use based on the actual context.
     """
 
-    async def decompose_goal(self, goal: str, context: Any = None, target_agent: str = None) -> list[dict]:
+    async def decompose_goal(
+        self,
+        goal: str,
+        context: Any = None,
+        target_agent: str = None,
+    ) -> list[dict]:
         """
-        Decompose a high-level goal into ordered steps.
-        Each step has: name, agent (optional), tool (optional).
-        If target_agent is specified, all steps are assigned to target_agent unless it is a multi-agent workflow.
+        Decompose a high-level goal into dynamic, context-driven executable steps.
+
+        Returns a list with a SINGLE adaptive step. The agent will dynamically
+        decide what tools to use, in what order, and how many iterations are needed.
         """
-        goal_lower = goal.lower()
+        goal_lower = goal.lower().strip()
 
-        import copy
+        # Determine the agent type based on target_agent or goal keywords
+        agent_type = self._determine_agent(goal_lower, target_agent)
 
-        # If an explicit target_agent is selected by user mode
-        if target_agent == "Coding Agent":
-            plan = [
-                {"name": f"Inspect workspace for task: {goal}", "agent": "Coding Agent", "tool": "filesystem"},
-                {"name": f"Perform requested development changes: {goal}", "agent": "Coding Agent", "tool": "filesystem"},
-                {"name": "Verify execution and output", "agent": "Coding Agent", "tool": "terminal"}
-            ]
-            logger.info(f"Planner: Mode override -> Routing goal directly to Coding Agent")
-            return plan
-        elif target_agent == "Testing Agent":
-            plan = [
-                {"name": f"Inspect workspace and detect test suite: {goal}", "agent": "Testing Agent", "tool": "filesystem"},
-                {"name": f"Run real test suite and analyze results", "agent": "Testing Agent", "tool": "terminal"}
-            ]
-            logger.info(f"Planner: Mode override -> Routing goal directly to Testing Agent")
-            return plan
-        elif target_agent == "Review Agent":
-            plan = [
-                {"name": f"Inspect git diff and workspace status for review: {goal}", "agent": "Review Agent", "tool": "terminal"},
-                {"name": "Perform code, security, and architecture review", "agent": "Review Agent", "tool": "filesystem"}
-            ]
-            logger.info(f"Planner: Mode override -> Routing goal directly to Review Agent")
-            return plan
-        elif target_agent == "Marketing Agent":
-            plan = [
-                {"name": f"Inspect project for documentation/marketing task: {goal}", "agent": "Marketing Agent", "tool": "filesystem"},
-                {"name": f"Generate documentation and release notes", "agent": "Marketing Agent", "tool": "filesystem"}
-            ]
-            logger.info(f"Planner: Mode override -> Routing goal directly to Marketing Agent")
-            return plan
+        # Build a single adaptive step
+        step_name = f"Execute task: {goal}"
+        return [
+            {
+                "name": step_name,
+                "agent": agent_type,
+                "tool": None,  # Agent decides dynamically
+            }
+        ]
 
-        # Try template matching first
-        if "calculator" in goal_lower or ("fix" in goal_lower and "test" in goal_lower and "review" in goal_lower):
-            plan = copy.deepcopy(PLAN_TEMPLATES["demo"])
-        elif any(kw in goal_lower for kw in ["review", "audit", "inspect"]):
-            plan = copy.deepcopy(PLAN_TEMPLATES["review"])
-        elif any(kw in goal_lower for kw in ["readme", "release notes", "marketing", "changelog", "doc"]):
-            plan = copy.deepcopy(PLAN_TEMPLATES["marketing"])
-        elif any(kw in goal_lower for kw in ["test", "testing", "verify", "unittest", "pytest"]):
-            plan = copy.deepcopy(PLAN_TEMPLATES["test"])
-        elif any(kw in goal_lower for kw in ["code", "write", "create", "fix", "refactor"]):
-            plan = copy.deepcopy(PLAN_TEMPLATES["code"])
-        else:
-            plan = copy.deepcopy(PLAN_TEMPLATES["default"])
+    def _determine_agent(self, goal_lower: str, target_agent: str = None) -> str:
+        """Determine which agent should handle this goal."""
+        if target_agent:
+            return target_agent
 
-        # Attempt LLM-enhanced planning
-        llm_plan = await self._llm_plan(goal, context)
-        if llm_plan:
-            return llm_plan
+        # Keyword-based agent selection
+        if any(kw in goal_lower for kw in ["test", "testing", "verify", "validate", "debug"]):
+            return "Testing Agent"
+        if any(kw in goal_lower for kw in ["review", "audit", "inspect changes", "code review"]):
+            return "Review Agent"
+        if any(kw in goal_lower for kw in ["readme", "release notes", "changelog", "documentation", "marketing"]):
+            return "Marketing Agent"
+        if any(kw in goal_lower for kw in ["where is", "find", "search", "explain", "how does", "what is", "research"]):
+            return "Research Agent"
+        if any(kw in goal_lower for kw in ["code", "write", "create", "fix", "refactor", "build", "implement"]):
+            return "Coding Agent"
 
-        # Add the user's goal as context to the first step
-        if plan:
-            plan[0]["name"] = f"Understand: {goal}"
-
-        logger.info(f"Planner: Generated {len(plan)} steps for goal")
-        return plan
+        # Default to Coding Agent for general tasks
+        return "Coding Agent"
 
     async def _llm_plan(self, goal: str, context: Any = None) -> list[dict] | None:
         """Use LLM to generate a custom plan for complex goals."""
         try:
             from ..config.settings import settings
 
-            if not settings.openai_api_key:
+            if not settings.openrouter_api_key:
                 return None
 
             import openai
-            client = openai.AsyncOpenAI(api_key=settings.openai_api_key)
+            client = openai.AsyncOpenAI(api_key=settings.openrouter_api_key)
 
             system_prompt = """You are the PEGASUS OS Planner. Decompose the user's goal into ordered steps.
 
@@ -143,7 +98,7 @@ USER GOAL → UNDERSTAND → PLAN → PERMISSION → EXECUTE → OBSERVE → ADA
 After each EXECUTE step, include an OBSERVE step to verify results."""
 
             response = await client.chat.completions.create(
-                model=settings.openai_model,
+                model=settings.openrouter_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": f"Goal: {goal}"}
@@ -158,7 +113,6 @@ After each EXECUTE step, include an OBSERVE step to verify results."""
 
             if isinstance(steps, list) and len(steps) > 0:
                 logger.info(f"LLM Planner: Generated {len(steps)} steps")
-                # Post-process: ensure each step follows PEGASUS workflow
                 steps = self._post_process_plan(steps)
                 return steps
 
@@ -172,13 +126,12 @@ After each EXECUTE step, include an OBSERVE step to verify results."""
         """Ensure plan follows PEGASUS workflow pattern."""
         processed = []
         for i, step in enumerate(steps):
-            # Ensure every step has name, agent, and tool
             name = step.get("name", f"Step {i+1}")
             agent = step.get("agent") or ("Coding Agent" if i % 2 == 0 else "Research Agent")
             tool = step.get("tool") or ("terminal" if i % 3 == 0 else "browser")
             processed.append({
                 "name": name,
                 "agent": agent,
-                "tool": tool
+                "tool": tool,
             })
         return processed

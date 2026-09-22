@@ -142,11 +142,26 @@ def create_app() -> FastAPI:
 
     # ── HTTP Endpoints ──
 
+    @app.get("/health")
+    async def health_check():
+        """Backend health check endpoint."""
+        from ..config.settings import settings
+        llm_configured = bool(settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY"))
+        return {
+            "status": "ok",
+            "llm_configured": llm_configured,
+            "version": "0.1.0"
+        }
+
     @app.get("/api/status")
     async def get_status():
         """Get PEGASUS system status."""
+        from ..config.settings import settings
+        llm_configured = bool(settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY"))
         return {
             "core_online": True,
+            "llm_configured": llm_configured,
+            "llm_model": settings.openrouter_model or "google/gemma-4-26b-a4b-it:free",
             "agents_active": len([a for a in orchestrator.agents.values()
                                   if hasattr(a, 'state') and a.state.value == "RUNNING"]),
             "uptime": int(time.time() - start_time),
