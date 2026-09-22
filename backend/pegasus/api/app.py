@@ -114,6 +114,7 @@ def create_app() -> FastAPI:
 
     class ExecuteRequest(BaseModel):
         goal: str
+        agent_mode: str = ""
         workspace: str = ""
 
     class CommandRequest(BaseModel):
@@ -192,10 +193,11 @@ def create_app() -> FastAPI:
         await broadcast_update("task_event", {
             "event": "TASK_STARTED",
             "goal": goal,
+            "agent_mode": req.agent_mode,
             "workspace": active_workspace["path"]
         })
 
-        mission = await orchestrator.execute_goal(goal)
+        mission = await orchestrator.execute_goal(goal, agent_mode=req.agent_mode)
 
         await broadcast_update("task_event", {
             "event": "TASK_COMPLETED",

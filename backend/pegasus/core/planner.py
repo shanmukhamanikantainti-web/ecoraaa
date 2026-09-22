@@ -51,14 +51,46 @@ class Planner:
     Uses LLM-based planning when available, falls back to template plans.
     """
 
-    async def decompose_goal(self, goal: str, context: Any = None) -> list[dict]:
+    async def decompose_goal(self, goal: str, context: Any = None, target_agent: str = None) -> list[dict]:
         """
         Decompose a high-level goal into ordered steps.
         Each step has: name, agent (optional), tool (optional).
+        If target_agent is specified, all steps are assigned to target_agent unless it is a multi-agent workflow.
         """
         goal_lower = goal.lower()
 
         import copy
+
+        # If an explicit target_agent is selected by user mode
+        if target_agent == "Coding Agent":
+            plan = [
+                {"name": f"Inspect workspace for task: {goal}", "agent": "Coding Agent", "tool": "filesystem"},
+                {"name": f"Perform requested development changes: {goal}", "agent": "Coding Agent", "tool": "filesystem"},
+                {"name": "Verify execution and output", "agent": "Coding Agent", "tool": "terminal"}
+            ]
+            logger.info(f"Planner: Mode override -> Routing goal directly to Coding Agent")
+            return plan
+        elif target_agent == "Testing Agent":
+            plan = [
+                {"name": f"Inspect workspace and detect test suite: {goal}", "agent": "Testing Agent", "tool": "filesystem"},
+                {"name": f"Run real test suite and analyze results", "agent": "Testing Agent", "tool": "terminal"}
+            ]
+            logger.info(f"Planner: Mode override -> Routing goal directly to Testing Agent")
+            return plan
+        elif target_agent == "Review Agent":
+            plan = [
+                {"name": f"Inspect git diff and workspace status for review: {goal}", "agent": "Review Agent", "tool": "terminal"},
+                {"name": "Perform code, security, and architecture review", "agent": "Review Agent", "tool": "filesystem"}
+            ]
+            logger.info(f"Planner: Mode override -> Routing goal directly to Review Agent")
+            return plan
+        elif target_agent == "Marketing Agent":
+            plan = [
+                {"name": f"Inspect project for documentation/marketing task: {goal}", "agent": "Marketing Agent", "tool": "filesystem"},
+                {"name": f"Generate documentation and release notes", "agent": "Marketing Agent", "tool": "filesystem"}
+            ]
+            logger.info(f"Planner: Mode override -> Routing goal directly to Marketing Agent")
+            return plan
 
         # Try template matching first
         if "calculator" in goal_lower or ("fix" in goal_lower and "test" in goal_lower and "review" in goal_lower):

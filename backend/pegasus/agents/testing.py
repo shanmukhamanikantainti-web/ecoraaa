@@ -96,13 +96,14 @@ class TestingAgent(BaseAgent):
 
             if result:
                 # Use LLM to analyze the failure
+                system_prompt = """You are ECORAA Testing Agent.
+Inspect the actual project.
+Run actual tests.
+Report actual commands and results.
+Never fabricate successful tests."""
+
                 analysis = await self._llm_call(
-                    system_prompt="""You are a software testing expert.
-Analyze the test failure output and identify:
-1. The root cause of the failure
-2. Which file/function is affected
-3. The likely fix needed
-Be concise and specific.""",
+                    system_prompt=system_prompt,
                     user_prompt=f"Test failure analysis:\n{result[:2000]}"
                 )
                 return f"Failure Analysis:\n{analysis}"

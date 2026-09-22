@@ -97,7 +97,17 @@ class FilesystemTool:
             return None
 
     def _resolve(self, path: str) -> str:
-        """Resolve a relative path against the base directory."""
+        """Resolve a relative or absolute path against the base directory safely."""
         if os.path.isabs(path):
-            return path
-        return os.path.normpath(os.path.join(self.base_dir, path))
+            target = os.path.normpath(path)
+        else:
+            target = os.path.normpath(os.path.join(self.base_dir, path))
+
+        # Enforce workspace security boundary
+        base_norm = os.path.normpath(self.base_dir)
+        if not (target == base_norm or target.startswith(base_norm + os.sep)):
+            logger.warning(f"[Security] Blocked path traversal attempt outside workspace: {path}")
+            raise PermissionError(f"Access denied: path '{path}' is outside active workspace boundary '{self.base_dir}'")
+
+        return target
+

@@ -14,7 +14,12 @@ class PegasusSettings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8420
 
-    # AI Models
+    # OpenRouter AI Model
+    openrouter_api_key: Optional[str] = None
+    openrouter_model: str = "google/gemma-4-26b-a4b-it:free"
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+
+    # Legacy AI Models
     openai_api_key: Optional[str] = None
     openai_model: str = "gpt-4"
     anthropic_api_key: Optional[str] = None
@@ -41,6 +46,8 @@ class PegasusSettings(BaseSettings):
     class Config:
         env_prefix = "PEGASUS_"
         env_file = ".env"
+        extra = "ignore"
 
 
 settings = PegasusSettings()
+

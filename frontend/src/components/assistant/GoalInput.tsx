@@ -5,11 +5,12 @@ import { useApp } from "@/lib/store";
 import { Paperclip, UploadCloud, Mic, Send, Sparkles } from "lucide-react";
 
 interface GoalInputProps {
-  onExecute?: (goal: string) => void;
+  onExecute?: (goal: string, agentMode?: string) => void;
+  agentMode?: string;
   disabled?: boolean;
 }
 
-export const GoalInput: React.FC<GoalInputProps> = ({ onExecute, disabled = false }) => {
+export const GoalInput: React.FC<GoalInputProps> = ({ onExecute, agentMode = "general", disabled = false }) => {
   const [goal, setGoal] = useState("");
   const { executeGoal } = useApp();
 
@@ -17,9 +18,9 @@ export const GoalInput: React.FC<GoalInputProps> = ({ onExecute, disabled = fals
     e.preventDefault();
     if (!goal.trim() || disabled) return;
     if (onExecute) {
-      onExecute(goal);
+      onExecute(goal, agentMode);
     } else {
-      executeGoal(goal);
+      executeGoal(goal, agentMode);
     }
     setGoal("");
   };

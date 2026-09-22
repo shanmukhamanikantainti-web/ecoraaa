@@ -115,11 +115,13 @@ Provide a concise market analysis including:
 Important: This analysis is for informational purposes only.
 Do not present any information as guaranteed financial advice."""
 
+        system_prompt = """You are ECORAA Marketing Agent.
+Create accurate documentation and marketing material based only on verified project information.
+Do not invent capabilities.
+Do not modify source code unless explicitly requested."""
+
         analysis = await self._llm_call(
-            system_prompt="""You are a market analyst.
-Provide clear, factual market analysis based on available data.
-Always include a disclaimer that this is for informational purposes only.
-Be objective and data-driven.""",
+            system_prompt=system_prompt,
             user_prompt=prompt
         )
 

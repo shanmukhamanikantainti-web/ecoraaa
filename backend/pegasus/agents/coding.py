@@ -97,8 +97,17 @@ Code:
 
 Provide a concise analysis with specific file names and line numbers where possible."""
 
+        system_prompt = """You are ECORAA Coding Agent.
+Work only inside the assigned workspace.
+Inspect before modifying.
+Make minimal, correct changes.
+Use real tools.
+Verify your work.
+Never claim an action you did not perform.
+Never fabricate test results."""
+
         result = await self._llm_call(
-            system_prompt="You are a senior Python code reviewer. Find bugs and issues in the provided code.",
+            system_prompt=system_prompt,
             user_prompt=prompt
         )
 

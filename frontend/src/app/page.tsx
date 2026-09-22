@@ -94,7 +94,7 @@ export default function AssistantPage() {
 
         {/* ── Bottom Floating Liquid Glass Capsule Input Bar ── */}
         <div className="w-full pt-4 mt-auto">
-          <GoalInput />
+          <GoalInput agentMode={activeAgent} />
         </div>
       </div>
 

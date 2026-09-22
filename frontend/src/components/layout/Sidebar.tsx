@@ -202,7 +202,7 @@ export const Sidebar: React.FC = () => {
 
       {/* User Profile Card at Bottom */}
       <div className="pt-2 mt-auto">
-        <Link href="/settings">
+        <Link href="/profile">
           <div className="p-2.5 rounded-2xl liquid-glass-card flex items-center justify-between cursor-pointer hover:border-blue-400/50">
             <div className="flex items-center gap-2.5">
               {/* User Avatar */}
@@ -213,7 +213,7 @@ export const Sidebar: React.FC = () => {
               <div className="space-y-0.5">
                 <h4 className="text-xs font-bold text-foreground">Sai Chandra Kiran</h4>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] text-muted-foreground">AI & Data Science</span>
+                  <span className="text-[10px] text-muted-foreground font-mono">Profile & Settings</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 </div>
               </div>

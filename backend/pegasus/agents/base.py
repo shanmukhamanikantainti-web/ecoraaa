@@ -111,38 +111,20 @@ class BaseAgent(ABC):
         return tools.get(tool_name)
 
     async def _llm_call(self, system_prompt: str, user_prompt: str) -> str:
-        """Make an LLM API call."""
+        """Make an LLM API call using OpenRouter primary service."""
         try:
-            from ..config.settings import settings
-
-            if settings.openai_api_key:
-                import openai
-                client = openai.AsyncOpenAI(api_key=settings.openai_api_key)
-                response = await client.chat.completions.create(
-                    model=settings.openai_model,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt}
-                    ],
-                    temperature=0.3,
-                    max_tokens=2000
-                )
-                return response.choices[0].message.content
-
-            elif settings.anthropic_api_key:
-                import anthropic
-                client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-                response = await client.messages.create(
-                    model=settings.anthropic_model,
-                    max_tokens=2000,
-                    system=system_prompt,
-                    messages=[{"role": "user", "content": user_prompt}]
-                )
-                return response.content[0].text
-
+            from ..services.llm import llm_service
+            response = await llm_service.chat_completion(
+                messages=[{"role": "user", "content": user_prompt}],
+                system_prompt=system_prompt,
+                temperature=0.3,
+                max_tokens=2000
+            )
+            return response
         except Exception as e:
-            logger.error(f"LLM call failed: {e}")
+            logger.error(f"OpenRouter LLM call failed: {e}")
             return f"LLM unavailable: {e}"
+
 
     def to_dict(self) -> dict:
         """Serialize agent state."""

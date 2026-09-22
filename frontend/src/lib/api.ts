@@ -56,7 +56,7 @@ export const api = {
     ),
 
   // Goal & Mission Execution
-  executeGoal: (goal: string, workspace?: string) =>
+  executeGoal: (goal: string, agent_mode: string = "general", workspace?: string) =>
     fetchJson<{
       mission_id: string;
       status: string;
@@ -65,7 +65,7 @@ export const api = {
       workspace?: string;
     }>("/api/execute", {
       method: "POST",
-      body: JSON.stringify({ goal, workspace: workspace || "" }),
+      body: JSON.stringify({ goal, agent_mode, workspace: workspace || "" }),
     }),
 
   getTasks: () =>

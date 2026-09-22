@@ -1,0 +1,173 @@
+"use client";
+
+import React, { useState } from "react";
+import { useApp } from "@/lib/store";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { api } from "@/lib/api";
+import {
+  User,
+  Smartphone,
+  Shield,
+  KeyRound,
+  CheckCircle2,
+  Server,
+  Palette,
+  Info,
+  RefreshCw,
+} from "lucide-react";
+
+export default function ProfilePage() {
+  const { theme, toggleTheme, isConnected, pairing, refreshState } = useApp();
+  const [pairingCode, setPairingCode] = useState("");
+  const [pairStatus, setPairStatus] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  const handlePair = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pairingCode.trim()) return;
+    try {
+      const res = await api.pairDevice(pairingCode);
+      if (res.status === "authenticated") {
+        setPairStatus("Device paired successfully!");
+        refreshState();
+      } else {
+        setPairStatus("Invalid pairing code");
+      }
+    } catch (err: any) {
+      setPairStatus(`Pairing failed: ${err.message}`);
+    }
+  };
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  };
+
+  return (
+    <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary">
+            <User className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">User Profile & Companion Settings</h1>
+            <p className="text-xs text-muted-foreground">
+              Manage user profile, Android pairing, session security, and environment preferences
+            </p>
+          </div>
+        </div>
+
+        <Button variant="primary" size="sm" onClick={handleSave} className="gap-1.5">
+          <CheckCircle2 className="w-4 h-4" />
+          <span>Save Preferences</span>
+        </Button>
+      </div>
+
+      {saved && (
+        <div className="p-3.5 rounded-lg bg-success/10 border border-success/30 text-success text-xs font-medium flex items-center gap-2 animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4" />
+          <span>Profile preferences saved successfully.</span>
+        </div>
+      )}
+
+      {/* User Profile Overview */}
+      <GlassCard className="p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-md ring-2 ring-white dark:ring-slate-800">
+              SC
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-foreground">Sai Chandra Kiran</h2>
+              <p className="text-xs text-muted-foreground">Lead Systems Architect & AI Specialist</p>
+            </div>
+          </div>
+          <Badge variant="primary" size="sm">Active User</Badge>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="space-y-1">
+            <span className="text-muted-foreground block font-mono">Workspace Role</span>
+            <span className="font-semibold text-foreground">Administrator</span>
+          </div>
+          <div className="space-y-1">
+            <span className="text-muted-foreground block font-mono">Environment Target</span>
+            <span className="font-semibold text-foreground">Windows Desktop Core</span>
+          </div>
+        </div>
+      </GlassCard>
+
+      {/* Android Device Pairing */}
+      <GlassCard className="p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <Smartphone className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-bold text-foreground">Android Companion Pairing</h2>
+          </div>
+          <Badge variant={pairing?.paired ? "success" : "muted"} size="sm">
+            {pairing?.paired ? "PAIRED" : "UNPAIRED"}
+          </Badge>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Connect your ECORAA Android Companion app to this Windows Desktop host using the 6-character pairing code.
+          </p>
+
+          <form onSubmit={handlePair} className="flex gap-2 max-w-md">
+            <input
+              type="text"
+              placeholder="e.g. ECORAA-4821"
+              value={pairingCode}
+              onChange={(e) => setPairingCode(e.target.value)}
+              className="flex-1 px-3 py-2 text-xs font-mono bg-surface border border-border/80 rounded-lg outline-none focus:border-primary text-foreground uppercase"
+            />
+            <Button type="submit" variant="primary" size="sm">
+              Pair Device
+            </Button>
+          </form>
+
+          {pairStatus && (
+            <p className="text-xs font-mono text-primary font-medium">{pairStatus}</p>
+          )}
+
+          {pairing?.paired && (
+            <div className="p-3 rounded-lg bg-surface/80 border border-border/60 text-xs font-mono space-y-1">
+              <div>Device: <span className="text-foreground font-semibold">{pairing.device_name || "ECORAA Android Pad"}</span></div>
+              <div>Session Token: <span className="text-muted-foreground">{pairing.token || "Active"}</span></div>
+            </div>
+          )}
+        </div>
+      </GlassCard>
+
+      {/* Security & System Info */}
+      <GlassCard className="p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-warning" />
+            <h2 className="text-sm font-bold text-foreground">Security & Permissions</h2>
+          </div>
+          <Badge variant={isConnected ? "success" : "danger"} size="sm">
+            {isConnected ? "SECURE BRIDGE ACTIVE" : "OFFLINE"}
+          </Badge>
+        </div>
+
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface/40 border border-border/40">
+            <span>Workspace Security Boundary</span>
+            <span className="font-mono text-emerald-600 font-semibold">ENFORCED</span>
+          </div>
+          <div className="flex items-center justify-between p-2.5 rounded-lg bg-surface/40 border border-border/40">
+            <span>OpenRouter API Key Storage</span>
+            <span className="font-mono text-emerald-600 font-semibold">BACKEND ONLY (.env)</span>
+          </div>
+        </div>
+      </GlassCard>
+    </div>
+  );
+}

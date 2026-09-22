@@ -16,12 +16,9 @@ export const MobileNav: React.FC = () => {
   const pathname = usePathname();
 
   const navItems = [
-    { label: "Assistant", href: "/", icon: MessageSquareCode },
+    { label: "Main", href: "/", icon: MessageSquareCode },
     { label: "Tasks", href: "/tasks", icon: ListTodo },
-    { label: "Memory", href: "/memory", icon: BrainCircuit },
-    { label: "Console", href: "/console", icon: Terminal },
-    { label: "Files", href: "/files", icon: FolderGit2 },
-    { label: "Settings", href: "/settings", icon: Sliders },
+    { label: "Profile", href: "/profile", icon: Sliders },
   ];
 
   return (

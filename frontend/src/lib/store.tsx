@@ -28,7 +28,7 @@ interface AppContextType {
   closeCommandPalette: () => void;
   addChatMessage: (msg: ChatMessage) => void;
   updateLastAssistantMessage: (updater: (prev: ChatMessage) => ChatMessage) => void;
-  executeGoal: (goal: string) => Promise<void>;
+  executeGoal: (goal: string, agentMode?: string) => Promise<void>;
   refreshState: () => Promise<void>;
 }
 
@@ -143,7 +143,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const executeGoal = useCallback(
-    async (goal: string) => {
+    async (goal: string, agentMode: string = "general") => {
       if (!goal.trim()) return;
 
       const userMsg: ChatMessage = {
@@ -169,7 +169,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await supabaseService.saveMessage(assistantMsg);
 
       try {
-        const res = await api.executeGoal(goal);
+        const res = await api.executeGoal(goal, agentMode);
         const finalMsg: ChatMessage = {
           id: assistantMsgId,
           role: "assistant",

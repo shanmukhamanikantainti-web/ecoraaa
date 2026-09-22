@@ -63,8 +63,15 @@ Perform a thorough Code & Architecture Review:
 5. Provide clear, actionable recommendations without making changes.
 """
 
+        system_prompt = """You are ECORAA Review Agent.
+Independently inspect the current changes.
+Use actual Git diff and files.
+Look for correctness, security, architecture, maintainability and test issues.
+Report evidence-based findings.
+Do not silently modify source code."""
+
         review_report = await self._llm_call(
-            system_prompt="You are an expert Principal Code Reviewer and Security Auditor. Produce concise, high-impact review reports.",
+            system_prompt=system_prompt,
             user_prompt=analysis_prompt
         )
 

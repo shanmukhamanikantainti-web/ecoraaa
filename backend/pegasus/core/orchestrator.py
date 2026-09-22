@@ -125,26 +125,43 @@ class PegasusOrchestrator:
         self.tools[name] = tool
         logger.info(f"Tool registered: {name}")
 
-    async def execute_goal(self, goal: str) -> Mission:
+    async def execute_goal(self, goal: str, agent_mode: Optional[str] = None) -> Mission:
         """
         Main entry point: receive a user goal and execute it.
+        If agent_mode is provided, route execution directly to that agent.
         Returns a Mission with status and steps.
         """
         mission_id = str(uuid.uuid4())[:8]
         mission = Mission(id=mission_id, goal=goal)
         self.active_missions[mission_id] = mission
 
-        logger.info(f"Mission {mission_id} started: {goal}")
-        await self._emit_event("TASK_STARTED", {"task_id": mission_id, "goal": goal})
+        # Normalize agent mode
+        norm_mode = (agent_mode or "").upper().strip()
+        if norm_mode in ["CODING", "CODE", "DEVELOPER"]:
+            target_agent = "Coding Agent"
+        elif norm_mode in ["TESTING", "TEST"]:
+            target_agent = "Testing Agent"
+        elif norm_mode in ["REVIEW", "CODE_REVIEW"]:
+            target_agent = "Review Agent"
+        elif norm_mode in ["MARKETING", "DOCS", "DOCUMENTATION"]:
+            target_agent = "Marketing Agent"
+        elif norm_mode in ["RESEARCH"]:
+            target_agent = "Research Agent"
+        else:
+            target_agent = None
+
+        logger.info(f"Mission {mission_id} started: {goal} (Agent Mode: {norm_mode or 'AUTO'} -> {target_agent or 'ORCHESTRATOR'})")
+        await self._emit_event("TASK_STARTED", {"task_id": mission_id, "goal": goal, "agent_mode": norm_mode or "AUTO", "agent": target_agent})
 
         try:
             # Step 1: Plan
             mission.status = MissionStatus.PLANNING
             await self._emit_event("PLANNING_STARTED", {"task_id": mission_id, "goal": goal})
-            steps = await self.planner.decompose_goal(goal, self.context)
+            steps = await self.planner.decompose_goal(goal, self.context, target_agent=target_agent)
             mission.steps = [MissionStep(name=s["name"], agent=s.get("agent"), tool=s.get("tool")) for s in steps]
             logger.info(f"Mission {mission_id}: Planned {len(steps)} steps")
             await self._emit_event("PLANNING_COMPLETED", {"task_id": mission_id, "steps": [s.to_dict() for s in mission.steps]})
+
 
             # Step 2: Execute
             mission.status = MissionStatus.RUNNING
