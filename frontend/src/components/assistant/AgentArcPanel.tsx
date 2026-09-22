@@ -6,19 +6,73 @@ import {
   Code2,
   Search,
   Feather,
-  ChevronRight,
+  BarChart3,
+  Terminal,
   ChevronUp,
   ChevronDown,
   RotateCw,
+  CheckCircle2,
 } from "lucide-react";
 
 export interface AgentOption {
   id: string;
   name: string;
   subtitle: string;
-  icon: any;
+  badge: string;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
 }
+
+export const AGENTS: AgentOption[] = [
+  {
+    id: "general",
+    name: "General Agent",
+    subtitle: "Chat & assist",
+    badge: "General",
+    icon: Sparkles,
+    color: "from-blue-600 to-sky-400",
+  },
+  {
+    id: "coding",
+    name: "Coding Agent",
+    subtitle: "Write & debug",
+    badge: "Code",
+    icon: Code2,
+    color: "from-indigo-600 to-blue-500",
+  },
+  {
+    id: "research",
+    name: "Research Agent",
+    subtitle: "Search & summarize",
+    badge: "Research",
+    icon: Search,
+    color: "from-cyan-600 to-teal-400",
+  },
+  {
+    id: "creative",
+    name: "Creative Agent",
+    subtitle: "Design & write",
+    badge: "Studio",
+    icon: Feather,
+    color: "from-violet-600 to-purple-400",
+  },
+  {
+    id: "analyst",
+    name: "Data Analyst",
+    subtitle: "Data & metrics",
+    badge: "Data",
+    icon: BarChart3,
+    color: "from-amber-600 to-orange-400",
+  },
+  {
+    id: "system",
+    name: "System Agent",
+    subtitle: "Terminal & ops",
+    badge: "DevOps",
+    icon: Terminal,
+    color: "from-emerald-600 to-teal-400",
+  },
+];
 
 interface AgentArcPanelProps {
   activeAgentId?: string;
@@ -26,36 +80,13 @@ interface AgentArcPanelProps {
   className?: string;
 }
 
-const AGENTS: AgentOption[] = [
-  {
-    id: "general",
-    name: "General Agent",
-    subtitle: "Chat, help, answer",
-    icon: Sparkles,
-    color: "from-blue-600 to-sky-400",
-  },
-  {
-    id: "coding",
-    name: "Coding Agent",
-    subtitle: "Write, debug, build",
-    icon: Code2,
-    color: "from-indigo-600 to-blue-500",
-  },
-  {
-    id: "research",
-    name: "Research Agent",
-    subtitle: "Find, analyze, summarize",
-    icon: Search,
-    color: "from-cyan-600 to-teal-400",
-  },
-  {
-    id: "creative",
-    name: "Creative Agent",
-    subtitle: "Design, write, brainstorm",
-    icon: Feather,
-    color: "from-violet-600 to-purple-400",
-  },
-];
+// Compact Wheel geometry scaled to fit precisely inside the user's red box boundary
+const WHEEL_RADIUS = 135; // Track radius
+const WHEEL_OUTER_RADIUS = 148; // Outer concentric rail
+const WHEEL_INNER_RADIUS = 122; // Inner concentric rail
+const CENTER_X = 230; // Center anchored near right edge
+const CENTER_Y = 210; // Vertical center of wheel
+const ANGLE_STEP = 38; // Degrees between each agent
 
 export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
   activeAgentId = "general",
@@ -66,246 +97,347 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(
     initialIndex >= 0 ? initialIndex : 0
   );
-  const [rotationAngle, setRotationAngle] = useState(0);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const [wheelAngle, setWheelAngle] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isRotating, setIsRotating] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
   const lastWheelTime = useRef(0);
+  const dragStartY = useRef(0);
+  const startAngle = useRef(0);
 
   useEffect(() => {
     const idx = AGENTS.findIndex((a) => a.id === activeAgentId);
     if (idx >= 0 && idx !== selectedIndex) {
       setSelectedIndex(idx);
+      setWheelAngle(idx * ANGLE_STEP);
     }
   }, [activeAgentId, selectedIndex]);
 
-  const selectAgentByIndex = useCallback(
-    (newIndex: number) => {
-      const normalized = (newIndex + AGENTS.length) % AGENTS.length;
+  const rotateToAgent = useCallback(
+    (targetIndex: number) => {
+      const normalized = (targetIndex + AGENTS.length) % AGENTS.length;
       setSelectedIndex(normalized);
-      setRotationAngle((prev) => prev + (newIndex - selectedIndex) * 18);
+      setWheelAngle(targetIndex * ANGLE_STEP);
+      setIsRotating(true);
+      setTimeout(() => setIsRotating(false), 350);
       onSelectAgent?.(AGENTS[normalized].id);
     },
-    [selectedIndex, onSelectAgent]
+    [onSelectAgent]
   );
 
-  // Mouse wheel listener to spin the half wheel
   const handleWheel = (e: React.WheelEvent) => {
     const now = Date.now();
-    // Throttle wheel events so a gentle flick advances by one step smoothly
-    if (now - lastWheelTime.current < 200) return;
+    if (now - lastWheelTime.current < 160) return;
     lastWheelTime.current = now;
 
-    if (e.deltaY > 15) {
-      // Scroll down -> next agent
-      selectAgentByIndex(selectedIndex + 1);
-    } else if (e.deltaY < -15) {
-      // Scroll up -> previous agent
-      selectAgentByIndex(selectedIndex - 1);
+    if (e.deltaY > 10) {
+      rotateToAgent(selectedIndex + 1);
+    } else if (e.deltaY < -10) {
+      rotateToAgent(selectedIndex - 1);
     }
   };
 
+  const handlePointerDown = (e: React.PointerEvent) => {
+    setIsDragging(true);
+    dragStartY.current = e.clientY;
+    startAngle.current = wheelAngle;
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    const deltaY = e.clientY - dragStartY.current;
+    const angleDelta = (deltaY / 220) * 70;
+    const currentVirtualAngle = startAngle.current - angleDelta;
+    setWheelAngle(currentVirtualAngle);
+
+    const computedIndex = Math.round(currentVirtualAngle / ANGLE_STEP);
+    const normalized =
+      ((computedIndex % AGENTS.length) + AGENTS.length) % AGENTS.length;
+    if (normalized !== selectedIndex) {
+      setSelectedIndex(normalized);
+      onSelectAgent?.(AGENTS[normalized].id);
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
+    const closestIndex = Math.round(wheelAngle / ANGLE_STEP);
+    rotateToAgent(closestIndex);
+  };
+
   const currentAgent = AGENTS[selectedIndex];
+  const CurrentIcon = currentAgent.icon;
+
+  // Tick marks along the compact arc
+  const numTicks = 26;
+  const tickAngles = Array.from(
+    { length: numTicks },
+    (_, i) => -75 + i * (150 / (numTicks - 1))
+  );
 
   return (
     <div
-      ref={panelRef}
+      ref={containerRef}
       onWheel={handleWheel}
-      className={`relative select-none flex flex-col justify-center py-2 ${className}`}
-      title="Scroll mouse wheel or click to rotate agents"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      className={`relative select-none flex flex-col justify-center items-end w-[250px] xl:w-[265px] h-[430px] overflow-visible cursor-grab active:cursor-grabbing ${className}`}
+      title="Scroll mouse wheel or drag to rotate agents"
     >
-      {/* ── Background Half-Wheel Orbital Arc SVG ── */}
-      <div className="absolute -left-20 top-1/2 -translate-y-1/2 w-[340px] h-[520px] pointer-events-none overflow-visible">
+      {/* ── Compact Header: Title & Step Steppers ── */}
+      <div className="absolute top-1 right-2 z-30 flex items-center justify-between w-[240px] px-2.5 py-1 rounded-xl bg-white/75 dark:bg-slate-900/75 backdrop-blur-md border border-blue-500/20 shadow-xs">
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+          <span className="text-[11px] font-bold text-foreground tracking-tight">
+            AI Agents
+          </span>
+          <span className="text-[9px] font-mono text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1 py-0.2 rounded font-semibold">
+            0{selectedIndex + 1}/0{AGENTS.length}
+          </span>
+        </div>
+
+        {/* Up/Down Micro Steppers */}
+        <div className="flex items-center gap-0.5">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              rotateToAgent(selectedIndex - 1);
+            }}
+            className="p-0.5 rounded hover:bg-blue-500/10 text-muted-foreground hover:text-blue-600 transition-colors"
+            title="Rotate Up"
+          >
+            <ChevronUp className="w-3 h-3" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              rotateToAgent(selectedIndex + 1);
+            }}
+            className="p-0.5 rounded hover:bg-blue-500/10 text-muted-foreground hover:text-blue-600 transition-colors"
+            title="Rotate Down"
+          >
+            <ChevronDown className="w-3 h-3" />
+          </button>
+        </div>
+      </div>
+
+      {/* ── SVG Dual-Arc Half Wheel Track ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-visible">
         <svg
-          viewBox="0 0 340 520"
+          viewBox="0 0 260 430"
           className="w-full h-full"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            <linearGradient id="wheelTrackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.08" />
-              <stop offset="35%" stopColor="#3B82F6" stopOpacity="0.45" />
-              <stop offset="50%" stopColor="#60A5FA" stopOpacity="0.85" />
-              <stop offset="65%" stopColor="#3B82F6" stopOpacity="0.45" />
-              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.08" />
+            <linearGradient id="cOuterRail" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.1" />
+              <stop offset="35%" stopColor="#3B82F6" stopOpacity="0.5" />
+              <stop offset="50%" stopColor="#2563EB" stopOpacity="0.9" />
+              <stop offset="65%" stopColor="#3B82F6" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.1" />
             </linearGradient>
 
-            <linearGradient id="glowDial" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#2563EB" stopOpacity="0.6" />
+            <linearGradient id="cInnerRail" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.1" />
+              <stop offset="35%" stopColor="#60A5FA" stopOpacity="0.4" />
+              <stop offset="50%" stopColor="#3B82F6" stopOpacity="0.8" />
+              <stop offset="65%" stopColor="#60A5FA" stopOpacity="0.4" />
               <stop offset="100%" stopColor="#60A5FA" stopOpacity="0.1" />
             </linearGradient>
 
-            <filter id="arcGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="6" result="blur" />
+            <filter id="cGlow" x="-25%" y="-25%" width="150%" height="150%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
           </defs>
 
-          {/* Outer soft ambient halo */}
+          {/* 1. Ambient Glow behind track */}
           <path
-            d="M 280,20 C 130,120 110,380 280,500"
-            stroke="url(#wheelTrackGrad)"
-            strokeWidth="28"
+            d={`M ${CENTER_X + WHEEL_RADIUS * Math.cos((-72 * Math.PI) / 180)},${
+              CENTER_Y + WHEEL_RADIUS * Math.sin((-72 * Math.PI) / 180)
+            } A ${WHEEL_RADIUS} ${WHEEL_RADIUS} 0 0 0 ${
+              CENTER_X + WHEEL_RADIUS * Math.cos((72 * Math.PI) / 180)
+            },${CENTER_Y + WHEEL_RADIUS * Math.sin((72 * Math.PI) / 180)}`}
+            stroke="url(#cOuterRail)"
+            strokeWidth="20"
             strokeLinecap="round"
-            strokeOpacity="0.15"
-            filter="url(#arcGlow)"
+            filter="url(#cGlow)"
+            opacity="0.22"
           />
 
-          {/* Main sleek orbital track line */}
+          {/* 2. Outer Concentric Arc */}
           <path
-            d="M 280,30 C 140,130 120,370 280,490"
-            stroke="url(#wheelTrackGrad)"
-            strokeWidth="2.5"
+            d={`M ${CENTER_X + WHEEL_OUTER_RADIUS * Math.cos((-74 * Math.PI) / 180)},${
+              CENTER_Y + WHEEL_OUTER_RADIUS * Math.sin((-74 * Math.PI) / 180)
+            } A ${WHEEL_OUTER_RADIUS} ${WHEEL_OUTER_RADIUS} 0 0 0 ${
+              CENTER_X + WHEEL_OUTER_RADIUS * Math.cos((74 * Math.PI) / 180)
+            },${CENTER_Y + WHEEL_OUTER_RADIUS * Math.sin((74 * Math.PI) / 180)}`}
+            stroke="url(#cOuterRail)"
+            strokeWidth="2"
             strokeLinecap="round"
           />
 
-          {/* Subtle tick markers along the wheel */}
-          {[60, 150, 260, 370, 460].map((y, idx) => (
-            <circle
-              key={idx}
-              cx={idx === 2 ? 150 : idx === 1 || idx === 3 ? 175 : 240}
-              cy={y}
-              r="2.5"
-              fill="#60A5FA"
-              fillOpacity={idx === 2 ? "0.9" : "0.35"}
-            />
-          ))}
+          {/* 3. Inner Concentric Arc */}
+          <path
+            d={`M ${CENTER_X + WHEEL_INNER_RADIUS * Math.cos((-74 * Math.PI) / 180)},${
+              CENTER_Y + WHEEL_INNER_RADIUS * Math.sin((-74 * Math.PI) / 180)
+            } A ${WHEEL_INNER_RADIUS} ${WHEEL_INNER_RADIUS} 0 0 0 ${
+              CENTER_X + WHEEL_INNER_RADIUS * Math.cos((74 * Math.PI) / 180)
+            },${CENTER_Y + WHEEL_INNER_RADIUS * Math.sin((74 * Math.PI) / 180)}`}
+            stroke="url(#cInnerRail)"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
 
-          {/* Active Wheel Position Glowing Diamond / Bead */}
-          <g
-            className="transition-transform duration-500 ease-out"
-            style={{
-              transform: `translateY(${
-                (selectedIndex - 1.5) * 88
-              }px)`,
-            }}
-          >
-            <circle cx="150" cy="260" r="7" fill="#3B82F6" filter="url(#arcGlow)" />
-            <circle cx="150" cy="260" r="3.5" fill="#FFFFFF" />
-          </g>
+          {/* 4. Ticks along the compact track */}
+          {tickAngles.map((angleDeg, i) => {
+            const dynamicAngleDeg = 180 + angleDeg + (wheelAngle % 360);
+            const normalizedDeg = ((dynamicAngleDeg % 360) + 360) % 360;
+            if (normalizedDeg < 105 || normalizedDeg > 255) return null;
+
+            const rad = (dynamicAngleDeg * Math.PI) / 180;
+            const x1 = CENTER_X + (WHEEL_INNER_RADIUS + 2) * Math.cos(rad);
+            const y1 = CENTER_Y + (WHEEL_INNER_RADIUS + 2) * Math.sin(rad);
+            const x2 = CENTER_X + (WHEEL_OUTER_RADIUS - 2) * Math.cos(rad);
+            const y2 = CENTER_Y + (WHEEL_OUTER_RADIUS - 2) * Math.sin(rad);
+
+            const isApex = Math.abs(normalizedDeg - 180) < 5;
+
+            return (
+              <line
+                key={i}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                stroke={isApex ? "#2563EB" : "#93C5FD"}
+                strokeWidth={isApex ? 2 : 1}
+                strokeOpacity={isApex ? 0.95 : 0.4}
+              />
+            );
+          })}
         </svg>
       </div>
 
-      {/* ── Main Container: Header + Half Wheel Cards ── */}
-      <div className="relative z-10 w-full max-w-[310px] space-y-4 pl-6">
-        {/* Header with Title and Up/Down Wheel Controls */}
-        <div className="flex items-center justify-between pr-2">
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-1.5">
-              <h3 className="text-base font-bold text-foreground tracking-tight">
-                AI Agents
-              </h3>
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                <RotateCw className="w-2.5 h-2.5 animate-spin" style={{ animationDuration: "9s" }} />
-                Wheel
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Choose an agent for your task
-            </p>
-          </div>
+      {/* ── Orbiting Inactive Agent Nodes on the Rim ── */}
+      <div className="absolute inset-0 pointer-events-auto">
+        {AGENTS.map((agent, index) => {
+          const stepDiff = index - selectedIndex;
+          let delta = stepDiff;
+          if (delta > AGENTS.length / 2) delta -= AGENTS.length;
+          if (delta < -AGENTS.length / 2) delta += AGENTS.length;
 
-          {/* Quick wheel cycle arrows */}
-          <div className="flex items-center gap-1 bg-surface-subtle/80 backdrop-blur-md rounded-xl p-0.5 border border-border/60">
-            <button
-              onClick={() => selectAgentByIndex(selectedIndex - 1)}
-              className="p-1 rounded-lg hover:bg-white/80 dark:hover:bg-slate-800 text-muted-foreground hover:text-foreground transition-all"
-              title="Previous Agent (Wheel Up)"
+          const angleDeg = 180 + delta * ANGLE_STEP;
+          const rad = (angleDeg * Math.PI) / 180;
+
+          const x = CENTER_X + WHEEL_RADIUS * Math.cos(rad);
+          const y = CENTER_Y + WHEEL_RADIUS * Math.sin(rad);
+
+          if (angleDeg < 100 || angleDeg > 260) return null;
+
+          const isActive = index === selectedIndex;
+          const NodeIcon = agent.icon;
+
+          // Active agent is displayed inside the apex card
+          if (isActive) return null;
+
+          return (
+            <div
+              key={agent.id}
+              onClick={(e) => {
+                e.stopPropagation();
+                rotateToAgent(index);
+              }}
+              style={{
+                left: `${x}px`,
+                top: `${y}px`,
+                transform: `translate(-50%, -50%)`,
+              }}
+              className="absolute z-20 group/node cursor-pointer transition-transform duration-200 hover:scale-115"
             >
-              <ChevronUp className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => selectAgentByIndex(selectedIndex + 1)}
-              className="p-1 rounded-lg hover:bg-white/80 dark:hover:bg-slate-800 text-muted-foreground hover:text-foreground transition-all"
-              title="Next Agent (Wheel Down)"
-            >
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-
-        {/* ── Half-Wheel Curved Stack of Agent Cards ── */}
-        <div className="relative py-1 space-y-3">
-          {AGENTS.map((agent, idx) => {
-            const Icon = agent.icon;
-            const isActive = selectedIndex === idx;
-
-            // Compute curved arc offsets based on position relative to center
-            // Items in the middle curve further to the left to follow the wheel perimeter
-            const delta = idx - 1.5; // distance from middle
-            const arcCurveOffset = Math.cos((delta / 2) * Math.PI * 0.45) * 18;
-            const extraActiveShift = isActive ? -8 : 0;
-            const totalTranslateX = -arcCurveOffset + extraActiveShift;
-
-            return (
-              <div
-                key={agent.id}
-                onClick={() => selectAgentByIndex(idx)}
-                style={{
-                  transform: `translateX(${totalTranslateX}px)`,
-                }}
-                className={`relative flex items-center justify-between p-3.5 rounded-2xl cursor-pointer transition-all duration-300 ease-out group ${
-                  isActive
-                    ? "liquid-glass bg-white/95 dark:bg-slate-900/95 border-blue-500/70 shadow-[0_12px_32px_-6px_rgba(37,99,235,0.28)] ring-1 ring-blue-400/40"
-                    : "liquid-glass-card hover:bg-white/70 dark:hover:bg-slate-800/70 opacity-80 hover:opacity-100"
-                }`}
-              >
-                {/* Active Left Indicator Pip */}
-                {isActive && (
-                  <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-7 rounded-full bg-gradient-to-b from-blue-500 to-sky-400 shadow-sm shadow-blue-500/50" />
-                )}
-
-                <div className="flex items-center gap-3">
-                  {/* Icon Circle */}
-                  <div
-                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 ${
-                      isActive
-                        ? `bg-gradient-to-tr ${agent.color} text-white shadow-md shadow-blue-500/35 scale-105`
-                        : "bg-surface-subtle/85 text-muted-foreground border border-border/80 group-hover:border-blue-400/50 group-hover:text-blue-600 group-hover:scale-100"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
-
-                  {/* Text Details */}
-                  <div className="space-y-0.5">
-                    <h4
-                      className={`text-xs font-bold leading-tight transition-colors ${
-                        isActive
-                          ? "text-blue-600 dark:text-blue-400"
-                          : "text-foreground group-hover:text-foreground-heading"
-                      }`}
-                    >
-                      {agent.name}
-                    </h4>
-                    <p className="text-[11px] text-muted-foreground leading-snug">
-                      {agent.subtitle}
-                    </p>
-                  </div>
+              <div className="relative flex items-center">
+                <div className="w-7 h-7 rounded-full liquid-glass bg-white/90 dark:bg-slate-900/90 border border-blue-400/40 shadow-xs flex items-center justify-center text-muted-foreground group-hover/node:text-blue-600 group-hover/node:border-blue-500 transition-colors">
+                  <NodeIcon className="w-3.5 h-3.5" />
                 </div>
 
-                {/* Right Arrow Chevron */}
-                <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                    isActive
-                      ? "bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400"
-                      : "text-muted-foreground/60 group-hover:text-muted-foreground group-hover:translate-x-0.5"
-                  }`}
-                >
-                  <ChevronRight className="w-4 h-4" />
+                {/* Floating mini tooltip */}
+                <div className="hidden group-hover/node:flex absolute right-8 whitespace-nowrap items-center gap-1 px-2 py-0.5 rounded-lg liquid-glass bg-white/95 dark:bg-slate-900/95 border border-blue-400/40 shadow-md text-[10px] font-semibold text-foreground">
+                  <span>{agent.name}</span>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* Wheel Interaction Helper Footer */}
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground/75 px-2 pt-1">
-          <span className="flex items-center gap-1">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Active: <strong className="text-foreground font-semibold">{currentAgent.name}</strong>
-          </span>
-          <span className="italic">Scroll wheel to rotate</span>
+      {/* ── Active Agent Card at the Apex (The Blue Box from Layout) ── */}
+      {/* Sized compactly to match the user's red box boundary */}
+      <div
+        style={{
+          top: `${CENTER_Y}px`,
+          transform: `translateY(-50%)`,
+        }}
+        className="absolute left-1 z-20 w-[182px] transition-all duration-300"
+      >
+        <div
+          className={`relative liquid-glass rounded-xl p-2.5 cursor-pointer transition-all duration-300 ${
+            isRotating
+              ? "scale-[1.02] border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+              : "border-2 border-blue-500 dark:border-blue-400 shadow-[0_0_18px_rgba(37,99,235,0.28)] ring-1 ring-blue-400/30"
+          }`}
+        >
+          {/* Active Left Pip */}
+          <div className="absolute -left-1 top-2.5 bottom-2.5 w-1 rounded-full bg-gradient-to-b from-blue-500 to-sky-400 shadow-[0_0_8px_rgba(59,130,246,0.7)]" />
+
+          {/* Mini Header: Tag & Apex indicator */}
+          <div className="flex items-center justify-between mb-1.5 pl-0.5">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-blue-500 text-white shadow-xs">
+              <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
+              Active
+            </span>
+
+            <span className="text-[9px] font-semibold text-blue-600 dark:text-blue-400">
+              {currentAgent.badge}
+            </span>
+          </div>
+
+          {/* Agent Icon + Title */}
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-tr ${currentAgent.color} text-white shadow-sm shadow-blue-500/30 shrink-0`}
+            >
+              <CurrentIcon className="w-4 h-4" />
+            </div>
+
+            <div className="space-y-0.5 overflow-hidden">
+              <h4 className="text-[11.5px] font-extrabold text-foreground tracking-tight truncate flex items-center gap-1">
+                {currentAgent.name}
+                <CheckCircle2 className="w-3 h-3 text-blue-500 shrink-0" />
+              </h4>
+              <p className="text-[9.5px] text-muted-foreground truncate leading-tight">
+                {currentAgent.subtitle}
+              </p>
+            </div>
+          </div>
+
+          {/* Wheel Docking Connector on right rim */}
+          <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-blue-500 border-2 border-white dark:border-slate-900 shadow-xs flex items-center justify-center">
+            <div className="w-1 h-1 rounded-full bg-white animate-ping" />
+          </div>
         </div>
+      </div>
+
+      {/* ── Compact Bottom Hint ── */}
+      <div className="absolute bottom-1 right-2 z-30 flex items-center gap-1 text-[9.5px] text-muted-foreground/80 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-2 py-0.5 rounded-lg border border-border/50">
+        <RotateCw className="w-2.5 h-2.5 text-blue-500 animate-spin" style={{ animationDuration: "12s" }} />
+        <span>Scroll or drag wheel</span>
       </div>
     </div>
   );
