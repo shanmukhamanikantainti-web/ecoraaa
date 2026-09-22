@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useApp } from "@/lib/store";
+import { useApp, getInitials } from "@/lib/store";
 import { EcoraaLogo } from "@/components/ui/EcoraaLogo";
 
 import {
@@ -33,8 +33,11 @@ interface RecentChat {
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const { openCommandPalette, isConnected, setShowWelcome, theme, toggleTheme } = useApp();
+  const { openCommandPalette, isConnected, setShowWelcome, theme, toggleTheme, userName, memory } = useApp();
   const [selectedChatId, setSelectedChatId] = useState<string>("chat-1");
+
+  const displayName = userName || (memory?.user && !memory.user.toLowerCase().includes("engineering student") ? memory.user : "") || "User";
+  const initials = getInitials(displayName);
 
   const recentChats: RecentChat[] = [
     {
@@ -206,12 +209,21 @@ export const Sidebar: React.FC = () => {
           <div className="p-2.5 rounded-2xl liquid-glass-card flex items-center justify-between cursor-pointer hover:border-blue-400/50">
             <div className="flex items-center gap-2.5">
               {/* User Avatar */}
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-sm ring-2 ring-white dark:ring-slate-800">
-                SC
+              <div
+                suppressHydrationWarning
+                className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-sm ring-2 ring-white dark:ring-slate-800"
+              >
+                {initials}
               </div>
 
-              <div className="space-y-0.5">
-                <h4 className="text-xs font-bold text-foreground">Sai Chandra Kiran</h4>
+              <div className="space-y-0.5 min-w-0">
+                <h4
+                  suppressHydrationWarning
+                  className="text-xs font-bold text-foreground truncate max-w-[120px]"
+                  title={displayName}
+                >
+                  {displayName}
+                </h4>
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] text-muted-foreground font-mono">Profile & Settings</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />

@@ -18,6 +18,7 @@ import {
   EyeOff,
   ArrowRight,
   Loader2,
+  CheckCircle2,
 } from "lucide-react";
 
 interface CreateAccountScreenProps {
@@ -32,58 +33,172 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
   initialSignInMode = false,
 }) => {
   const router = useRouter();
-  const { setAuthStep, setShowWelcome } = useApp();
+  const { setAuthStep, setShowWelcome, setUserName } = useApp();
   const [isSignInMode, setIsSignInMode] = useState(initialSignInMode);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const handleAuthSuccess = () => {
     setShowWelcome(false);
     if (onSuccess) {
       onSuccess();
     } else {
-      router.push("/");
+      router.push("/dashboard");
     }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
-    if (!email || !password) {
+    setSuccessMsg(null);
+
+    if (!email.trim() || !password) {
       setErrorMsg("Please fill in all required fields.");
       return;
     }
-    if (!isSignInMode && !fullName.trim()) {
-      setErrorMsg("Please enter your full name.");
-      return;
+
+    if (!isSignInMode) {
+      if (!fullName.trim()) {
+        setErrorMsg("Please enter your full name.");
+        return;
+      }
+      if (password.length < 6) {
+        setErrorMsg("Password must be at least 6 characters long.");
+        return;
+      }
+      if (!confirmPassword) {
+        setErrorMsg("Please enter your confirm password.");
+        return;
+      }
+      if (password !== confirmPassword) {
+        setErrorMsg("Passwords do not match. Please ensure both passwords are identical.");
+        return;
+      }
     }
 
     setIsLoading(true);
     try {
-      if (!isSignInMode && fullName.trim()) {
-        await supabaseService.addMemoryItem("user", fullName.trim());
+      if (!isSignInMode) {
+        // Save name immediately to local store & localStorage
+        if (fullName.trim()) {
+          setUserName(fullName.trim());
+          if (typeof window !== "undefined") {
+            localStorage.setItem("ecoraa_user_name", fullName.trim());
+            localStorage.setItem("ecoraa_user_email", email.trim());
+          }
+        }
+
+        // ── Create Account in Supabase ──
+        try {
+          const data = await supabaseService.signUp(
+            email.trim(),
+            password,
+            fullName.trim()
+          );
+
+          // Save display name into memory
+          try {
+            await supabaseService.addMemoryItem("user", fullName.trim());
+          } catch {
+            // ignore background sync errors
+          }
+
+          if (data?.session) {
+            setSuccessMsg("Account created and verified in Supabase! Redirecting to workspace...");
+            setTimeout(() => {
+              setIsLoading(false);
+              handleAuthSuccess();
+            }, 800);
+          } else if (data?.user) {
+            setSuccessMsg("Account created successfully in Supabase! Welcome aboard.");
+            setTimeout(() => {
+              setIsLoading(false);
+              handleAuthSuccess();
+            }, 1000);
+          } else {
+            setSuccessMsg("Account created successfully in Supabase! Redirecting...");
+            setTimeout(() => {
+              setIsLoading(false);
+              handleAuthSuccess();
+            }, 800);
+          }
+        } catch (signUpErr: any) {
+          // If the user already registered in Supabase, smoothly sign them in!
+          const errMsg = signUpErr?.message || "";
+          if (errMsg.toLowerCase().includes("already registered")) {
+            console.log("[Supabase Auth] User already exists, attempting sign in...");
+            try {
+              const res = await supabaseService.signIn(email.trim(), password);
+              const signedInUser = res?.user;
+              const resolvedName =
+                fullName.trim() ||
+                signedInUser?.user_metadata?.full_name ||
+                signedInUser?.user_metadata?.name ||
+                email.trim().split("@")[0];
+              if (resolvedName) {
+                setUserName(resolvedName);
+                if (typeof window !== "undefined") {
+                  localStorage.setItem("ecoraa_user_name", resolvedName);
+                  localStorage.setItem("ecoraa_user_email", email.trim());
+                }
+              }
+              setSuccessMsg("Account already registered! Signed in successfully. Redirecting...");
+              setTimeout(() => {
+                setIsLoading(false);
+                handleAuthSuccess();
+              }, 600);
+              return;
+            } catch (signInErr: any) {
+              throw new Error("This email is already registered in Supabase. Please verify your password or use Sign In.");
+            }
+          }
+          throw signUpErr;
+        }
+      } else {
+        // ── Sign In to existing Supabase account ──
+        const res = await supabaseService.signIn(email.trim(), password);
+        const signedInUser = res?.user;
+        const resolvedName =
+          signedInUser?.user_metadata?.full_name ||
+          signedInUser?.user_metadata?.name ||
+          email.trim().split("@")[0];
+        if (resolvedName) {
+          setUserName(resolvedName);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("ecoraa_user_name", resolvedName);
+            localStorage.setItem("ecoraa_user_email", email.trim());
+          }
+        }
+        setSuccessMsg("Signed in successfully! Redirecting...");
+        setTimeout(() => {
+          setIsLoading(false);
+          handleAuthSuccess();
+        }, 500);
       }
-      // Artificial smooth transition for user feedback
-      setTimeout(() => {
-        setIsLoading(false);
-        handleAuthSuccess();
-      }, 500);
     } catch (err: any) {
       setIsLoading(false);
-      setErrorMsg(err?.message || "Failed to authenticate. Please try again.");
+      console.error("[Supabase Auth Error]:", err);
+      setErrorMsg(err?.message || "Failed to authenticate with Supabase. Please try again.");
     }
   };
 
-  const handleOAuth = (provider: "google" | "github") => {
+  const handleOAuth = async (provider: "google" | "github") => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      await supabaseService.signInWithOAuth(provider);
+    } catch (err: any) {
       setIsLoading(false);
-      handleAuthSuccess();
-    }, 400);
+      setErrorMsg(err?.message || `Failed to sign in with ${provider}.`);
+    }
   };
 
   const valueProps = [
@@ -321,8 +436,25 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
                 </div>
               )}
 
+              {/* Success Message if any */}
+              {successMsg && (
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium animate-in fade-in flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>{successMsg}</span>
+                </div>
+              )}
+
               {/* Inputs Form */}
-              <form onSubmit={handleFormSubmit} className="space-y-3">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleFormSubmit(e);
+                }}
+                action="#"
+                method="POST"
+                className="space-y-3"
+              >
                 {/* Full Name field (Only shown for Create Account) */}
                 {!isSignInMode && (
                   <div className="space-y-1">
@@ -374,7 +506,7 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder={isSignInMode ? "Enter your password" : "Create a strong password"}
+                      placeholder={isSignInMode ? "Enter your password" : "Create a strong password (min 6 chars)"}
                       required
                       className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white/70 border border-[#C6D1D7] text-xs font-medium text-[#2E303D] placeholder:text-[#9FA0B5] focus:outline-none focus:border-[#2F7EDA] focus:ring-2 focus:ring-[#2F7EDA]/20 transition-all"
                     />
@@ -382,6 +514,7 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
                       className="absolute right-3 text-[#9FA0B5] hover:text-[#555663] cursor-pointer"
+                      title={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -392,11 +525,68 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
                   </div>
                 </div>
 
+                {/* Confirm Password field (Only shown for Create Account) */}
+                {!isSignInMode && (
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-[#555663] block">
+                      Confirm Password
+                    </label>
+                    <div className="relative flex items-center">
+                      <Lock className="w-4 h-4 text-[#9FA0B5] absolute left-3.5 pointer-events-none" />
+                      <input
+                        id="create-account-confirm-password-input"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Re-enter your password"
+                        required={!isSignInMode}
+                        className={`w-full pl-10 pr-10 py-2.5 rounded-2xl bg-white/70 border text-xs font-medium text-[#2E303D] placeholder:text-[#9FA0B5] focus:outline-none transition-all ${
+                          confirmPassword && password !== confirmPassword
+                            ? "border-amber-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                            : confirmPassword && password === confirmPassword
+                            ? "border-emerald-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                            : "border-[#C6D1D7] focus:border-[#2F7EDA] focus:ring-2 focus:ring-[#2F7EDA]/20"
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="absolute right-3 text-[#9FA0B5] hover:text-[#555663] cursor-pointer"
+                        title={showConfirmPassword ? "Hide password" : "Show password"}
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Subtle match validation notice */}
+                    {confirmPassword && password !== confirmPassword && (
+                      <p className="text-[10px] text-amber-600 font-medium pl-1">
+                        Passwords do not match yet
+                      </p>
+                    )}
+                    {confirmPassword && password === confirmPassword && (
+                      <p className="text-[10px] text-emerald-600 font-medium pl-1 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                        Passwords match
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 {/* Submit Action Button */}
                 <div className="pt-1.5">
                   <button
                     id="create-account-submit-btn"
-                    type="submit"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleFormSubmit(e);
+                    }}
                     disabled={isLoading}
                     className="w-full group py-3 rounded-full gradient-blue-btn flex items-center justify-center gap-2 text-sm font-bold tracking-wide cursor-pointer shadow-lg shadow-blue-500/30 hover:brightness-105 active:scale-98 transition-all focus:outline-none focus:ring-2 focus:ring-[#2F7EDA]/40"
                   >

@@ -114,6 +114,7 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
       const targetAngle = slot * ANGLE_STEP;
       const targetNormalized =
         ((slot % AGENTS.length) + AGENTS.length) % AGENTS.length;
+      console.log("[AgentArcPanel] snapToSlot:", { slot, targetAngle, targetNormalized, selectedId: AGENTS[targetNormalized].id });
       setWheelAngle(targetAngle);
       wheelAngleRef.current = targetAngle;
       const selectedId = AGENTS[targetNormalized].id;
@@ -159,34 +160,69 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
     snapToSlot(curSlot - 1);
   }, [snapToSlot]);
 
-  // ── Native Non-Passive Wheel Event Listener ──
+  // ── Smooth Continuous Wheel & Trackpad Scroll Event Handling ──
+  const snapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Use a ref to always have the latest snapToSlot without re-registering the native listener
+  const snapToSlotRef = useRef(snapToSlot);
+  snapToSlotRef.current = snapToSlot;
+
+  // ── Native Non-Passive Wheel Event Listener (ONLY handler — no React onWheel) ──
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const onWheelHandler = (e: WheelEvent) => {
+    const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
+      const deltaY = e.deltaY;
+      if (Math.abs(deltaY) < 1) return;
+
       const now = Date.now();
-      if (now - lastScrollTime.current < 130) return;
-      lastScrollTime.current = now;
+      const isNotchedWheel = Math.abs(deltaY) >= 40;
 
-      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-      if (Math.abs(delta) < 2) return;
+      if (isNotchedWheel) {
+        // Standard notched mouse wheel: 1 click = 1 agent step
+        if (now - lastScrollTime.current < 160) return;
+        lastScrollTime.current = now;
 
-      if (delta > 0) {
-        stepNext();
+        const curSlot = Math.round(wheelAngleRef.current / ANGLE_STEP);
+        if (deltaY > 0) {
+          snapToSlotRef.current(curSlot + 1);
+        } else {
+          snapToSlotRef.current(curSlot - 1);
+        }
       } else {
-        stepPrev();
+        // Continuous smooth rotation for trackpads
+        setIsDragging(true);
+        isDraggingRef.current = true;
+
+        const sensitivity = 0.4;
+        const newAngle = wheelAngleRef.current + deltaY * sensitivity;
+        wheelAngleRef.current = newAngle;
+        setWheelAngle(newAngle);
+
+        if (snapTimeoutRef.current) {
+          clearTimeout(snapTimeoutRef.current);
+        }
+        snapTimeoutRef.current = setTimeout(() => {
+          setIsDragging(false);
+          isDraggingRef.current = false;
+          const nearestSlot = Math.round(wheelAngleRef.current / ANGLE_STEP);
+          snapToSlotRef.current(nearestSlot);
+        }, 130);
       }
     };
 
-    el.addEventListener("wheel", onWheelHandler, { passive: false });
+    el.addEventListener("wheel", onWheel, { passive: false });
     return () => {
-      el.removeEventListener("wheel", onWheelHandler);
+      el.removeEventListener("wheel", onWheel);
+      if (snapTimeoutRef.current) {
+        clearTimeout(snapTimeoutRef.current);
+      }
     };
-  }, [stepNext, stepPrev]);
+  }, []); // stable — uses refs internally
 
   // ── Mouse & Touch Direct Manipulation Dragging ──
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -256,10 +292,16 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
     (_, i) => -72 + i * (144 / (numTicks - 1))
   );
 
-  // Elastic drag displacement for active card
-  const cardElasticY = isDragging
-    ? Math.max(-24, Math.min(24, dragDeltaY * 0.2))
-    : 0;
+  // Active card position: tracks wheel rotation continuously along the circular arc!
+  const activeDiffSlots = wrapDiff(
+    normalizedIndex - wheelAngle / ANGLE_STEP,
+    AGENTS.length
+  );
+  const activeDiffDeg = activeDiffSlots * ANGLE_STEP;
+  const cardAngleDeg = 180 + activeDiffDeg;
+  const cardRad = (cardAngleDeg * Math.PI) / 180;
+  const cardY = CENTER_Y + WHEEL_RADIUS * Math.sin(cardRad);
+  const cardX = Math.max(0, CENTER_X + WHEEL_RADIUS * Math.cos(cardRad) - 105);
 
   return (
     <div
@@ -429,7 +471,7 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
           if (Math.abs(diffDeg) < 16) return null;
 
           // Only show nodes along the visible half-wheel arc
-          if (Math.abs(diffDeg) > 92) return null;
+          if (Math.abs(diffDeg) > 55) return null;
 
           const angleDeg = 180 + diffDeg;
           const rad = (angleDeg * Math.PI) / 180;
@@ -475,13 +517,14 @@ export const AgentArcPanel: React.FC<AgentArcPanelProps> = ({
       {/* ── Active Agent Card at the Apex (The Blue Box from Layout) ── */}
       <div
         style={{
-          top: `${CENTER_Y}px`,
-          transform: `translateY(-50%) translateY(${cardElasticY}px)`,
+          top: `${cardY}px`,
+          left: `${cardX}px`,
+          transform: "translateY(-50%)",
           transition: isDragging
             ? "none"
-            : "all 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+            : "all 350ms cubic-bezier(0.16, 1, 0.3, 1)",
         }}
-        className="absolute left-0 z-20 w-[204px] pointer-events-auto"
+        className="absolute z-20 w-[204px] pointer-events-auto"
       >
         <div
           onClick={(e) => {

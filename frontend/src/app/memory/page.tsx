@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 
 export default function MemoryPage() {
-  const { memory, refreshState } = useApp();
+  const { memory, refreshState, userName, setUserName } = useApp();
   const [newVal, setNewVal] = useState("");
   const [activeCategory, setActiveCategory] = useState<"projects" | "preferences" | "goals" | "user">(
     "projects"
@@ -35,6 +35,7 @@ export default function MemoryPage() {
     try {
       // Sync with both Backend Core and Supabase Database
       if (activeCategory === "user") {
+        setUserName(newVal.trim());
         await Promise.allSettled([
           api.updateMemory("set_user", newVal),
           supabaseService.addMemoryItem("user", newVal),
@@ -183,7 +184,7 @@ export default function MemoryPage() {
             </Button>
           </div>
           <div className="p-3.5 rounded-2xl liquid-glass-card text-xs font-mono text-foreground leading-relaxed">
-            {memory?.user || "Sai Chandra Kiran (AI & Data Science Specialist)"}
+            {memory?.user || userName || "User"}
           </div>
         </GlassCard>
 

@@ -69,8 +69,10 @@ export const supabaseService = {
       const preferences = data.filter((d) => d.category === "preferences").map((d) => d.value);
       const goals = data.filter((d) => d.category === "goals").map((d) => d.value);
 
+      const storedName = typeof window !== "undefined" ? localStorage.getItem("ecoraa_user_name") : null;
+
       return {
-        user: userRow ? userRow.value : "Sai Chandra Kiran",
+        user: userRow ? userRow.value : (storedName || "User"),
         projects,
         preferences,
         goals,
@@ -129,4 +131,71 @@ export const supabaseService = {
       console.warn("[Supabase] Failed to save mission:", err);
     }
   },
+
+  // ── Authentication ──
+  async signUp(email: string, password: string, fullName?: string) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName || "",
+          name: fullName || "",
+        },
+      },
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  async signIn(email: string, password: string) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  async signInWithOAuth(provider: "google" | "github") {
+    const redirectTo =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/dashboard`
+        : undefined;
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo,
+      },
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  async signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  },
+
+  async getUser() {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) return null;
+      return user;
+    } catch {
+      return null;
+    }
+  },
+
+  async getSession() {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) return null;
+      return session;
+    } catch {
+      return null;
+    }
+  },
 };
+

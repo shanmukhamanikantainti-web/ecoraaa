@@ -33,8 +33,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${syne.variable} ${jetbrains.variable}`}>
-      <body className="antialiased bg-[#F7F1E3] text-[#2D2A26]">
+    <html lang="en" suppressHydrationWarning className={`${syne.variable} ${jetbrains.variable}`}>
+      <body suppressHydrationWarning className="antialiased bg-[#F7F1E3] text-[#2D2A26]">
         <AppProvider>
           <AppShell>{children}</AppShell>
         </AppProvider>

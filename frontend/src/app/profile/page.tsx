@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useApp } from "@/lib/store";
+import React, { useState, useEffect } from "react";
+import { useApp, getInitials } from "@/lib/store";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -19,10 +19,33 @@ import {
 } from "lucide-react";
 
 export default function ProfilePage() {
-  const { theme, toggleTheme, isConnected, pairing, refreshState } = useApp();
+  const {
+    theme,
+    toggleTheme,
+    isConnected,
+    pairing,
+    refreshState,
+    userName,
+    setUserName,
+    userRole,
+    setUserRole,
+    memory,
+  } = useApp();
   const [pairingCode, setPairingCode] = useState("");
   const [pairStatus, setPairStatus] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+
+  const initialName = userName || (memory?.user && !memory.user.toLowerCase().includes("engineering student") ? memory.user : "") || "User";
+  const [nameInput, setNameInput] = useState(initialName);
+  const [roleInput, setRoleInput] = useState(userRole || "Lead Systems Architect & AI Specialist");
+
+  useEffect(() => {
+    if (userName) setNameInput(userName);
+  }, [userName]);
+
+  useEffect(() => {
+    if (userRole) setRoleInput(userRole);
+  }, [userRole]);
 
   const handlePair = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,9 +65,17 @@ export default function ProfilePage() {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    if (nameInput.trim()) {
+      setUserName(nameInput.trim());
+    }
+    if (roleInput.trim()) {
+      setUserRole(roleInput.trim());
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
+
+  const initials = getInitials(nameInput || userName);
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -79,18 +110,49 @@ export default function ProfilePage() {
       <GlassCard className="p-5 space-y-4">
         <div className="flex items-center justify-between border-b border-border/60 pb-3">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-md ring-2 ring-white dark:ring-slate-800">
-              SC
+            <div
+              suppressHydrationWarning
+              className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-md ring-2 ring-white dark:ring-slate-800"
+            >
+              {initials}
             </div>
             <div>
-              <h2 className="text-sm font-bold text-foreground">Sai Chandra Kiran</h2>
-              <p className="text-xs text-muted-foreground">Lead Systems Architect & AI Specialist</p>
+              <h2 suppressHydrationWarning className="text-sm font-bold text-foreground">
+                {nameInput || userName || "User"}
+              </h2>
+              <p suppressHydrationWarning className="text-xs text-muted-foreground">
+                {roleInput || "AI Specialist"}
+              </p>
             </div>
           </div>
           <Badge variant="primary" size="sm">Active User</Badge>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        {/* Profile Editing Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-1">
+          <div className="space-y-1.5">
+            <label className="text-muted-foreground block font-mono text-[11px]">Display Name</label>
+            <input
+              type="text"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="e.g. Alex Rivera"
+              className="w-full px-3 py-2 text-xs bg-surface border border-border/80 rounded-lg outline-none focus:border-primary text-foreground"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-muted-foreground block font-mono text-[11px]">Professional Title / Role</label>
+            <input
+              type="text"
+              value={roleInput}
+              onChange={(e) => setRoleInput(e.target.value)}
+              placeholder="e.g. Lead Systems Architect & AI Specialist"
+              className="w-full px-3 py-2 text-xs bg-surface border border-border/80 rounded-lg outline-none focus:border-primary text-foreground"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2 border-t border-border/40">
           <div className="space-y-1">
             <span className="text-muted-foreground block font-mono">Workspace Role</span>
             <span className="font-semibold text-foreground">Administrator</span>

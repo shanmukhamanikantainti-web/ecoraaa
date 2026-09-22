@@ -20,6 +20,10 @@ interface AppContextType {
   authStep: "welcome" | "create-account";
   mounted: boolean;
   isCommandPaletteOpen: boolean;
+  userName: string;
+  userRole: string;
+  setUserName: (name: string) => void;
+  setUserRole: (role: string) => void;
   setShowWelcome: (show: boolean) => void;
   setAuthStep: (step: "welcome" | "create-account") => void;
   toggleTheme: () => void;
@@ -30,6 +34,15 @@ interface AppContextType {
   updateLastAssistantMessage: (updater: (prev: ChatMessage) => ChatMessage) => void;
   executeGoal: (goal: string, agentMode?: string) => Promise<void>;
   refreshState: () => Promise<void>;
+}
+
+export function getInitials(name?: string | null): string {
+  if (!name || !name.trim()) return "U";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -47,14 +60,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [showWelcome, setShowWelcomeState] = useState<boolean>(true);
   const [authStep, setAuthStep] = useState<"welcome" | "create-account">("welcome");
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [userName, setUserNameState] = useState<string>("");
+  const [userRole, setUserRoleState] = useState<string>("Lead Systems Architect & AI Specialist");
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+
+  const setUserName = useCallback((name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setUserNameState(trimmed);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ecoraa_user_name", trimmed);
+    }
+    supabaseService.addMemoryItem("user", trimmed).catch(() => {});
+    api.updateMemory("set_user", trimmed).catch(() => {});
+  }, []);
+
+  const setUserRole = useCallback((role: string) => {
+    const trimmed = role.trim();
+    if (!trimmed) return;
+    setUserRoleState(trimmed);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("ecoraa_user_role", trimmed);
+    }
+  }, []);
 
   useEffect(() => {
     setMounted(true);
     // Ensure document element has light class by default
     if (typeof window !== "undefined") {
       document.documentElement.classList.remove("dark");
+      const storedName = localStorage.getItem("ecoraa_user_name");
+      if (storedName) {
+        setUserNameState(storedName);
+      }
+      const storedRole = localStorage.getItem("ecoraa_user_role");
+      if (storedRole) {
+        setUserRoleState(storedRole);
+      }
     }
   }, []);
 
@@ -128,13 +171,43 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       if (mem.status === "fulfilled") {
         setMemory(mem.value);
-      } else if (supaMem.status === "fulfilled" && supaMem.value) {
-        setMemory(supaMem.value);
+        if (mem.value?.user && !mem.value.user.toLowerCase().includes("engineering student")) {
+          setUserNameState((curr) => curr || mem.value.user);
+        }
+      }
+      if (supaMem.status === "fulfilled" && supaMem.value) {
+        if (!mem || mem.status !== "fulfilled") {
+          setMemory(supaMem.value);
+        }
+        const supaUser = supaMem.value.user;
+        if (supaUser && supaUser !== "User") {
+          setUserNameState((curr) => {
+            const next = curr || supaUser;
+            if (typeof window !== "undefined" && !localStorage.getItem("ecoraa_user_name")) {
+              localStorage.setItem("ecoraa_user_name", next);
+            }
+            return next;
+          });
+        }
       }
       if (pair.status === "fulfilled") setPairing(pair.value);
       if (supaMsgs.status === "fulfilled" && supaMsgs.value.length > 0) {
         setChatMessages(supaMsgs.value);
       }
+
+      // Check active Supabase Auth user
+      supabaseService.getUser().then((authUser) => {
+        if (authUser) {
+          const authName = authUser.user_metadata?.full_name || authUser.user_metadata?.name;
+          if (authName) {
+            setUserNameState(authName);
+            if (typeof window !== "undefined") {
+              localStorage.setItem("ecoraa_user_name", authName);
+            }
+          }
+        }
+      }).catch(() => {});
+
       setIsConnected(true);
       setIsSupabaseConnected(true);
     } catch {
@@ -279,6 +352,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         authStep,
         mounted,
         isCommandPaletteOpen,
+        userName,
+        userRole,
+        setUserName,
+        setUserRole,
         setShowWelcome,
         setAuthStep,
         toggleTheme,
