@@ -9,7 +9,7 @@ import { ChatStream } from "@/components/assistant/ChatStream";
 
 export default function DashboardPage() {
   const { chatMessages, setShowWelcome } = useApp();
-  const [activeAgent, setActiveAgent] = useState("coding");
+  const [activeAgent, setActiveAgent] = useState("GENERAL");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const hasUserMessages = chatMessages.some((m) => m.role === "user");

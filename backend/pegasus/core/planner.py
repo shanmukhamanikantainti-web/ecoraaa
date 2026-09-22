@@ -10,7 +10,8 @@ iterations are needed. The number of steps is NOT predetermined.
 """
 
 import logging
-from typing import Any
+import os
+from typing import Any, Optional
 
 logger = logging.getLogger("pegasus.planner")
 
@@ -30,7 +31,7 @@ class Planner:
         self,
         goal: str,
         context: Any = None,
-        target_agent: str = None,
+        target_agent: Optional[str] = None,
     ) -> list[dict]:
         """
         Decompose a high-level goal into dynamic, context-driven executable steps.
@@ -53,28 +54,30 @@ class Planner:
             }
         ]
 
-    def _determine_agent(self, goal_lower: str, target_agent: str = None) -> str:
+    def _determine_agent(self, goal_lower: str, target_agent: Optional[str] = None) -> str:
         """Determine which agent should handle this goal."""
         if target_agent:
             return target_agent
 
         # Keyword-based agent selection
         if any(kw in goal_lower for kw in ["test", "testing", "verify", "validate", "debug"]):
-            return "Testing Agent"
+            return "TESTING"
         if any(kw in goal_lower for kw in ["review", "audit", "inspect changes", "code review"]):
-            return "Review Agent"
+            return "REVIEW"
         if any(kw in goal_lower for kw in ["readme", "release notes", "changelog", "documentation", "marketing"]):
-            return "Marketing Agent"
-        if any(kw in goal_lower for kw in ["where is", "find", "search", "explain", "how does", "what is", "research"]):
-            return "Research Agent"
+            return "MARKETING"
+        if any(kw in goal_lower for kw in ["where is", "find", "search", "explain", "how does", "what is", "research", "information"]):
+            return "RESEARCH"
         if any(kw in goal_lower for kw in ["code", "write", "create", "fix", "refactor", "build", "implement"]):
-            return "Coding Agent"
+            return "CODING"
 
-        # Default to Coding Agent for general tasks
-        return "Coding Agent"
+        # Default to General Agent for broad-purpose tasks
+        return "GENERAL"
 
     async def _llm_plan(self, goal: str, context: Any = None) -> list[dict] | None:
-        """Use LLM to generate a custom plan for complex goals."""
+        """
+        Use LLM to generate a custom plan for complex goals.
+        """
         try:
             from ..config.settings import settings
 
@@ -82,20 +85,19 @@ class Planner:
                 return None
 
             import openai
-            client = openai.AsyncOpenAI(api_key=settings.openrouter_api_key)
+            client = openai.AsyncOpenAI(
+                api_key=settings.openrouter_api_key or os.getenv("OPENROUTER_API_KEY"),
+                base_url=settings.openrouter_base_url
+            )
 
             system_prompt = """You are the PEGASUS OS Planner. Decompose the user's goal into ordered steps.
 
 Each step must be a JSON object with:
 - "name": Description of what this step does
-- "agent": Which agent should handle it ("Research Agent", "Coding Agent", "Device Agent", or null)
+- "agent": Which agent should handle it ("GENERAL", "CODING", "RESEARCH", "TESTING", "REVIEW", "MARKETING")
 - "tool": Which tool to use ("browser", "terminal", "filesystem", or null)
 
-Return ONLY a JSON array of step objects. Keep it to 3-7 steps maximum.
-Focus on practical, executable actions that follow the PEGASUS workflow:
-USER GOAL → UNDERSTAND → PLAN → PERMISSION → EXECUTE → OBSERVE → ADAPT → RESULT → MEMORY
-
-After each EXECUTE step, include an OBSERVE step to verify results."""
+Return ONLY a JSON array of step objects. Keep it to 1-3 steps maximum."""
 
             response = await client.chat.completions.create(
                 model=settings.openrouter_model,
@@ -127,8 +129,14 @@ After each EXECUTE step, include an OBSERVE step to verify results."""
         processed = []
         for i, step in enumerate(steps):
             name = step.get("name", f"Step {i+1}")
-            agent = step.get("agent") or ("Coding Agent" if i % 2 == 0 else "Research Agent")
-            tool = step.get("tool") or ("terminal" if i % 3 == 0 else "browser")
+            agent = step.get("agent", "GENERAL")
+            if agent and isinstance(agent, str):
+                agent = agent.upper().replace(' AGENT', '')
+                if agent not in ["GENERAL", "CODING", "RESEARCH", "TESTING", "REVIEW", "MARKETING"]:
+                    agent = "GENERAL"
+            else:
+                agent = "GENERAL"
+            tool = step.get("tool")
             processed.append({
                 "name": name,
                 "agent": agent,

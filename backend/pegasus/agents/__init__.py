@@ -4,5 +4,6 @@ from .coding import CodingAgent
 from .testing import TestingAgent
 from .market import MarketAnalysisAgent
 from .review import ReviewAgent
+from .general import GeneralAgent
 
-__all__ = ["BaseAgent", "AgentState", "ResearchAgent", "CodingAgent", "TestingAgent", "MarketAnalysisAgent", "ReviewAgent"]
+__all__ = ["BaseAgent", "AgentState", "ResearchAgent", "CodingAgent", "TestingAgent", "MarketAnalysisAgent", "ReviewAgent", "GeneralAgent"]

@@ -32,6 +32,7 @@ from ..agents.coding import CodingAgent
 from ..agents.testing import TestingAgent
 from ..agents.market import MarketAnalysisAgent
 from ..agents.review import ReviewAgent
+from ..agents.general import GeneralAgent
 from ..tools.browser import BrowserTool
 from ..tools.terminal import TerminalTool
 from ..tools.filesystem import FilesystemTool
@@ -62,12 +63,13 @@ async def lifespan(app: FastAPI):
     # Initialize orchestrator
     orchestrator = PegasusOrchestrator()
 
-    # Register agents
-    orchestrator.register_agent("Coding Agent", CodingAgent())
-    orchestrator.register_agent("Testing Agent", TestingAgent())
-    orchestrator.register_agent("Marketing Agent", MarketAnalysisAgent())
-    orchestrator.register_agent("Review Agent", ReviewAgent())
-    orchestrator.register_agent("Research Agent", ResearchAgent())
+    # Register agents with canonical IDs
+    orchestrator.register_agent("CODING", CodingAgent())
+    orchestrator.register_agent("TESTING", TestingAgent())
+    orchestrator.register_agent("MARKETING", MarketAnalysisAgent())
+    orchestrator.register_agent("REVIEW", ReviewAgent())
+    orchestrator.register_agent("RESEARCH", ResearchAgent())
+    orchestrator.register_agent("GENERAL", GeneralAgent())
 
     # Register tools
     browser = BrowserTool()

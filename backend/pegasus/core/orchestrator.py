@@ -98,6 +98,7 @@ class PegasusOrchestrator:
         self.context = ContextManager()
         self.permissions = PermissionManager()
         self.agents: dict[str, Any] = {}
+        self.agent_types: dict[Any, str] = {}  # Maps agent instance to canonical ID
         self.tools: dict[str, Any] = {}
         self.active_missions: dict[str, Mission] = {}
         self.completed_missions: list[Mission] = []
@@ -118,6 +119,7 @@ class PegasusOrchestrator:
     def register_agent(self, name: str, agent: Any):
         """Register an agent with the orchestrator."""
         self.agents[name] = agent
+        self.agent_types[agent] = name
         logger.info(f"Agent registered: {name}")
 
     def register_tool(self, name: str, tool: Any):
@@ -135,23 +137,15 @@ class PegasusOrchestrator:
         mission = Mission(id=mission_id, goal=goal)
         self.active_missions[mission_id] = mission
 
-        # Normalize agent mode
-        norm_mode = (agent_mode or "").upper().strip()
-        if norm_mode in ["CODING", "CODE", "DEVELOPER"]:
-            target_agent = "Coding Agent"
-        elif norm_mode in ["TESTING", "TEST"]:
-            target_agent = "Testing Agent"
-        elif norm_mode in ["REVIEW", "CODE_REVIEW"]:
-            target_agent = "Review Agent"
-        elif norm_mode in ["MARKETING", "DOCS", "DOCUMENTATION"]:
-            target_agent = "Marketing Agent"
-        elif norm_mode in ["RESEARCH"]:
-            target_agent = "Research Agent"
-        else:
+        # Canonical agent mode: use the mode directly
+        target_agent = agent_mode.upper() if agent_mode else None
+        if target_agent and target_agent not in self.agents:
+            # Fallback or error? Let's just log and clear if invalid
+            logger.warning(f"Invalid agent mode requested: {target_agent}")
             target_agent = None
 
-        logger.info(f"Mission {mission_id} started: {goal} (Agent Mode: {norm_mode or 'AUTO'} -> {target_agent or 'ORCHESTRATOR'})")
-        await self._emit_event("TASK_STARTED", {"task_id": mission_id, "goal": goal, "agent_mode": norm_mode or "AUTO", "agent": target_agent})
+        logger.info(f"Mission {mission_id} started: {goal} (Agent Mode: {target_agent or 'AUTO'})")
+        await self._emit_event("TASK_STARTED", {"task_id": mission_id, "goal": goal, "agent": target_agent or "AUTO"})
 
         try:
             # Step 1: Plan
@@ -194,18 +188,38 @@ class PegasusOrchestrator:
 
             step.status = StepStatus.RUNNING
             step.started_at = time.time()
+
+            # Use canonical agent ID for event if step.agent is set
+            agent_id_for_event = step.agent
+            if agent_id_for_event is None and step.agent in self.agent_types:
+                # Find agent ID from step
+                for name, ag in self.agents.items():
+                    if ag == self._select_agent(step):
+                        agent_id_for_event = name
+                        break
+
             await self._emit_event("AGENT_STARTED", {
                 "task_id": mission.id,
                 "step_name": step.name,
-                "agent": step.agent,
+                "agent": agent_id_for_event,
                 "tool": step.tool
+            })
+
+            # Emit agent event for real-time status
+            await self._emit_event("agent_event", {
+                "task_id": mission.id,
+                "agent": agent_id_for_event,
+                "status": "RUNNING",
+                "step_name": step.name
             })
 
             try:
                 # Select agent for this step
                 agent = self._select_agent(step)
                 if agent:
-                    step.agent = type(agent).__name__
+                    # Use canonical agent ID from registry
+                    agent_id = self.agent_types.get(agent, type(agent).__name__)
+                    step.agent = agent_id
                     if step.tool:
                         await self._emit_event("TOOL_STARTED", {
                             "task_id": mission.id,
@@ -232,6 +246,15 @@ class PegasusOrchestrator:
                         "status": "COMPLETED",
                         "result_snippet": result[:300] if result else ""
                     })
+
+                    # Emit agent event for real-time status
+                    await self._emit_event("agent_event", {
+                        "task_id": mission.id,
+                        "agent": step.agent,
+                        "status": "COMPLETED",
+                        "step_name": step.name
+                    })
+
                 else:
                     step.result = "No suitable agent found"
                     step.status = StepStatus.COMPLETED
@@ -246,6 +269,15 @@ class PegasusOrchestrator:
                     "error": str(e)
                 })
 
+                # Emit agent event for real-time status
+                await self._emit_event("agent_event", {
+                    "task_id": mission.id,
+                    "agent": step.agent,
+                    "status": "FAILED",
+                    "step_name": step.name,
+                    "error": str(e)
+                })
+
                 # Attempt retry
                 if await self._should_retry(step, mission):
                     logger.info(f"Retrying step '{step.name}'")
@@ -254,7 +286,8 @@ class PegasusOrchestrator:
                     try:
                         agent = self._select_agent(step)
                         if agent:
-                            step.agent = type(agent).__name__
+                            agent_id = self.agent_types.get(agent, type(agent).__name__)
+                            step.agent = agent_id
                             result = await agent.execute(step, self.tools, self.context)
                             step.result = result
                             step.status = StepStatus.COMPLETED

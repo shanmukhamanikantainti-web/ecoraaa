@@ -143,7 +143,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const executeGoal = useCallback(
-    async (goal: string, agentMode: string = "general") => {
+    async (goal: string, agentMode: string = "GENERAL") => {
       if (!goal.trim()) return;
 
       const userMsg: ChatMessage = {
@@ -225,7 +225,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       refreshState();
     });
 
-    const unsubTaskEvent = wsManager.on("task_event", () => {
+    const unsubAgentEvent = wsManager.on("agent_event", (data) => {
+      console.log("[WS] Agent Event:", data);
       refreshState();
     });
 
@@ -255,7 +256,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => {
       unsubConn();
       unsubMission();
-      unsubTaskEvent();
+      unsubAgentEvent();
       unsubPairing();
       unsubMemory();
       window.removeEventListener("keydown", handleKeyDown);
