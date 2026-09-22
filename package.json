@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "cd backend && .venv/Scripts/python main.py",
+    "dev:backend": "cd backend && venv/Scripts/python main.py",
     "dev:frontend": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-    "start:backend": "cd backend && .venv/Scripts/python main.py",
+    "start:backend": "cd backend && venv/Scripts/python main.py",
     "start:frontend": "cd frontend && npm run start",
     "install:all": "cd frontend && npm install && cd ../backend && .venv/Scripts/pip install -r requirements.txt",
     "test": "cd backend && .venv/Scripts/python test_e2e.py"
