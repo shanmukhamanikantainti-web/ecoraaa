@@ -10,7 +10,7 @@ interface GoalInputProps {
   disabled?: boolean;
 }
 
-export const GoalInput: React.FC<GoalInputProps> = ({ onExecute, agentMode = "general", disabled = false }) => {
+export const GoalInput: React.FC<GoalInputProps> = ({ onExecute, agentMode = "coding", disabled = false }) => {
   const [goal, setGoal] = useState("");
   const { executeGoal } = useApp();
 
