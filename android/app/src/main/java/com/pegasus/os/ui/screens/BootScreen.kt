@@ -66,30 +66,104 @@ fun BootScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(DeepBackground),
+            .background(EcoraaBackground),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier.padding(48.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // ECORAA Logo Emblem
+            androidx.compose.foundation.Canvas(
+                modifier = Modifier.size(72.dp)
+            ) {
+                val w = size.width
+                val h = size.height
+                val color = androidx.compose.ui.graphics.Color(0xFF2D2A26)
+
+                val stroke = androidx.compose.ui.graphics.drawscope.Stroke(
+                    width = w * 0.05f,
+                    cap = androidx.compose.ui.graphics.StrokeCap.Round
+                )
+
+                // 1. Outer Swirling Arc Ring
+                drawArc(
+                    color = color,
+                    startAngle = -20f,
+                    sweepAngle = 240f,
+                    useCenter = false,
+                    style = stroke
+                )
+                drawArc(
+                    color = color,
+                    startAngle = 230f,
+                    sweepAngle = 100f,
+                    useCenter = false,
+                    style = stroke
+                )
+
+                // 2. Center Code Emblem </>
+                val bracketY = h * 0.32f
+                val bracketH = h * 0.16f
+                val bracketW = w * 0.08f
+                val centerX = w / 2f
+
+                // Left '<'
+                val leftPath = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(centerX - bracketW * 1.8f, bracketY + bracketH / 2f)
+                    lineTo(centerX - bracketW * 0.8f, bracketY)
+                    lineTo(centerX - bracketW * 0.8f, bracketY + bracketH)
+                }
+                drawPath(leftPath, color, style = stroke)
+
+                // Right '>'
+                val rightPath = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(centerX + bracketW * 1.8f, bracketY + bracketH / 2f)
+                    lineTo(centerX + bracketW * 0.8f, bracketY)
+                    lineTo(centerX + bracketW * 0.8f, bracketY + bracketH)
+                }
+                drawPath(rightPath, color, style = stroke)
+
+                // Slash '/'
+                drawLine(
+                    color = color,
+                    start = androidx.compose.ui.geometry.Offset(centerX - bracketW * 0.4f, bracketY + bracketH * 0.9f),
+                    end = androidx.compose.ui.geometry.Offset(centerX + bracketW * 0.4f, bracketY + bracketH * 0.1f),
+                    strokeWidth = w * 0.05f
+                )
+
+                // 3. U-Shaped Crescent / Bowl
+                val bowlPath = androidx.compose.ui.graphics.Path().apply {
+                    arcTo(
+                        rect = androidx.compose.ui.geometry.Rect(w * 0.22f, h * 0.48f, w * 0.78f, h * 0.80f),
+                        startAngleDegrees = 0f,
+                        sweepAngleDegrees = 180f,
+                        forceMoveTo = true
+                    )
+                }
+                drawPath(bowlPath, color, style = stroke)
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
             // Title
             Text(
-                text = "PEGASUS OS",
+                text = "ECORAA",
                 fontSize = 28.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.Default,
-                color = PrimaryText,
+                color = EcoraaTextPrimary,
                 letterSpacing = 2.sp
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Version
+            // Subtitle / Version
             Text(
-                text = "v0.1.0",
-                fontSize = 11.sp,
-                color = TertiaryText,
+                text = "Personal Intelligence v1.0",
+                fontSize = 12.sp,
+                color = EcoraaTextSecondary,
                 letterSpacing = 1.sp
             )
 
@@ -110,14 +184,14 @@ fun BootScreen(
                             Text(
                                 text = "\u25CF",
                                 fontSize = 8.sp,
-                                color = PegasusAccent.copy(alpha = dotAlpha),
+                                color = EcoraaAccent.copy(alpha = dotAlpha),
                                 modifier = Modifier.width(12.dp)
                             )
                         } else if (isComplete) {
                             Text(
                                 text = "\u2713",
                                 fontSize = 10.sp,
-                                color = PegasusAccent,
+                                color = EcoraaAccent,
                                 modifier = Modifier.width(12.dp)
                             )
                         }
@@ -129,11 +203,11 @@ fun BootScreen(
                             text = buildString {
                                 append(label)
                                 append(" ")
-                                append(". ".repeat(maxOf(1, 20 - label.length)))
+                                append(". ".repeat(maxOf(1, 18 - label.length)))
                             },
                             fontSize = 13.sp,
                             fontFamily = FontFamily.Monospace,
-                            color = SecondaryText,
+                            color = EcoraaTextSecondary,
                             letterSpacing = 0.5.sp
                         )
 
@@ -141,9 +215,9 @@ fun BootScreen(
 
                         // Status
                         val statusColor = if (label == "PEGASUS CORE") {
-                            PegasusAccent
+                            EcoraaAccent
                         } else {
-                            SuccessColor
+                            EcoraaSuccess
                         }
                         Text(
                             text = if (label == "PEGASUS CORE" && index == currentLine && !allComplete) {
@@ -151,7 +225,7 @@ fun BootScreen(
                             } else status,
                             fontSize = 13.sp,
                             fontFamily = FontFamily.Monospace,
-                            color = if (isComplete || allComplete) statusColor else DisabledText,
+                            color = if (isComplete || allComplete) statusColor else EcoraaTextSecondary,
                             fontWeight = if (label == "PEGASUS CORE") FontWeight.Medium else FontWeight.Normal,
                             letterSpacing = 0.5.sp
                         )
@@ -163,13 +237,15 @@ fun BootScreen(
             if (allComplete) {
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
-                    text = "SYSTEM READY",
+                    text = "ECORAA READY",
                     fontSize = 12.sp,
                     fontFamily = FontFamily.Monospace,
-                    color = PegasusAccent,
+                    color = EcoraaAccent,
+                    fontWeight = FontWeight.Bold,
                     letterSpacing = 2.sp
                 )
             }
         }
     }
 }
+
